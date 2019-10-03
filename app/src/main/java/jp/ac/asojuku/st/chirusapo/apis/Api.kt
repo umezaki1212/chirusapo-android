@@ -2,7 +2,7 @@ package jp.ac.asojuku.st.chirusapo.apis
 
 class Api {
     companion object {
-        const val SLIM3 = "https://slim3.chirusapo.vxx0.com/"
+        const val SLIM = "https://slim.chirusapo.vxx0.com/"
         const val FLASK = "https://flask.chirusapo.vxx0.com/"
 
         fun urlBuilder(
@@ -10,12 +10,12 @@ class Api {
             apiName: String,
             apiReplace: Map<String, String>
         ): String {
-            var apiNameTemp = apiName
+            var temp = apiName
             apiReplace.forEach { (search, target) ->
-                apiNameTemp = apiNameTemp.replace(search, target)
+                temp = temp.replace(search, target)
             }
 
-            return apiServer + apiNameTemp
+            return apiServer + temp
         }
     }
 }
