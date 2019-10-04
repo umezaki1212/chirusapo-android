@@ -10,12 +10,9 @@ class Api {
             apiName: String,
             apiReplace: Map<String, String>
         ): String {
-            var temp = apiName
-            apiReplace.forEach { (search, target) ->
-                temp = temp.replace(search, target)
+            return apiServer + apiReplace.toList().fold(apiName) { acc, (search, target) ->
+                acc.replace(search, target)
             }
-
-            return apiServer + temp
         }
     }
 }
