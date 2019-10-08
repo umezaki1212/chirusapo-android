@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignInActivity">
+
+    <Button
+        android:id="@+id/button_sign_in"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
+
+        android:layout_marginBottom="168dp"
+        android:background="@drawable/signin_button_background"
+        android:fontFamily="@font/noto_sans"
+        android:text="@string/user_login"
+        android:textColor="@color/browser_actions_bg_grey"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_user_id"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        app:counterEnabled="false"
+        app:errorEnabled="true"
+        app:helperText="メールアドレスでもログインできます"
+        app:helperTextEnabled="true"
+        app:helperTextTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:hintAnimationEnabled="true"
+        app:hintEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans"
+            android:hint="@string/user_id"
+            android:inputType="text"
+            android:textSize="30sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_password"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        app:errorEnabled="true"
+        app:hintAnimationEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/button_sign_in"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_input_user_id"
+        app:layout_constraintVertical_bias="0.296"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans"
+            android:hint="@string/user_password"
+            android:inputType="textPassword"
+            android:textSize="30sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/text_new_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/noto_sans"
+        android:text="@string/new_accout"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_sign_in" />
+
+    <TextView
+        android:id="@+id/text_forget_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/noto_sans"
+        android:text="@string/password_forget_button"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_new_account"
+        app:layout_constraintVertical_bias="0.95" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
