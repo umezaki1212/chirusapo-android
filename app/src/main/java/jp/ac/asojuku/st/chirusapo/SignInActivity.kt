@@ -12,10 +12,19 @@ import java.util.regex.Pattern
 
 class SignInActivity : AppCompatActivity() {
 
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
+
+
     }
+
+    //自動ログイン処理
+    private fun autoLogin(){
+
+    }
+
 
     //IDをバリデートをする
     private fun validationUserId(): Boolean {
@@ -91,6 +100,7 @@ class SignInActivity : AppCompatActivity() {
                     "200" -> {
                         it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+
                     }
                     "400" -> {
 
