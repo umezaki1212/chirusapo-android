@@ -1,29 +1,24 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.fragment.app.DialogFragment
-import com.google.android.material.snackbar.Snackbar
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import kotlinx.android.synthetic.main.activity_sign_up.*
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import java.util.*
-import java.util.regex.Pattern
-import android.widget.DatePicker
-
 
 
 class SignUpActivity : AppCompatActivity() {
     val myStrings = arrayOf("性別","男", "女")
     private lateinit var spEditor: SharedPreferences.Editor
-    private var spinnerDatePicker: DatePickerDialog? = null
+    val calender = Calendar.getInstance()
+    val year = calender.get(Calendar.YEAR)
+    val month = calender.get(Calendar.MONTH)
+    val day = calender.get(Calendar.DAY_OF_MONTH)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,19 +30,9 @@ class SignUpActivity : AppCompatActivity() {
         } ?: IllegalAccessException("Toolbar cannot be null")
     }
 
-    fun isEnabled(position: Int): Boolean {
-        return if (position == 0) {
-            // Disable the first item from Spinner
-            // First item will be use for hint
-            false
-        } else {
-            true
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        user_sex.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        user_gender.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val spinner = parent as Spinner
                 val select = spinner.selectedItem.toString()
@@ -57,9 +42,17 @@ class SignUpActivity : AppCompatActivity() {
                 spEditor.putString("user_sex","未回答").apply()
             }
         }
+        user_birthday.setOnClickListener { onBirthdaySetting() }
         AccountCreate_button.setOnClickListener { onSignUp() }
     }
 
+    private fun onBirthdaySetting(){
+        val birthday = findViewById (R.id.user_birthday) as EditText
+        val date = DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
+            birthday.setText(y+m+d)
+        }, year,month,day
+        )
+    }
 
     private fun userNameCheck():Boolean{
         val userName = user_name.editText?.text.toString().trim()
@@ -149,7 +142,7 @@ class SignUpActivity : AppCompatActivity() {
             }
             else {
                 when(it.getString("status")) {
-                    "201" -> {
+                    "200" -> {
                         val token = it.getJSONObject("data").getString("token")
                         val editor = getSharedPreferences("data", MODE_PRIVATE).edit()
                         editor.putString("token", token).apply()
@@ -159,7 +152,7 @@ class SignUpActivity : AppCompatActivity() {
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
                     }
-                    "E00" -> {
+                    "400" -> {
                         val msgArray = it.getJSONArray("msg")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
@@ -167,32 +160,15 @@ class SignUpActivity : AppCompatActivity() {
                                 "VALIDATION_USER_NAME" -> user_name.error = "ユーザー名の入力規則に違反しています"
                                 "VALIDATION_EMAIL" -> user_email.error = "メールアドレスの入力規則に違反しています"
                                 "VALIDATION_PASSWORD" -> user_password.error = "パスワードの入力規則に違反しています"
+                                "VALIDATION_BIRTHDAY" -> user_birthday.error = "誕生日の入力内容が不正です"
                                 "ALREADY_USER_ID" -> user_id.error = "入力されたユーザーは既に登録されています"
                                 "ALREADY_EMAIL" -> user_email.error = "入力されたメールアドレスは既に登録されています"
                                 else -> Toast.makeText(applicationContext, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-}
-@Suppress("DEPRECATION")
-class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener{
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
-
-        return DatePickerDialog(SignUpActivity(), android.R.style.Theme_Holo_Dialog, this, year, month, day)
-    }
-
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-
-    }
-
 }
