@@ -136,9 +136,6 @@ class SignUpActivity : AppCompatActivity() {
 
         if(!check) return
 
-
-        //TODO エラーチェック終了後のアカウント作成登録処理
-
         ApiPostTask{
             if(it == null){
                //応答null
