@@ -3,6 +3,9 @@ package jp.ac.asojuku.st.chirusapo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import io.realm.Realm
+import io.realm.kotlin.createObject
+import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
@@ -12,7 +15,8 @@ import java.util.regex.Pattern
 
 class SignInActivity : AppCompatActivity() {
 
-    
+    lateinit var realm:Realm
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
@@ -21,10 +25,61 @@ class SignInActivity : AppCompatActivity() {
     }
 
     //自動ログイン処理
-    private fun autoLogin(){
-
+    private fun autoLogin() {
+//        ApiPostTask {
+//            //データが取得できなかった場合
+//            if (it == null) {
+//                ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+//            }
+//            //なにかしら返答があった場合
+//            else {
+//                //statusを取得する
+//                when (it.getString("status")) {
+//                    "200" -> {
+//                        var token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+//                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getInt("user_id")
+//                        var user_name = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
+//                        var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
+//                        //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+//                        realm = Realm.getDefaultInstance()
+//                        realm.executeTransaction {
+//                            ​
+//                            realm.createObject<account_user>().apply{
+//                                //ここに保存する内容を入れる処理
+//                                //例)name = "Rex"など
+//                                ​
+//                                //user_id
+//                                ​Ruser_id = user_id
+//                                //user_name
+//                                Ruser_name = user_name
+//                                //icon_file_name
+//                                ​Ruser_icon = user_icon
+//                                //token
+//                                ​Rtoken = token
+//
+//                                //ここに古い行を削除する処理をいれるかも？
+//                            }
+//                            ​
+//                        }
+//                    }
+//                    "400" -> {
+//
+//                    }
+//                }
+//            }
+//        }.execute(
+//            ApiParam(
+//                Api.SLIM + "account/signin",
+//                //ここに送るデータを記入する
+//                hashMapOf("user_id" to user_id, "password" to password)
+//            )
+//        )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        realm.close()
+    }
 
     //IDをバリデートをする
     private fun validationUserId(): Boolean {
@@ -98,9 +153,31 @@ class SignInActivity : AppCompatActivity() {
                 //statusを取得する
                 when (it.getString("status")) {
                     "200" -> {
-                        it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+                        var token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getInt("user_id")
+                        var user_name = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
+                        var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+                        realm = Realm.getDefaultInstance()
+                        realm.executeTransaction {
+                            ​
+                            realm.createObject<account_user>().apply{
+                                //ここに保存する内容を入れる処理
+                                //例)name = "Rex"など
+                                ​
+                                //user_id
+                                ​Ruser_id = user_id
+                                //user_name
+                                Ruser_name = user_name
+                                //icon_file_name
+                                ​Ruser_icon = user_icon
+                                //token
+                                ​Rtoken = token
 
+                               
+                            }
+                            ​
+                        }
                     }
                     "400" -> {
 

@@ -6,16 +6,16 @@ import io.realm.annotations.*
 import java.util.*
 
 open class account_user : RealmObject() {
-    @PrimaryKey open var user_id : Int = 0
-    @Required open var user_name: String = ""
-    open var icon_file_name: String? = ""
-    open var token: String = ""
+    @PrimaryKey open var Ruser_id : Int = 0
+    @Required open var Ruser_name: String = ""
+    open var Ruser_icon: String? = ""
+    open var Rtoken: String = ""
 }
 
-open class child_allergy : RealmObject(){
-    @PrimaryKey open var child_id : Int = 0
-    open var child_name : String = ""
-    open var allergy_name: String? = ""
-    open var vaccine_name: String? = ""
-    open var icon_file_nanme: String = ""
+open class allergy : RealmObject(){
+    @PrimaryKey open var allergy_name: String? = ""
+}
+
+open class vaccine : RealmObject(){
+    @PrimaryKey open var vaccine_name: String? = ""
 }
