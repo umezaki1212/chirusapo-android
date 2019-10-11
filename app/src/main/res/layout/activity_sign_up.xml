@@ -147,6 +147,7 @@
 
         <Spinner
             android:id="@+id/user_sex"
+
             android:layout_width="250dp"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
@@ -156,13 +157,14 @@
             android:id="@+id/user_birthday"
             android:layout_width="250dp"
             android:layout_height="50dp"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:spinnerMode="dialog" />
 
         <Button
             android:id="@+id/AccountCreate_button"
             android:layout_width="280dp"
             android:layout_height="50dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:text="新規作成" />
 
     </LinearLayout>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.fragment.app.DialogFragment
@@ -15,10 +16,14 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import java.util.*
 import java.util.regex.Pattern
+import android.widget.DatePicker
+
+
 
 class SignUpActivity : AppCompatActivity() {
-    private val user_sexItems = arrayOf("未回答", "男性", "女性")
+    val myStrings = arrayOf("性別","男", "女")
     private lateinit var spEditor: SharedPreferences.Editor
+    private var spinnerDatePicker: DatePickerDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,16 @@ class SignUpActivity : AppCompatActivity() {
         } ?: IllegalAccessException("Toolbar cannot be null")
     }
 
+    fun isEnabled(position: Int): Boolean {
+        return if (position == 0) {
+            // Disable the first item from Spinner
+            // First item will be use for hint
+            false
+        } else {
+            true
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         user_sex.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -38,9 +53,13 @@ class SignUpActivity : AppCompatActivity() {
                 val select = spinner.selectedItem.toString()
                 spEditor.putString("user_sex",select).apply()
             }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                spEditor.putString("user_sex","未回答").apply()
+            }
         }
         AccountCreate_button.setOnClickListener { onSignUp() }
     }
+
 
     private fun userNameCheck():Boolean{
         val userName = user_name.editText?.text.toString().trim()
