@@ -3,7 +3,7 @@ package jp.ac.asojuku.st.chirusapo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-class ResetPasswordActivity : AppCompatActivity() {
+class ResetPasswordMailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

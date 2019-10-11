@@ -2,6 +2,7 @@ package jp.ac.asojuku.st.chirusapo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
@@ -17,6 +18,14 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        button_sign_in.setOnClickListener {view ->
+            signin(view)
+        }
+    }
+
     //IDをバリデートをする
     private fun validationUserId(): Boolean {
         //これで入力されたuser_idをstring型に変換して代入する。
@@ -30,8 +39,8 @@ class SignInActivity : AppCompatActivity() {
                 false
             }
             //半角数字_で4文字から10文字以外なら
-            !Pattern.compile("^[a-zA-Z0-9-_]\$").matcher(userId).find() -> {
-                text_input_user_id.error = "4文字以上30文字以下の半角英数字で入力してください"
+            !Pattern.compile("^[a-zA-Z0-9-_@.]*\$").matcher(userId).find() -> {
+                text_input_user_id.error = "使用できない文字が含まれています"
                 false
             }
             //なにもエラーなし
@@ -55,8 +64,12 @@ class SignInActivity : AppCompatActivity() {
                 false
             }
             //半角数字_で5文字から30文字以外なら
-            !Pattern.compile("^[a-zA-Z0-9-_]\$").matcher(userPassword).find() -> {
+            !Pattern.compile("^[a-zA-Z0-9-_]{5,30}\$").matcher(userPassword).find() -> {
                 text_input_password.error = "5文字以上30文字以下の半角英数字で入力してください"
+                false
+            }
+            !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userPassword).find() -> {
+                text_input_user_id.error = "使用できない文字が含まれています"
                 false
             }
             else -> {//なにもエラーなし
@@ -66,19 +79,19 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signin() {//サインイン
+    private fun signin(view:View) {//サインイン
 
         //ここでstring型に変換する。
         val user_id = text_input_user_id.editText?.text.toString().trim()
         val password = text_input_password.editText?.text.toString().trim()
 
         //バリデートでfalseが返ってきたら処理を抜ける
-        if (!validationUserId()) {
-            return
-        }
-        if (!validationUserPassword()) {
-            return
-        }
+        var check = true
+        if (!validationUserId()) check = false
+        if (!validationUserPassword()) check = false
+
+        if (!check) return
+
         ApiPostTask {
             //データが取得できなかった場合
             if (it == null) {
@@ -93,7 +106,14 @@ class SignInActivity : AppCompatActivity() {
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
                     }
                     "400" -> {
-
+                        val errorArray = it.getJSONArray("message")
+                        for(i in 0 until errorArray.length()){
+                            when(errorArray.getString(i)){
+                                ApiError.UNKNOWN_USER -> {
+                                    ApiError.showEditTextError(text_input_user_id,errorArray.getString(i))
+                                }
+                            }
+                        }
                     }
                 }
             }
