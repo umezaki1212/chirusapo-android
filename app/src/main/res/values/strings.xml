@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ちるサポ</string>
-    <string-array name="user_sexItems">
-        <item>未回答</item>
+    <string-array name="user_genderItems">
+        <item>性別</item>
         <item>男性</item>
         <item>女性</item>
     </string-array>

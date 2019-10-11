@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.*
 
@@ -36,10 +37,10 @@ class SignUpActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val spinner = parent as Spinner
                 val select = spinner.selectedItem.toString()
-                spEditor.putString("user_sex",select).apply()
+                spEditor.putString("user_gender",select).apply()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                spEditor.putString("user_sex","未回答").apply()
+                spEditor.putString("user_gender","性別").apply()
             }
         }
         user_birthday.setOnClickListener { onBirthdaySetting() }
@@ -48,8 +49,11 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun onBirthdaySetting(){
         val birthday = findViewById (R.id.user_birthday) as EditText
-        val date = DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
-            birthday.setText(y+m+d)
+        DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
+            val year = y.toString()
+            val month = m.toString()
+            val day = d.toString()
+            birthday.setText(year+"-"+month+"-"+day)
         }, year,month,day
         )
     }
@@ -93,9 +97,9 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun userEmailCheck():Boolean{
-        val email = user_email.length()
+        val email = user_email.editText?.text.toString().trim()
         return when {
-            email == 0 -> {
+            email.count() == 0 -> {
                 user_email.error = "メールアドレスが入力されていません"
                 false
             }
@@ -169,6 +173,16 @@ class SignUpActivity : AppCompatActivity() {
                             }
                         }
                     }
-                }
+                }.execute(
+                    ApiParam(
+                        "account/signup",
+                        hashMapOf(
+                            "user_id" to user_id.editText?.text.toString(),
+                            "user_name" to user_name.editText?.text.toString(),
+                            "email" to user_email.editText?.text.toString(),
+                            "password" to user_password.editText?.text.toString()
+                        )
+                    )
+                )
             }
 }
