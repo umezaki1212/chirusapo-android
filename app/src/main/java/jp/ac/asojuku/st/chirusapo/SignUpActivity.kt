@@ -55,7 +55,7 @@ class SignUpActivity : AppCompatActivity() {
             val day = d.toString()
             birthday.setText(year+"-"+month+"-"+day)
         }, year,month,day
-        )
+        ).show()
     }
 
     private fun userNameCheck():Boolean{
@@ -67,6 +67,10 @@ class SignUpActivity : AppCompatActivity() {
                 false
             }
             userName.count() < 2 -> {
+                user_name.error = "ユーザー名の文字数が不正です"
+                false
+            }
+            userName.count() > 30 -> {
                 user_name.error = "ユーザー名の文字数が不正です"
                 false
             }
@@ -85,7 +89,11 @@ class SignUpActivity : AppCompatActivity() {
                 user_id.error = "ユーザーIDが入力されていません"
                 false
             }
-            userID.count() <= 4  ->{
+            userID.count() < 5  ->{
+                user_id.error = "ユーザーIDの文字数が不正です"
+                false
+            }
+            userID.count() > 30  ->{
                 user_id.error = "ユーザーIDの文字数が不正です"
                 false
             }
@@ -121,6 +129,10 @@ class SignUpActivity : AppCompatActivity() {
                 user_password.error = "パスワードの文字数が不正です"
                 false
             }
+            userPass.count() > 30 -> {
+                user_password.error = "パスワードの文字数が不正です"
+                false
+            }
             else -> {
                 user_password.error = null
                 true
@@ -129,10 +141,10 @@ class SignUpActivity : AppCompatActivity() {
     }
     private fun onSignUp(){
         var check = true
-        if(!userNameCheck())check == false
-        if(!userIDCheck())check == false
-        if(!userEmailCheck())check == false
-        if(!userPassCheck())check == false
+        if(!userNameCheck())check = false
+        if(!userIDCheck())check = false
+        if(!userEmailCheck())check = false
+        if(!userPassCheck())check = false
 
         if(!check) return
 
