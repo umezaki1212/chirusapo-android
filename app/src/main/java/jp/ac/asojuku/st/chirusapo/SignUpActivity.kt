@@ -45,10 +45,15 @@ class SignUpActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val spinner = parent as Spinner
                 val select = spinner.selectedItem.toString()
-                spEditor.putString("user_gender",select).apply()
+                if(select == "男性") {
+                    spEditor.putString("user_gender", "1").apply()
+                }
+                else if(select == "女性"){
+                    spEditor.putString("user_gender","2")
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                spEditor.putString("user_gender","性別").apply()
+                spEditor.putString("user_gender","0").apply()
             }
         }
         user_birthday.setOnClickListener { onBirthdaySetting() }
@@ -147,6 +152,7 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun onSignUp(){
         var check = true
         if(!userNameCheck())check = false
