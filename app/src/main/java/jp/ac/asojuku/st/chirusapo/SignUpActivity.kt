@@ -14,7 +14,6 @@ import java.util.*
 
 
 class SignUpActivity : AppCompatActivity() {
-    val myStrings = arrayOf("性別","男", "女")
     private lateinit var spEditor: SharedPreferences.Editor
     val calender = Calendar.getInstance()
     val year = calender.get(Calendar.YEAR)
@@ -29,6 +28,15 @@ class SignUpActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
         } ?: IllegalAccessException("Toolbar cannot be null")
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return super.onSupportNavigateUp()
+        return true
     }
 
     override fun onResume() {
