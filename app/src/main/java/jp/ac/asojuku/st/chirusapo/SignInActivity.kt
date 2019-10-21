@@ -2,7 +2,6 @@ package jp.ac.asojuku.st.chirusapo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
@@ -21,8 +20,8 @@ class SignInActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        button_sign_in.setOnClickListener {view ->
-            signin(view)
+        button_sign_in.setOnClickListener {
+            signIn()
         }
     }
 
@@ -79,10 +78,10 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signin(view:View) {//サインイン
+    private fun signIn() {//サインイン
 
         //ここでstring型に変換する。
-        val user_id = text_input_user_id.editText?.text.toString().trim()
+        val userId = text_input_user_id.editText?.text.toString().trim()
         val password = text_input_password.editText?.text.toString().trim()
 
         //バリデートでfalseが返ってきたら処理を抜ける
@@ -106,11 +105,27 @@ class SignInActivity : AppCompatActivity() {
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
                     }
                     "400" -> {
+                        //messageからエラー文を配列で取得し格納する
                         val errorArray = it.getJSONArray("message")
+                        //エラーが出た分だけ回す。untilとは(int i = 0; i< 100; i++)と同じ意味
                         for(i in 0 until errorArray.length()){
                             when(errorArray.getString(i)){
+                                //ユーザー情報が見つからない場合に返される
+                                //ユーザーIDに一致する項目があり、パスワードが誤っている場合でもUNKNOWN_USERとして返される
                                 ApiError.UNKNOWN_USER -> {
+                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                }
+                                //ユーザーIDがバリデーションに失敗した
+                                ApiError.VALIDATION_USER_ID -> {
                                     ApiError.showEditTextError(text_input_user_id,errorArray.getString(i))
+                                }
+                                //パスワードがバリデーションに失敗した
+                                ApiError.VALIDATION_PASSWORD -> {
+                                    ApiError.showEditTextError(text_input_password,errorArray.getString(i))
+                                }
+                                //値が不足している場合
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
                                 }
                             }
                         }
@@ -121,7 +136,7 @@ class SignInActivity : AppCompatActivity() {
             ApiParam(
                 Api.SLIM + "account/signin",
                 //ここに送るデータを記入する
-                hashMapOf("user_id" to user_id, "password" to password)
+                hashMapOf("user_id" to userId, "password" to password)
             )
         )
     }
