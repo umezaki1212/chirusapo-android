@@ -26,11 +26,13 @@ class SignInActivity : AppCompatActivity() {
         }
 
         text_new_account.setOnClickListener {
+            //新規作成へ
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
 
         text_forget_password.setOnClickListener {
+            //パスワードリセットへ
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
