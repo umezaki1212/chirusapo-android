@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -22,6 +23,16 @@ class SignInActivity : AppCompatActivity() {
 
         button_sign_in.setOnClickListener {
             signIn()
+        }
+
+        text_new_account.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
+        text_forget_password.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -110,6 +121,8 @@ class SignInActivity : AppCompatActivity() {
                     "200" -> {
                         it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
                     }
                     "400" -> {
                         //messageからエラー文を配列で取得し格納する
