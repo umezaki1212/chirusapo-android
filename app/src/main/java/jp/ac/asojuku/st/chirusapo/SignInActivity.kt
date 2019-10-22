@@ -68,7 +68,7 @@ class SignInActivity : AppCompatActivity() {
                 false
             }
             !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userPassword).find() -> {
-                text_input_user_id.error = "使用できない文字が含まれています"
+                text_input_password.error = "使用できない文字が含まれています"
                 false
             }
             else -> {//なにもエラーなし
@@ -80,6 +80,9 @@ class SignInActivity : AppCompatActivity() {
 
     private fun signIn() {//サインイン
 
+        // クリックを無効にする
+        button_sign_in.isEnabled = false
+
         //ここでstring型に変換する。
         val userId = text_input_user_id.editText?.text.toString().trim()
         val password = text_input_password.editText?.text.toString().trim()
@@ -89,7 +92,11 @@ class SignInActivity : AppCompatActivity() {
         if (!validationUserId()) check = false
         if (!validationUserPassword()) check = false
 
-        if (!check) return
+        if (!check){
+            // クリックを有効にする
+            button_sign_in.isEnabled = true
+            return
+        }
 
         ApiPostTask {
             //データが取得できなかった場合
@@ -139,6 +146,8 @@ class SignInActivity : AppCompatActivity() {
                 hashMapOf("user_id" to userId, "password" to password)
             )
         )
+        // クリックを有効にする
+        button_sign_in.isEnabled = true
     }
 
 }
