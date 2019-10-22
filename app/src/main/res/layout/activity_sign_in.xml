@@ -20,19 +20,18 @@
         android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_input_user_id"
-        app:layout_constraintVertical_bias="0.535" />
+        app:layout_constraintVertical_bias="0.562" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_user_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="130dp"
         app:counterEnabled="false"
         app:errorEnabled="true"
-        app:helperText="メールアドレスでもログインできます"
         app:helperTextEnabled="true"
         app:helperTextTextAppearance="@style/TextAppearance.AppCompat.Medium"
         app:hintAnimationEnabled="false"
@@ -47,7 +46,7 @@
             android:fontFamily="@font/noto_sans"
             android:hint="@string/user_id"
             android:inputType="text"
-            android:textSize="30sp" />
+            android:textSize="29sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
