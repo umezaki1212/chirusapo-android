@@ -1,8 +1,8 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
@@ -21,8 +21,20 @@ class SignInActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        button_sign_in.setOnClickListener {view ->
-            signin(view)
+        button_sign_in.setOnClickListener {
+            signIn()
+        }
+
+        text_new_account.setOnClickListener {
+            //新規作成へ
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+
+        text_forget_password.setOnClickListener {
+            //パスワードリセットへ
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -69,7 +81,7 @@ class SignInActivity : AppCompatActivity() {
                 false
             }
             !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userPassword).find() -> {
-                text_input_user_id.error = "使用できない文字が含まれています"
+                text_input_password.error = "使用できない文字が含まれています"
                 false
             }
             else -> {//なにもエラーなし
@@ -79,10 +91,13 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signin(view:View) {//サインイン
+    private fun signIn() {//サインイン
+
+        // クリックを無効にする
+        button_sign_in.isEnabled = false
 
         //ここでstring型に変換する。
-        val user_id = text_input_user_id.editText?.text.toString().trim()
+        val userId = text_input_user_id.editText?.text.toString().trim()
         val password = text_input_password.editText?.text.toString().trim()
 
         //バリデートでfalseが返ってきたら処理を抜ける
@@ -90,7 +105,11 @@ class SignInActivity : AppCompatActivity() {
         if (!validationUserId()) check = false
         if (!validationUserPassword()) check = false
 
-        if (!check) return
+        if (!check){
+            // クリックを有効にする
+            button_sign_in.isEnabled = true
+            return
+        }
 
         ApiPostTask {
             //データが取得できなかった場合
@@ -104,13 +123,31 @@ class SignInActivity : AppCompatActivity() {
                     "200" -> {
                         it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
                     }
                     "400" -> {
+                        //messageからエラー文を配列で取得し格納する
                         val errorArray = it.getJSONArray("message")
+                        //エラーが出た分だけ回す。untilとは(int i = 0; i< 100; i++)と同じ意味
                         for(i in 0 until errorArray.length()){
                             when(errorArray.getString(i)){
+                                //ユーザー情報が見つからない場合に返される
+                                //ユーザーIDに一致する項目があり、パスワードが誤っている場合でもUNKNOWN_USERとして返される
                                 ApiError.UNKNOWN_USER -> {
+                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                }
+                                //ユーザーIDがバリデーションに失敗した
+                                ApiError.VALIDATION_USER_ID -> {
                                     ApiError.showEditTextError(text_input_user_id,errorArray.getString(i))
+                                }
+                                //パスワードがバリデーションに失敗した
+                                ApiError.VALIDATION_PASSWORD -> {
+                                    ApiError.showEditTextError(text_input_password,errorArray.getString(i))
+                                }
+                                //値が不足している場合
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
                                 }
                             }
                         }
@@ -121,9 +158,11 @@ class SignInActivity : AppCompatActivity() {
             ApiParam(
                 Api.SLIM + "account/signin",
                 //ここに送るデータを記入する
-                hashMapOf("user_id" to user_id, "password" to password)
+                hashMapOf("user_id" to userId, "password" to password)
             )
         )
+        // クリックを有効にする
+        button_sign_in.isEnabled = true
     }
 
 }

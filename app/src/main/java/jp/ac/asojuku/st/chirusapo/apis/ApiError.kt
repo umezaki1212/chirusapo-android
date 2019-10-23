@@ -23,6 +23,14 @@ class ApiError {
         const val ALREADY_EMAIL = "ALREADY_EMAIL"
         const val UNKNOWN_USER = "UNKNOWN_USER"
         const val MAIL_SEND = "MAIL_SEND"
+        const val UNKNOWN_GROUP = "UNKNOWN_GROUP"
+        const val ALREADY_CREATE_GROUP = "ALREADY_CREATE_GROUP"
+        const val ALREADY_BELONG_GROUP = "ALREADY_BELONG_GROUP"
+        const val UNREADY_BELONG_GROUP = "UNREADY_BELONG_GROUP"
+        const val VALIDATION_GROUP_ID = "VALIDATION_GROUP_ID"
+        const val VALIDATION_GROUP_NAME = "VALIDATION_GROUP_NAME"
+        const val VALIDATION_PIN_CODE = "VALIDATION_PIN_CODE"
+        const val VERIFY_PIN_CODE = "VERIFY_PIN_CODE"
 
         fun showToast(context: Context, message: String, duration: Int) {
             Toast.makeText(context, switchMessage(message), duration).show()
@@ -79,6 +87,30 @@ class ApiError {
                 }
                 MAIL_SEND -> {
                     "メール送信に失敗しました"
+                }
+                UNKNOWN_GROUP -> {
+                    "不明なグループです"
+                }
+                ALREADY_CREATE_GROUP -> {
+                    "既に入力されたグループIDは使用されています"
+                }
+                ALREADY_BELONG_GROUP -> {
+                    "既にグループに所属しています"
+                }
+                UNREADY_BELONG_GROUP -> {
+                    "グループに所属していない為取得できません"
+                }
+                VALIDATION_GROUP_ID -> {
+                    "グループIDに使用できない文字が含まれています"
+                }
+                VALIDATION_GROUP_NAME -> {
+                    "グループ名に使用できない文字が含まれています"
+                }
+                VALIDATION_PIN_CODE -> {
+                    "PINコードに使用できない文字が含まれています"
+                }
+                VERIFY_PIN_CODE -> {
+                    "PINコードの検証に失敗しました"
                 }
                 else -> message
             }
