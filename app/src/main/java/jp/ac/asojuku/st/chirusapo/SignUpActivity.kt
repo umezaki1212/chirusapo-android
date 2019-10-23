@@ -49,7 +49,7 @@ class SignUpActivity : AppCompatActivity() {
                     spEditor.putString("user_gender", "1").apply()
                 }
                 else if(select == "女性"){
-                    spEditor.putString("user_gender","2")
+                    spEditor.putString("user_gender","2").apply()
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -162,6 +162,17 @@ class SignUpActivity : AppCompatActivity() {
 
         if(!check) return
 
+        val param = hashMapOf(
+            "user_id" to user_id.editText?.text.toString(),
+            "user_name" to user_name.editText?.text.toString(),
+            "email" to user_email.editText?.text.toString(),
+            "password" to user_password.editText?.text.toString(),
+            "user_gender" to user_gender.toString()
+        )
+        if (user_birthday.text != null) {
+            param.put("birthday",user_birthday.text.toString())
+        }
+
         ApiPostTask{
             if(it == null){
                //応答null
@@ -199,12 +210,7 @@ class SignUpActivity : AppCompatActivity() {
                 }.execute(
                     ApiParam(
                         "account/signup",
-                        hashMapOf(
-                            "user_id" to user_id.editText?.text.toString(),
-                            "user_name" to user_name.editText?.text.toString(),
-                            "email" to user_email.editText?.text.toString(),
-                            "password" to user_password.editText?.text.toString()
-                        )
+                        param
                     )
                 )
             }
