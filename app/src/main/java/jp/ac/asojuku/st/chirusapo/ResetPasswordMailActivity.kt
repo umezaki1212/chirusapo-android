@@ -1,37 +1,47 @@
 package jp.ac.asojuku.st.chirusapo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import kotlinx.android.synthetic.main.activity_reset_password_mail.*
-import kotlinx.android.synthetic.main.activity_sign_in.*
-
+import java.util.regex.Pattern
 
 class ResetPasswordMailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password_mail)
+        send_btn.setOnClickListener { view ->
+            passwordReset(view)
+        }
     }
-    /*
-    "user_id":{
-        "name": "post",
-        "password": "password",
-        "password_confirmation": "password"
-    }
-    */
 
-    fun passwordReset() {
-        val user_id = userid_mailaddress.text.toString()
+    private fun passwordReset(view: View) {
+        val userId = userid_mailaddress.text.toString()
 
-        ApiPostTask{
+        when {
+            userId.isEmpty() -> {
+                // エラー処理
+                Toast.makeText(this, "入力されていません", Toast.LENGTH_SHORT).show()
+                return
+            }
+            !Pattern.compile("^[a-zA-Z0-9-.@_]{4,250}\$").matcher(userId).find() -> {
+                // エラー処理
+                Toast.makeText(this, "ユーザーIDかメールアドレスを入力してください", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        ApiPostTask {
             // 処理した結果が帰ってくる
             if (it == null) {
-                ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+                ApiError.showSnackBar(view, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
             }
             //なにかしら返答があった場合
             else {
@@ -40,24 +50,54 @@ class ResetPasswordMailActivity : AppCompatActivity() {
                     "200" -> {
                         it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")
-                        for(i in 0 until errorArray.length()){
-                            when(errorArray.getString(i)){
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
                                 ApiError.UNKNOWN_USER -> {
-                                    ApiError.showEditTextError(text_input_user_id,errorArray.getString(i))
+                                    // 不明なユーザーです表示
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                ApiError.VALIDATION_USER_ID -> {
+                                    // ユーザーIDの書式が誤っています表示
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                ApiError.MAIL_SEND -> {
+                                    // メール送信に失敗しました表示
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+
+                                }
+                                ApiError.REQUIRED_PARAM -> {
+                                    // 必要な値が見つかりませんでした表示
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
                                 }
                             }
                         }
                     }
                 }
             }
-
         }.execute(
             ApiParam(
-            Api.SLIM + "account/password-reset",
-            hashMapOf("user_id" to user_id)
+                Api.SLIM + "account/password-reset",
+                hashMapOf("user_id" to userId)
             )
         )
     }
