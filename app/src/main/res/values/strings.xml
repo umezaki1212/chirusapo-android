@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ちるサポ</string>
+    <string name="user_id">ユーザーID or メールアドレス</string>
+    <string name="user_password">パスワード</string>
+    <string name="user_login">ログイン</string>
+    <string name="new_accout">アカウントを作成する</string>
+    <string name="password_forget_button">パスワードを忘れましたか？</string>
 </resources>
