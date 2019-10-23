@@ -33,7 +33,7 @@ class SignInActivity : AppCompatActivity() {
 
         text_forget_password.setOnClickListener {
             //パスワードリセットへ
-            val intent = Intent(this, SignUpActivity::class.java)
+            val intent = Intent(this, ResetPasswordMailActivity::class.java)
             startActivity(intent)
         }
     }
