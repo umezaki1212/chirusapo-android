@@ -44,7 +44,6 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     // Material Design
     api 'com.google.android.material:material:1.1.0-alpha10'
-    //under line
     // Floating Action Button Speed Dial
     // https://github.com/leinardi/FloatingActionButtonSpeedDial
     implementation 'com.leinardi.android:speed-dial:3.0.0'
@@ -61,5 +60,4 @@ dependencies {
     // LINE
     // https://developers.line.biz/ja/docs/android-sdk/integrate-line-login/
     implementation 'com.linecorp:linesdk:5.0.1'
-
 }
