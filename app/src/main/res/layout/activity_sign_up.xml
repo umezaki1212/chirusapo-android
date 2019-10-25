@@ -172,6 +172,7 @@
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
+            android:background="@drawable/signin_button_background"
             android:text="新規作成" />
 
     </LinearLayout>
