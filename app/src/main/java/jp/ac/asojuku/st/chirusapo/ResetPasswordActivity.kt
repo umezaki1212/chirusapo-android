@@ -5,13 +5,8 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_reset_password.*
-import java.util.*
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.os.AsyncTask.execute
 import android.widget.Toast
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 
@@ -32,15 +27,15 @@ class ResetPasswordActivity : AppCompatActivity() {
     }
 
     private fun onPasswordCheck():Boolean{
-        val userPass = user_password.editText?.text.toString().trim()
+        val userPass = old_password.editText?.text.toString().trim()
         val userPassCheck = prefs.getString("password","")
         return when {
             userPass.isEmpty() -> {
-                user_password.error = "パスワードが未入力です"
+                old_password.error = "パスワードが未入力です"
                 false
             }
             userPass != userPassCheck -> {
-                user_password.error = "パスワードが正しくありません"
+                old_password.error = "パスワードが正しくありません"
                 false
             }
             else -> {
@@ -50,18 +45,18 @@ class ResetPasswordActivity : AppCompatActivity() {
     }
 
     private fun onNewPasswordCheck():Boolean{
-        val userNewPass = user_newpassword.editText?.text.toString().trim()
+        val userNewPass = new_password.editText?.text.toString().trim()
         return when {
             userNewPass.isEmpty() -> {
-                user_newpassword.error = "新しいパスワードが未入力です"
+                new_password.error = "新しいパスワードが未入力です"
                 false
             }
             userNewPass.count() < 2 -> {
-                user_newpassword.error = "新しいパスワードの文字数が不正です"
+                new_password.error = "新しいパスワードの文字数が不正です"
                 false
             }
             userNewPass.count() > 30 -> {
-                user_newpassword.error = "新しいパスワードの文字数が不正です"
+                new_password.error = "新しいパスワードの文字数が不正です"
                 false
             }
             else -> {
@@ -76,7 +71,6 @@ class ResetPasswordActivity : AppCompatActivity() {
         if(!onNewPasswordCheck())check = false
 
         if(!check) return
-        val param = hashMapOf("password" to user_password.editText?.text.toString())
 
         ApiPostTask{
             if(it == null){
@@ -98,7 +92,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                         val msgArray = it.getJSONArray("msg")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
-                                "VALIDATION_PASSWORD" -> user_newpassword.error = "パスワードの入力規則に違反しています"
+                                "VALIDATION_PASSWORD" -> new_password.error = "パスワードの入力規則に違反しています"
                                 else -> Toast.makeText(applicationContext, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -107,7 +101,8 @@ class ResetPasswordActivity : AppCompatActivity() {
             }
         }.execute(
             ApiParam(
-                "account/password-reset"
+                "account/password-change",
+                        hashMapOf("password" to old_password.editText?.text.toString())
             )
         )
     }

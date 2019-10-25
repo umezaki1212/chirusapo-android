@@ -132,22 +132,22 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun userPassCheck():Boolean{
-        val userPass = user_password.editText?.text.toString().trim()
+        val userPass = old_password.editText?.text.toString().trim()
         return when {
             userPass.isEmpty() -> {
-                user_password.error = "パスワードが入力されていません"
+                old_password.error = "パスワードが入力されていません"
                 false
             }
             userPass.count() < 5 -> {
-                user_password.error = "パスワードの文字数が不正です"
+                old_password.error = "パスワードの文字数が不正です"
                 false
             }
             userPass.count() > 30 -> {
-                user_password.error = "パスワードの文字数が不正です"
+                old_password.error = "パスワードの文字数が不正です"
                 false
             }
             else -> {
-                user_password.error = null
+                old_password.error = null
                 true
             }
         }
@@ -166,7 +166,7 @@ class SignUpActivity : AppCompatActivity() {
             "user_id" to user_id.editText?.text.toString(),
             "user_name" to user_name.editText?.text.toString(),
             "email" to user_email.editText?.text.toString(),
-            "password" to user_password.editText?.text.toString(),
+            "password" to old_password.editText?.text.toString(),
             "user_gender" to user_gender.toString()
         )
         if (user_birthday.text != null) {
@@ -197,7 +197,7 @@ class SignUpActivity : AppCompatActivity() {
                                 "VALIDATION_USER_ID" -> user_id.error = "ユーザーIDの入力規則に違反しています"
                                 "VALIDATION_USER_NAME" -> user_name.error = "ユーザー名の入力規則に違反しています"
                                 "VALIDATION_EMAIL" -> user_email.error = "メールアドレスの入力規則に違反しています"
-                                "VALIDATION_PASSWORD" -> user_password.error = "パスワードの入力規則に違反しています"
+                                "VALIDATION_PASSWORD" -> old_password.error = "パスワードの入力規則に違反しています"
                                 "VALIDATION_BIRTHDAY" -> user_birthday.error = "誕生日の入力内容が不正です"
                                 "ALREADY_USER_ID" -> user_id.error = "入力されたユーザーは既に登録されています"
                                 "ALREADY_EMAIL" -> user_email.error = "入力されたメールアドレスは既に登録されています"
