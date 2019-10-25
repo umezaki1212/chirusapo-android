@@ -15,10 +15,8 @@
         android:paddingRight="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_name"
@@ -174,7 +172,7 @@
             android:layout_width="280dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/signin_button_background"
+            android:background="@drawable/signin_button_background"    
             android:text="新規作成" />
 
     </LinearLayout>
