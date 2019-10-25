@@ -79,13 +79,10 @@ class ResetPasswordActivity : AppCompatActivity() {
             else {
                 when(it.getString("status")){
                     "200" -> {
-                        val token = it.getJSONObject("data").getString("token")
-                        val editor = getSharedPreferences("data", MODE_PRIVATE).edit()
-                        editor.putString("token", token).apply()
                         startActivity(
                             Intent(
                                 this, MainActivity::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            )
                         )
                     }
                     "400" -> {
@@ -102,7 +99,7 @@ class ResetPasswordActivity : AppCompatActivity() {
         }.execute(
             ApiParam(
                 "account/password-change",
-                        hashMapOf("password" to old_password.editText?.text.toString())
+                        hashMapOf("password" to new_password.editText?.text.toString())
             )
         )
     }
