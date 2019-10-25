@@ -12,6 +12,7 @@ import android.os.AsyncTask.execute
 import android.widget.Toast
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 
 
@@ -104,6 +105,10 @@ class ResetPasswordActivity : AppCompatActivity() {
                     }
                 }
             }
-        }.execute()
+        }.execute(
+            ApiParam(
+                "account/password-reset"
+            )
+        )
     }
 }
