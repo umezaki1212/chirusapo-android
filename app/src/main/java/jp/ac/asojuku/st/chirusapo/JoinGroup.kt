@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
 
-open class join_group : RealmObject(){
+open class JoinGroup : RealmObject(){
     @PrimaryKey
     open var Rgroup_id : Int = 0
     @Required
