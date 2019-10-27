@@ -9,20 +9,31 @@ import com.google.android.material.textfield.TextInputLayout
 class ApiError {
 
     companion object {
+        // etc.
         const val CONNECTION_ERROR = "CONNECTION_ERROR"
         const val REQUIRED_PARAM = "REQUIRED_PARAM"
-        const val UNKNOWN_TOKEN = "UNKNOWN_TOKEN"
+        const val ALLOW_EXTENSION = "ALLOW_EXTENSION"
+        const val UPLOAD_FAILED = "UPLOAD_FAILED"
+        const val MAIL_SEND = "MAIL_SEND"
         const val UNKNOWN_ERROR = "UNKNOWN_ERROR"
+        // Account
         const val VALIDATION_USER_ID = "VALIDATION_USER_ID"
         const val VALIDATION_USER_NAME = "VALIDATION_USER_NAME"
         const val VALIDATION_EMAIL = "VALIDATION_EMAIL"
         const val VALIDATION_PASSWORD = "VALIDATION_PASSWORD"
+        const val VALIDATION_OLD_PASSWORD = "VALIDATION_OLD_PASSWORD"
+        const val VALIDATION_NEW_PASSWORD = "VALIDATION_NEW_PASSWORD"
+        const val VERIFY_PASSWORD_FAILED = "VERIFY_PASSWORD_FAILED"
         const val VALIDATION_BIRTHDAY = "VALIDATION_BIRTHDAY"
         const val VALIDATION_GENDER = "VALIDATION_GENDER"
+        const val VALIDATION_LINE_ID = "VALIDATION_LINE_ID"
+        const val VALIDATION_INTRODUCTION = "VALIDATION_INTRODUCTION"
         const val ALREADY_USER_ID = "ALREADY_USER_ID"
         const val ALREADY_EMAIL = "ALREADY_EMAIL"
         const val UNKNOWN_USER = "UNKNOWN_USER"
-        const val MAIL_SEND = "MAIL_SEND"
+        // Token
+        const val UNKNOWN_TOKEN = "UNKNOWN_TOKEN"
+        // Group
         const val UNKNOWN_GROUP = "UNKNOWN_GROUP"
         const val ALREADY_CREATE_GROUP = "ALREADY_CREATE_GROUP"
         const val ALREADY_BELONG_GROUP = "ALREADY_BELONG_GROUP"
@@ -31,6 +42,11 @@ class ApiError {
         const val VALIDATION_GROUP_NAME = "VALIDATION_GROUP_NAME"
         const val VALIDATION_PIN_CODE = "VALIDATION_PIN_CODE"
         const val VERIFY_PIN_CODE = "VERIFY_PIN_CODE"
+        // Timeline
+        const val NOT_FIND_POST_CONTENT = "NOT_FIND_POST_CONTENT"
+        const val DUPLICATE_MEDIA_FILE = "DUPLICATE_MEDIA_FILE"
+        const val VALIDATION_TIMELINE_POST_CONTENT = "VALIDATION_TIMELINE_POST_CONTENT"
+        const val GENERATE_THUMBNAIL = "GENERATE_THUMBNAIL"
 
         fun showToast(context: Context, message: String, duration: Int) {
             Toast.makeText(context, switchMessage(message), duration).show()
@@ -111,6 +127,39 @@ class ApiError {
                 }
                 VERIFY_PIN_CODE -> {
                     "PINコードの検証に失敗しました"
+                }
+                ALLOW_EXTENSION -> {
+                    "選択されたファイルをアップロードすることはできません"
+                }
+                UPLOAD_FAILED -> {
+                    "アップロードに失敗しました"
+                }
+                VALIDATION_OLD_PASSWORD -> {
+                    "旧パスワードに使用できない文字が含まれています"
+                }
+                VALIDATION_NEW_PASSWORD -> {
+                    "新パスワードに使用できない文字が含まれています"
+                }
+                VERIFY_PASSWORD_FAILED -> {
+                    "旧パスワードの検証に失敗しました"
+                }
+                VALIDATION_LINE_ID -> {
+                    "LINE IDに使用できない文字が含まれています"
+                }
+                VALIDATION_INTRODUCTION -> {
+                    "自己紹介に使用できない文字が含まれています"
+                }
+                NOT_FIND_POST_CONTENT -> {
+                    "投稿しようとしている情報が見つかりません"
+                }
+                DUPLICATE_MEDIA_FILE -> {
+                    "画像と動画を同時にアップロードすることはできません"
+                }
+                VALIDATION_TIMELINE_POST_CONTENT -> {
+                    "投稿文章に使用できない文字が含まれています"
+                }
+                GENERATE_THUMBNAIL -> {
+                    "サムネイルの生成に失敗しました"
                 }
                 else -> message
             }
