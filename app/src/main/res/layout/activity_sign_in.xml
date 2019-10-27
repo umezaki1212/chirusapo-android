@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/noto_sans"
-        android:text="@string/new_accout"
+        android:text="@string/new_Accout"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
