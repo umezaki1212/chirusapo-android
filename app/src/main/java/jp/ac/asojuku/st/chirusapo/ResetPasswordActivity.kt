@@ -54,8 +54,13 @@ class ResetPasswordActivity : AppCompatActivity() {
                 new_password.error = "新しいパスワードの文字数が不正です"
                 false
             }
-            else -> {
+            userNewPass.equals("\"^[0-9a-zA-Z]+\$") -> {
+                new_password.error = null
                 true
+            }
+            else -> {
+                new_password.error = "使用できない文字が含まれています"
+                false
             }
         }
     }
@@ -81,7 +86,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                         )
                     }
                     "400" -> {
-                        val msgArray = it.getJSONArray("msg")
+                        val msgArray = it.getJSONArray("massage")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
                                 "VALIDATION_PASSWORD" -> new_password.error = "パスワードの入力規則に違反しています"
