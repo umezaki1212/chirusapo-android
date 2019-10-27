@@ -188,8 +188,6 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         ApiPostTask{
-
-
             if(it == null){
                //応答null
                 Toast.makeText(applicationContext, "APIとの通信に失敗しました", Toast.LENGTH_SHORT).show()

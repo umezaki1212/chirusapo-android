@@ -115,16 +115,19 @@ class SignInActivity : AppCompatActivity() {
             //データが取得できなかった場合
             if (it == null) {
                 ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+                button_sign_in.isEnabled = true
             }
             //なにかしら返答があった場合
             else {
                 //statusを取得する
                 when (it.getString("status")) {
                     "200" -> {
+                        button_sign_in.isEnabled = true
                         it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
                         //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
                     "400" -> {
                         //messageからエラー文を配列で取得し格納する
@@ -151,6 +154,8 @@ class SignInActivity : AppCompatActivity() {
                                 }
                             }
                         }
+                        // クリックを有効にする
+                        button_sign_in.isEnabled = true
                     }
                 }
             }
@@ -161,8 +166,6 @@ class SignInActivity : AppCompatActivity() {
                 hashMapOf("user_id" to userId, "password" to password)
             )
         )
-        // クリックを有効にする
-        button_sign_in.isEnabled = true
     }
 
 }
