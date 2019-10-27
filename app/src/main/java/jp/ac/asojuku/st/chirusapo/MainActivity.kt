@@ -11,7 +11,6 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.layout_group_join.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -148,7 +147,7 @@ class MainActivity : AppCompatActivity() {
             ) { dialog, which ->
                 val token = "5t0DUpyH4yrgPp8tv"
                 val groupId = group_id.editText?.text.toString()
-                val groupPin = group_name.editText?.text.toString()
+                val groupPin = group_pin.editText?.text.toString()
 
                 // APIとの通信を行う
                 ApiPostTask{
@@ -165,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                                 for (i in 0 until belongGroup.length()) {
                                     val groupInfo = belongGroup.getJSONObject(i)
                                     val groupInfoId = groupInfo.getString("group_id")
-                                    val groupInfoPin = groupInfo.getString("group_name")
+                                    val groupInfoPin = groupInfo.getString("pin_code")
                                 }
                             }
                             "400" -> {
@@ -234,7 +233,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }.execute(ApiParam(
                     Api.SLIM + "group/join" ,
-                    hashMapOf("token" to token,"group_id" to groupId,"group_name" to groupPin)
+                    hashMapOf("token" to token,"group_id" to groupId,"pin_code" to groupPin)
                 ))
             }
             .setNegativeButton("キャンセル", null)
