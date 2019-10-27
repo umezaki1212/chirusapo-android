@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
@@ -17,6 +18,7 @@ import java.util.*
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var spEditor: SharedPreferences.Editor
+    lateinit var realm:Realm
     val calender = Calendar.getInstance()
     val year = calender.get(Calendar.YEAR)
     val month = calender.get(Calendar.MONTH)
@@ -25,6 +27,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+        realm = Realm.getDefaultInstance()
 
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
@@ -34,6 +37,11 @@ class SignUpActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        realm.close()
     }
 
     override fun onSupportNavigateUp(): Boolean {
