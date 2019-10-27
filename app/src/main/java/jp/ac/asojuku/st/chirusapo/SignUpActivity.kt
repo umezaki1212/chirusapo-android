@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.accounts.Account
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.SharedPreferences
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_sign_up.*
@@ -167,13 +169,15 @@ class SignUpActivity : AppCompatActivity() {
             "user_name" to user_name.editText?.text.toString(),
             "email" to user_email.editText?.text.toString(),
             "password" to old_password.editText?.text.toString(),
-            "user_gender" to user_gender.toString()
+            "gender" to user_gender.toString()
         )
         if (user_birthday.text != null) {
             param.put("birthday",user_birthday.text.toString())
         }
 
         ApiPostTask{
+
+
             if(it == null){
                //応答null
                 Toast.makeText(applicationContext, "APIとの通信に失敗しました", Toast.LENGTH_SHORT).show()
@@ -181,9 +185,26 @@ class SignUpActivity : AppCompatActivity() {
             else {
                 when(it.getString("status")) {
                     "200" -> {
-                        val token = it.getJSONObject("data").getString("token")
-                        val editor = getSharedPreferences("data", MODE_PRIVATE).edit()
-                        editor.putString("token", token).apply()
+                        //Realmに保存する値を取得する
+                        var token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getInt("user_id")
+                        var user_name = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
+                        var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
+                        //ユーザー情報をRealmに保存する
+                        //ID,Name,Token
+                        realm.executeTransaction{
+                            it.createObject<Account>().apply {
+                                //user_id
+                                this.Ruser_id = user_id
+
+                                //user_name
+                                this.Ruser_name = user_name
+
+                                //token
+                                this.Rtoken = token
+
+                            }
+                        }
                         startActivity(
                             Intent(
                                 this, MainActivity::class.java
@@ -191,7 +212,7 @@ class SignUpActivity : AppCompatActivity() {
                         )
                     }
                     "400" -> {
-                        val msgArray = it.getJSONArray("msg")
+                        val msgArray = it.getJSONArray("message")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
                                 "VALIDATION_USER_ID" -> user_id.error = "ユーザーIDの入力規則に違反しています"
@@ -209,7 +230,7 @@ class SignUpActivity : AppCompatActivity() {
                     }
                 }.execute(
                     ApiParam(
-                        "account/signup",
+                        Api.SLIM + "account/signup",
                         param
                     )
                 )

@@ -28,14 +28,9 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     private fun onPasswordCheck():Boolean{
         val userPass = old_password.editText?.text.toString().trim()
-        val userPassCheck = prefs.getString("password","")
         return when {
             userPass.isEmpty() -> {
                 old_password.error = "パスワードが未入力です"
-                false
-            }
-            userPass != userPassCheck -> {
-                old_password.error = "パスワードが正しくありません"
                 false
             }
             else -> {
