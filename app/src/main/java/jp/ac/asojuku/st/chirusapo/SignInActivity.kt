@@ -12,7 +12,7 @@ import java.util.regex.Pattern
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import jp.ac.asojuku.st.chirusapo.apis.*
-import sun.jvm.hotspot.utilities.IntArray
+//import sun.jvm.hotspot.utilities.IntArray
 
 
 
@@ -31,39 +31,41 @@ class SignInActivity : AppCompatActivity() {
 
     //自動ログイン処理
     private fun autoLogin() {
-        if (realm.where<Book>().findFirst() != null) {
-            //インスタンスを取得
-            var mInstance = realm.where<Book>().findFirst()
-            //インスタンスに保存されているトークンを取得
-            var mtoken = mInstance?.Rtoken
+        realm.executeTransaction{
+            var account = realm.where<Account>().findFirst()
+            if (account != null) {
+                var token = account?.Rtoken
+                ApiPostTask {
+                    //データが取得できなかった場合
+                    if (it == null) {
+                        ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+                    }
+                    //なにかしら返答があった場合
+                    else {
+                        //statusを取得する
+                        when (it.getString("status")) {
+                            "200" -> {
+                                //自動ログインを行う
 
-            ApiPostTask {
-                //データが取得できなかった場合
-                if (it == null) {
-                    ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
-                }
-                //なにかしら返答があった場合
-                else {
-                    //statusを取得する
-                    when (it.getString("status")) {
-                        "200" -> {
-                            //ログインを行う
+                            }
+                            "400" -> {
+                                //トークンが正しくなかったのでログイン画面に移動する
 
-                            //データを更新する
-
-                        }
-                        "400" -> {
-
+                            }
                         }
                     }
-                }
-            }.execute(
-                ApiParam(
-                    Api.SLIM + "token/verify-token",
-                    //ここに送るデータを記入する
-                    hashMapOf("token" to mtoken)
+                }.execute(
+                    ApiParam(
+                        Api.SLIM + "token/verify-token",
+                        //ここに送るデータを記入する
+                        hashMapOf("token" to token)
+                    )
                 )
-            )
+            }
+            else{
+                //トークンが存在しないので新規登録画面に移動
+
+            }
         }
     }
 
@@ -151,25 +153,35 @@ class SignInActivity : AppCompatActivity() {
                             .getString("user_name")
                         var user_icon = it.getJSONObject("data").getJSONObject("user_info")
                             .getString("user_icon")
+                        var group = it.getJSONObject("data").getJSONObject("belong_group")
+//ユーザー情報をRealmに保存する
+//ID,Name,Token
 
-                        realm = Realm.getDefaultInstance()
-                        realm.beginTransaction();
-                        realm.executeTransaction {
-                            if(realm.where<Book>().findFirst() == null) {
+                        realm.executeTransaction{
+                            it.createObject<Account>().apply {
+                                //user_id
+                                this.Ruser_id = user_id
 
-                            //Realmにtokenを保存しホームに飛ばす//処理を書く　ログイン時スタックを消す
+                                //user_name
+                                this.Ruser_name = user_name
 
-                                it.createObject<Book>().apply {
-                                    //ここに保存する内容を入れる処理
-                                    //例)name = "Rex"など
-                                    //user_id
-                                    this.Ruser_id = user_id
-                                    //user_name
-                                    this.Ruser_name = user_name
-                                    //icon_file_name
-                                    ​this.Ruser_icon = user_icon
-                                    //token
-                                    ​this.Rtoken = token
+                                //user_icon
+                                this.Ruser_icon = user_icon
+
+                                //token
+                                ​this.Rtoken = token
+
+                            }
+                        }
+//group_id,group_name
+                        realm.executeTransaction{
+                            for(x in group){
+                                it.createObject<JoinGroup>().apply{
+                                    this.Rgroup_id = x["group_id"]
+                                    this.Rgroup_name = x["group_name"]
+                                }
+                            }
+                        }
                                 }
 // Persist your data in a transaction
 //                                realm.beginTransaction();
@@ -186,23 +198,10 @@ class SignInActivity : AppCompatActivity() {
 //
 //                                manageBook.getBooks().add(managedDog)
 //                                realm.commitTransaction();
-                            }
-                            else {
-                                Log.d("TEST", "nullじゃないです")
 
-                                var users = realm.where<Book>().findFirst()
-                                realm.executeTransaction {
-                                    users?.Ruser_id = user_id
-                                    users?.Ruser_name = user_name
-                                    users?.Ruser_icon = user_icon
-                                    users?.Rtoken = token
-
-                                }
-                            }
-                        }
-                    }
                     "400" -> {
                         //ログインができなかった場合の処理
+
                     }
                 }
             }
