@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">ちるサポ</string>
+    <string-array name="user_genderItems">
+        <item>性別</item>
+        <item>男性</item>
+        <item>女性</item>
+    </string-array>
     <string name="user_id">ユーザーID or メールアドレス</string>
     <string name="user_password">パスワード</string>
     <string name="user_login">ログイン</string>
