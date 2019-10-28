@@ -31,7 +31,6 @@ import kotlinx.android.synthetic.main.layout_group_join.*
 class MainActivity : AppCompatActivity() {
     lateinit var realm: Realm
     private lateinit var menu: Menu
-
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
