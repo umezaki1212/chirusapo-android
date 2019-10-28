@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSignOut() {
-        android.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle("ログアウト")
             .setMessage("ログアウトしますか？")
             .setPositiveButton("ログアウト") { _, _ ->
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         val group_name = inputView.findViewById(R.id.group_name) as TextInputLayout
 
         //Dialog生成
-        val alertDlg = android.app.AlertDialog.Builder(this)
+        val alertDlg = AlertDialog.Builder(this)
             .setTitle("グループ作成")
             .setView(inputView)
             .setPositiveButton(
