@@ -107,7 +107,7 @@
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
             android:text="※必須"
             android:textColor="@android:color/holo_red_light" />
 
@@ -142,7 +142,7 @@
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="20dp"
                 android:text="※必須"
                 android:textColor="@android:color/holo_red_light" />
         </LinearLayout>
@@ -150,9 +150,9 @@
         <Spinner
             android:id="@+id/user_gender"
 
-            android:layout_width="250dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:defaultFocusHighlightEnabled="false"
             android:entries="@array/user_genderItems" />
 
@@ -160,7 +160,6 @@
             android:id="@+id/user_birthday"
             android:layout_width="250dp"
             android:layout_height="50dp"
-            android:layout_marginTop="10dp"
             android:clickable="true"
             android:focusable="false"
             android:hint="誕生日" />
