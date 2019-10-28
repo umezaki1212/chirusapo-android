@@ -84,7 +84,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                         )
                     }
                     "400" -> {
-                        val msgArray = it.getJSONArray("massage")
+                        val msgArray = it.getJSONArray("message")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
                                 "VALIDATION_PASSWORD" -> new_password.error = "パスワードの入力規則に違反しています"
