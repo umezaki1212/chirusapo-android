@@ -96,8 +96,6 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    //TODO 後でoverride fun onNavigationItemSelected(item: MenuItem): Booleanに修正
-
     //ログアウト時Realmで保存したデータをすべて削除する
     private fun onRealmDelete(){
         realm.executeTransaction{
