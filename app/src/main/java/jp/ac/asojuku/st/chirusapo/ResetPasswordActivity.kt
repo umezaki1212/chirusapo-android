@@ -12,8 +12,6 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 
 
 class ResetPasswordActivity : AppCompatActivity() {
-    private lateinit var spEditor: SharedPreferences.Editor
-    var prefs: SharedPreferences = getSharedPreferences("password", Context.MODE_PRIVATE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
