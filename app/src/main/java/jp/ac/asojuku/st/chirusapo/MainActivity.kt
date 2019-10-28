@@ -77,22 +77,62 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSignOut() {
-        AlertDialog.Builder(this)
-            .setTitle("ログアウト")
-            .setMessage("ログアウトしますか？")
-            .setPositiveButton("ログアウト") { _, _ ->
-                onRealmDelete()
-                startActivity(intent)
-                /*
-                startActivity(
-                    Intent(
-                        this, TitleActivity::class.java
-                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-                */
+        ApiPostTask{
+            if(it == null){
+                ApiError.showToast(this,ApiError.CONNECTION_ERROR,Toast.LENGTH_SHORT)
             }
-            .setNegativeButton("キャンセル", null)
-            .show()
+            else{
+                when(it.getString("status")){
+                    "200" -> {
+                        AlertDialog.Builder(this)
+                            .setTitle("ログアウト")
+                            .setMessage("ログアウトしますか？")
+                            .setPositiveButton("ログアウト") { _, _ ->
+                                onRealmDelete()
+                                startActivity(intent)
+                                /*
+                                startActivity(
+                                    Intent(
+                                        this, TitleActivity::class.java
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                                */
+                            }
+                            .setNegativeButton("キャンセル", null)
+                            .show()
+                    }
+                    "400" -> {
+                        val errorArray = it.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    // ログイントークンの検証失敗
+                                    val intent = Intent(this, SignInActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    startActivity(intent)
+                                    /*
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    */
+                                }
+                                ApiError.REQUIRED_PARAM -> {
+                                    // 必要な値が見つかりませんでした表示
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     //ログアウト時Realmで保存したデータをすべて削除する
