@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
@@ -27,7 +28,6 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
-        realm = Realm.getDefaultInstance()
 
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
@@ -120,9 +120,13 @@ class SignUpActivity : AppCompatActivity() {
                 user_id.error = "ユーザーIDの文字数が不正です"
                 false
             }
-            else ->{
+            userID.equals("\"^[0-9a-zA-Z]+\$") ->{
                 user_id.error = null
                 true
+            }
+            else -> {
+                user_id.error = "使用できない文字が含まれています"
+                false
             }
         }
     }
@@ -202,8 +206,9 @@ class SignUpActivity : AppCompatActivity() {
                         var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
                         //ユーザー情報をRealmに保存する
                         //ID,Name,Token
+                        realm = Realm.getDefaultInstance()
                         realm.executeTransaction{
-                            it.createObject<Account>().apply {
+                            it.createObject<jp.ac.asojuku.st.chirusapo.Account>().apply {
                                 //user_id
                                 this.Ruser_id = user_id
 

@@ -43,4 +43,7 @@
     <string name="nav_config">設定</string>
     <string name="nav_logout">ログアウト</string>
     <string name="nav_timeline">タイムライン</string>
+    <string name="userid_mail_text">ユーザーID or メールアドレス</string>
+    <string name="group_name">グループ名</string>
+    <string name="group_id">グループID</string>
 </resources>
