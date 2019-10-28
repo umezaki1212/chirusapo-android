@@ -16,10 +16,12 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import androidx.appcompat.app.AlertDialog
 import io.realm.Realm
 
 class MainActivity : AppCompatActivity() {
     lateinit var realm: Realm
+    private lateinit var menu: Menu
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -68,6 +70,28 @@ class MainActivity : AppCompatActivity() {
 
     //TODO 後でoverride fun onNavigationItemSelected(item: MenuItem): Booleanに修正
     fun onNavigationItemSelected(){
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        //when(item.itemId){
+          //R.id.sign_out -> {
+        AlertDialog.Builder(this)
+            .setTitle("ログアウト")
+            .setMessage("ログアウトしますか？")
+            .setPositiveButton("ログアウト") { _, _ ->
+                onRealmDelete()
+                startActivity(intent)
+                /*
+                startActivity(
+                    Intent(
+                        this, TitleActivity::class.java
+                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+                */
+            }
+            .setNegativeButton("キャンセル", null)
+            .show()
+        //return false
+        //}
+        //}
 
     }
     //ログアウト時Realmで保存したデータをすべて削除する
