@@ -43,4 +43,6 @@
     <string name="nav_config">設定</string>
     <string name="nav_logout">ログアウト</string>
     <string name="nav_timeline">タイムライン</string>
+    <string name="app_post_add_loading_text">送信中</string>
+    <string name="app_post_add_input">今日何があったの？</string>
 </resources>
