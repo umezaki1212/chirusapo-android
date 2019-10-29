@@ -87,9 +87,10 @@ class ResetPasswordActivity : AppCompatActivity() {
                         val msgArray = it.getJSONArray("message")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
-                                "REQUIRED_PARAM" -> Toast.makeText(applicationContext,"必要な値が不足しています",Toast.LENGTH_SHORT).show()
+                                "REQUIRED_PARAM" -> Toast.makeText(applicationContext,"必須項目が未入力です",Toast.LENGTH_SHORT).show()
                                 "VALIDATION_OLD_PASSWORD" -> old_password.error = "現在のパスワードが正しくありません"
                                 "VALIDATION_NEW_PASSWORD" -> new_password.error = "パスワードの入力規則に違反しています"
+                                "UNKNOWN_TOKEN" -> Toast.makeText(applicationContext,"ログイントークンが不明です",Toast.LENGTH_SHORT).show()
                                 "VERIFY_PASSWORD_FAILED" -> new_password.error = "パスワード検証に失敗しました"
                                 else -> Toast.makeText(applicationContext, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
                             }

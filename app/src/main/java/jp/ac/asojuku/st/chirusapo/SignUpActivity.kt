@@ -231,10 +231,12 @@ class SignUpActivity : AppCompatActivity() {
                         val msgArray = it.getJSONArray("message")
                         for (i in 0 until msgArray.length()) {
                             when (msgArray.getString(i)) {
+                                "REQUIRED_PARAM" -> Toast.makeText(applicationContext, "必須項目が未入力です", Toast.LENGTH_SHORT).show()
                                 "VALIDATION_USER_ID" -> user_id.error = "ユーザーIDの入力規則に違反しています"
                                 "VALIDATION_USER_NAME" -> user_name.error = "ユーザー名の入力規則に違反しています"
                                 "VALIDATION_EMAIL" -> user_email.error = "メールアドレスの入力規則に違反しています"
                                 "VALIDATION_PASSWORD" -> user_password.error = "パスワードの入力規則に違反しています"
+                                "VALIDATION_GENDER" -> Toast.makeText(applicationContext, "性別データの型が不正です", Toast.LENGTH_SHORT).show()
                                 "VALIDATION_BIRTHDAY" -> user_birthday.error = "誕生日の入力内容が不正です"
                                 "ALREADY_USER_ID" -> user_id.error = "入力されたユーザーは既に登録されています"
                                 "ALREADY_EMAIL" -> user_email.error = "入力されたメールアドレスは既に登録されています"

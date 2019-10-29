@@ -132,7 +132,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "group/signout"
+        )
+        )
     }
 
     //ログアウト時Realmで保存したデータをすべて削除する
