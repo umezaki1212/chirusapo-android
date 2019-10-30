@@ -12,7 +12,7 @@ class StartUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start_up)
 
         button2.setOnClickListener {
-            val intent = Intent(this, SignInActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
