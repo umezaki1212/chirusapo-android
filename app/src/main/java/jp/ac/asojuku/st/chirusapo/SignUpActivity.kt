@@ -30,6 +30,7 @@ class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
@@ -47,8 +48,8 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        finish()
         return super.onSupportNavigateUp()
-        return true
     }
 
     override fun onResume() {

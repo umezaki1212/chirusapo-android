@@ -26,26 +26,9 @@ class ResetPasswordActivity : AppCompatActivity() {
         PasswordReset_Button.setOnClickListener { onPasswordReset() }
     }
 
-    private fun onPasswordCheck():Boolean{
-        val userPass = old_password.editText?.text.toString().trim()
-        return when {
-            userPass.isEmpty() -> {
-                old_password.error = "パスワードが未入力です"
-                false
-            }
-            else -> {
-                true
-            }
-        }
-    }
-
     private fun onNewPasswordCheck():Boolean{
         val userNewPass = new_password.editText?.text.toString().trim()
         return when {
-            userNewPass.isEmpty() -> {
-                new_password.error = "新しいパスワードが未入力です"
-                false
-            }
             userNewPass.count() < 2 -> {
                 new_password.error = "新しいパスワードの文字数が不正です"
                 false
@@ -67,7 +50,6 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     private fun onPasswordReset(){
         var check = true
-        if(!onPasswordCheck())check = false
         if(!onNewPasswordCheck())check = false
 
         if(!check) return
@@ -110,10 +92,7 @@ class ResetPasswordActivity : AppCompatActivity() {
                 }
             }
         }.execute(
-            ApiParam(
-                "account/password-change",
-                        hashMapOf("password" to new_password.editText?.text.toString())
-            )
+            ApiParam("account/password-change")
         )
     }
 }
