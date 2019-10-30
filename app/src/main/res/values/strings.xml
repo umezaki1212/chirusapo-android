@@ -45,4 +45,10 @@
     <string name="nav_timeline">タイムライン</string>
     <string name="app_post_add_loading_text">送信中</string>
     <string name="app_post_add_input">今日何があったの？</string>
+    <string name="layout_post_content">投稿内容</string>
+    <string name="layout_post_image01">投稿画像01</string>
+    <string name="layout_post_image02">投稿画像02</string>
+    <string name="layout_post_user_icon">ユーザーアイコン</string>
+    <string name="layout_post_user_name">ユーザー名</string>
+    <string name="layout_post_user_id">ユーザーID</string>
 </resources>

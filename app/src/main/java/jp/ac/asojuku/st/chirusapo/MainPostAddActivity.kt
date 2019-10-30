@@ -1,4 +1,4 @@
-package com.vxx0.aso.ore_no_yome
+package jp.ac.asojuku.st.chirusapo
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -8,30 +8,29 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import jp.ac.asojuku.st.chirusapo.R
-import jp.ac.asojuku.st.chirusapo.SignInActivity
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_post.*
-import kotlinx.android.synthetic.main.activity_sign_up.*
+import jp.ac.asojuku.st.chirusapo.apis.*
+import kotlinx.android.synthetic.main.activity_main_post_add.*
 import kotlinx.android.synthetic.main.content_main_post_add.*
 import java.io.IOException
 
 class MainPostAddActivity : AppCompatActivity() {
     private lateinit var userToken: String
     private lateinit var group_id: String
-    private lateinit var charaSelect: String
     private val resultRequestPickImage01 = 1001
     private val resultRequestPickImage02 = 1002
+    private val resultRequestPickImage03 = 1003
+    private val resultRequestPickImage04 = 1004
     private var resultPickImage01: Bitmap? = null
     private var resultPickImage02: Bitmap? = null
+    private var resultPickImage03: Bitmap? = null
+    private var resultPickImage04: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post)
-        setSupportActionBar(toolbar)
+        setContentView(R.layout.activity_main_post_add)
 
         val pref = getSharedPreferences("data", MODE_PRIVATE)
         userToken = "Uel1KebSmQRH2I6yqoro1JgVLkskDi"
@@ -93,6 +92,19 @@ class MainPostAddActivity : AppCompatActivity() {
             startActivityForResult(intent, resultRequestPickImage01)
         }
 
+        button_image_select_1.setOnLongClickListener {
+            AlertDialog.Builder(this)
+                .setMessage("選択を解除しますか？")
+                .setPositiveButton("解除") { _, _ ->
+                    resultPickImage01 = null
+                    button_image_select_1.setImageBitmap(null)
+                }
+                .setNegativeButton("キャンセル", null)
+                .create()
+                .show()
+            return@setOnLongClickListener true
+        }
+
         button_image_select_2.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -100,15 +112,71 @@ class MainPostAddActivity : AppCompatActivity() {
             startActivityForResult(intent, resultRequestPickImage02)
         }
 
+        button_image_select_2.setOnLongClickListener {
+            AlertDialog.Builder(this)
+                .setMessage("選択を解除しますか？")
+                .setPositiveButton("解除") { _, _ ->
+                    resultPickImage02 = null
+                    button_image_select_2.setImageBitmap(null)
+                    button_image_select_2.visibility = View.INVISIBLE
+                }
+                .setNegativeButton("キャンセル", null)
+                .create()
+                .show()
+            return@setOnLongClickListener true
+        }
 
         button_post_add.setOnClickListener { view ->
-            if (text_input_post_content.text.isNullOrEmpty() || charaSelect.isNotEmpty() || userToken.isNotEmpty()) {
+            if (text_input_post_content.text.isNullOrEmpty() || userToken.isNotEmpty()) {
                 loading_background.visibility = View.VISIBLE
                 text_input_post_content.visibility = View.INVISIBLE
                 image_area.visibility = View.INVISIBLE
                 button_post_add.visibility = View.INVISIBLE
 
-                ApiPostTask {
+                val param = hashMapOf(
+                    "token" to userToken,
+                    "text" to text_input_post_content.text.toString(),
+                    "group_id" to group_id
+                )
+                val image = arrayListOf<ApiParamImage>()
+
+                if (resultPickImage01 != null) {
+                    image.add(ApiParamImage(
+                        "image/jpg",
+                        "image01.jpg",
+                        "image01",
+                        resultPickImage01!!
+                    ))
+
+                    if (resultPickImage02 != null) {
+                        image.add(ApiParamImage(
+                            "image/jpg",
+                            "image02.jpg",
+                            "image02",
+                            resultPickImage02!!
+                        ))
+
+                        if (resultPickImage03 != null) {
+                            image.add(ApiParamImage(
+                                "image/jpg",
+                                "image03.jpg",
+                                "image03",
+                                resultPickImage03!!
+                            ))
+
+                            if (resultPickImage04 != null) {
+                                image.add(ApiParamImage(
+                                    "image/jpg",
+                                    "image04.jpg",
+                                    "image04",
+                                    resultPickImage04!!
+                                ))
+                            }
+                        }
+                    }
+                }
+
+                ApiMediaPostTask {
                     if (it == null) {
                         Snackbar.make(view, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
                     } else {
@@ -117,7 +185,7 @@ class MainPostAddActivity : AppCompatActivity() {
                                 finish()
                             }
                             "400" -> {
-                                val msgArray = it.getJSONArray("msg")
+                                val msgArray = it.getJSONArray("message")
                                 for (i in 0 until msgArray.length()) {
                                     when (msgArray.getString(i)) {
                                         "REQUIRED_PARAM" -> Snackbar.make(
@@ -126,7 +194,11 @@ class MainPostAddActivity : AppCompatActivity() {
                                             Snackbar.LENGTH_SHORT
                                         ).show()
                                         "UNKNOWN_TOKEN" -> {
-                                            Toast.makeText(this, "ログイントークンが不明です", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                this,
+                                                "ログイントークンが不明です",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                             Intent(
                                                 this, SignInActivity::class.java
                                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -136,11 +208,19 @@ class MainPostAddActivity : AppCompatActivity() {
                                             "投稿できる最大文字数を超えています",
                                             Snackbar.LENGTH_SHORT
                                         ).show()
-                                        else -> Snackbar.make(view, "不明なエラーが発生しました", Snackbar.LENGTH_SHORT).show()
+                                        else -> Snackbar.make(
+                                            view,
+                                            "不明なエラーが発生しました",
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             }
-                            else -> Snackbar.make(view, "不明なエラーが発生しました", Snackbar.LENGTH_SHORT).show()
+                            else -> Snackbar.make(
+                                view,
+                                "不明なエラーが発生しました",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
                         }
                     }
 
@@ -150,12 +230,9 @@ class MainPostAddActivity : AppCompatActivity() {
                     button_post_add.visibility = View.VISIBLE
                 }.execute(
                     ApiParam(
-                        "post/add-post",
-                        hashMapOf(
-                            "token" to userToken,
-                            "text" to text_input_post_content.text.toString(),
-                            "user_id" to group_id
-                        )
+                        Api.SLIM + "timeline/post",
+                        param,
+                        image
                     )
                 )
             }

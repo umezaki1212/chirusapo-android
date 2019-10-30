@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".PostActivity"
-    tools:showIn="@layout/activity_post">
+    tools:showIn="@layout/activity_main_post_add"
+    tools:context=".MainPostAddActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/loading_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/darker_gray">
+        android:layout_height="match_parent" android:background="@android:color/darker_gray"
+        android:id="@+id/loading_background">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:orientation="vertical" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent">
 
             <ProgressBar
                 android:id="@+id/loading_progress_ring"
@@ -30,7 +27,7 @@
                 android:layout_height="100dp"
                 android:layout_marginBottom="10dp"
                 android:indeterminate="true"
-                android:indeterminateTint="@color/colorPrimary"
+                android:indeterminateTint="@color/browser_actions_title_color"
                 android:indeterminateTintMode="src_in"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -51,25 +48,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
-        android:id="@+id/text_input_post_content"
         android:layout_width="0dp"
         android:layout_height="250dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/style_border"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/app_post_add_input"
         android:inputType="textMultiLine"
-        android:paddingLeft="20dp"
-        android:paddingTop="20dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="20dp"
+        android:gravity="start|top"
+        android:ems="10"
+        android:id="@+id/text_input_post_content" android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill" />
+        android:layout_marginStart="16dp" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" android:hint="@string/app_post_add_input"
+        android:background="@drawable/style_border" android:layout_marginTop="16dp"
+        android:paddingLeft="20dp" android:paddingTop="20dp" android:paddingBottom="20dp"
+        android:paddingRight="20dp" tools:ignore="Autofill"/>
 
     <LinearLayout
         android:id="@+id/image_area"
