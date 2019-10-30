@@ -19,7 +19,6 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import java.util.regex.Pattern
 
-
 class MainActivity : AppCompatActivity() {
 
     //グローバル変数としてRealmの変数を作る
@@ -30,9 +29,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //onCreateメソッドでRealmのインスタンスを取得する
-
-
-        groupJoin()
     }
 
     //Realmのインスタンスを解放
