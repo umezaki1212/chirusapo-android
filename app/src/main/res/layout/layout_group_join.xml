@@ -28,7 +28,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/group_name"
+        android:id="@+id/pin_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:counterEnabled="false"
