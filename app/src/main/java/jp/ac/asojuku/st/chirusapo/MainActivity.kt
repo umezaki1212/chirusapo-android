@@ -121,10 +121,7 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 ApiError.REQUIRED_PARAM -> {
                                     // 必要な値が見つかりませんでした表示
-                                    ApiError.showToast(
-                                        this,
-                                        errorArray.getString(i),
-                                        Toast.LENGTH_SHORT
+                                    ApiError.showToast(this, errorArray.getString(i), Toast.LENGTH_SHORT
                                     )
                                 }
                             }

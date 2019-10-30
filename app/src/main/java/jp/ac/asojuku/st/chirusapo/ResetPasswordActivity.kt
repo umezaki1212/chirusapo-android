@@ -7,6 +7,8 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_reset_password.*
 import android.content.Intent
 import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 
@@ -84,15 +86,24 @@ class ResetPasswordActivity : AppCompatActivity() {
                         )
                     }
                     "400" -> {
-                        val msgArray = it.getJSONArray("message")
-                        for (i in 0 until msgArray.length()) {
-                            when (msgArray.getString(i)) {
-                                "REQUIRED_PARAM" -> Toast.makeText(applicationContext,"必須項目が未入力です",Toast.LENGTH_SHORT).show()
-                                "VALIDATION_OLD_PASSWORD" -> old_password.error = "現在のパスワードが正しくありません"
-                                "VALIDATION_NEW_PASSWORD" -> new_password.error = "パスワードの入力規則に違反しています"
-                                "UNKNOWN_TOKEN" -> Toast.makeText(applicationContext,"ログイントークンが不明です",Toast.LENGTH_SHORT).show()
-                                "VERIFY_PASSWORD_FAILED" -> new_password.error = "パスワード検証に失敗しました"
-                                else -> Toast.makeText(applicationContext, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
+                        val errorArray = it.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
+                                }
+                                ApiError.VALIDATION_OLD_PASSWORD -> {
+                                    ApiError.showEditTextError(old_password,errorArray.getString(i))
+                                }
+                                ApiError.VALIDATION_NEW_PASSWORD -> {
+                                    ApiError.showEditTextError(new_password,errorArray.getString(i))
+                                }
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
+                                }
+                                ApiError.VERIFY_PASSWORD_FAILED -> {
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
+                                }
                             }
                         }
                     }

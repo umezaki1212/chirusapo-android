@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import android.widget.Toast.LENGTH_LONG
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_sign_up.*
@@ -225,22 +227,38 @@ class SignUpActivity : AppCompatActivity() {
                                 this, MainActivity::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
-
                     }
                     "400" -> {
-                        val msgArray = it.getJSONArray("message")
-                        for (i in 0 until msgArray.length()) {
-                            when (msgArray.getString(i)) {
-                                "REQUIRED_PARAM" -> Toast.makeText(applicationContext, "必須項目が未入力です", Toast.LENGTH_SHORT).show()
-                                "VALIDATION_USER_ID" -> user_id.error = "ユーザーIDの入力規則に違反しています"
-                                "VALIDATION_USER_NAME" -> user_name.error = "ユーザー名の入力規則に違反しています"
-                                "VALIDATION_EMAIL" -> user_email.error = "メールアドレスの入力規則に違反しています"
-                                "VALIDATION_PASSWORD" -> user_password.error = "パスワードの入力規則に違反しています"
-                                "VALIDATION_GENDER" -> Toast.makeText(applicationContext, "性別データの型が不正です", Toast.LENGTH_SHORT).show()
-                                "VALIDATION_BIRTHDAY" -> user_birthday.error = "誕生日の入力内容が不正です"
-                                "ALREADY_USER_ID" -> user_id.error = "入力されたユーザーは既に登録されています"
-                                "ALREADY_EMAIL" -> user_email.error = "入力されたメールアドレスは既に登録されています"
-                                else -> Toast.makeText(applicationContext, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
+                        val errorArray = it.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                }
+                                ApiError.VALIDATION_USER_ID -> {
+                                    ApiError.showEditTextError(user_id,errorArray.getString(i))
+                                }
+                                ApiError.VALIDATION_USER_NAME -> {
+                                    ApiError.showEditTextError(user_name,errorArray.getString(i))
+                                }
+                                ApiError.VALIDATION_EMAIL -> {
+                                    ApiError.showEditTextError(user_email,errorArray.getString(i))
+                                }
+                                ApiError.VALIDATION_PASSWORD -> {
+                                    ApiError.showEditTextError(user_password,errorArray.getString(i))
+                                }
+                                ApiError.VALIDATION_GENDER -> {
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
+                                }
+                                ApiError.VALIDATION_BIRTHDAY -> {
+                                    ApiError.showToast(this,errorArray.getString(i), LENGTH_LONG)
+                                }
+                                ApiError.ALREADY_USER_ID -> {
+                                    ApiError.showEditTextError(user_id,errorArray.getString(i))
+                                }
+                                ApiError.ALREADY_EMAIL -> {
+                                    ApiError.showEditTextError(user_email,errorArray.getString(i))
+                                }
                                     }
                                 }
                             }
