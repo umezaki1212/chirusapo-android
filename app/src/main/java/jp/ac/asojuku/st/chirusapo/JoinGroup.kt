@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull
 
 open class JoinGroup : RealmObject(){
     @PrimaryKey
-    open var Rgroup_id : Int = 0
+    open var Rgroup_id : String = ""
     @Required
     open var Rgroup_name : String = ""
     open var Rgroup_flag : Int = 0
