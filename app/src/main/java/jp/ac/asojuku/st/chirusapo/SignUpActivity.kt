@@ -2,6 +2,7 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.accounts.Account
 import android.app.DatePickerDialog
+import android.content.ClipData
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -15,12 +16,14 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import kotlinx.android.synthetic.main.activity_reset_password.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.*
+import java.util.regex.Pattern
 
 
 class SignUpActivity : AppCompatActivity() {
-    private lateinit var spEditor: SharedPreferences.Editor
+    var gender = 0
     lateinit var realm:Realm
     val calender = Calendar.getInstance()
     val year = calender.get(Calendar.YEAR)
@@ -55,17 +58,20 @@ class SignUpActivity : AppCompatActivity() {
         super.onResume()
         user_gender.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                val spinner = parent as Spinner
+                val spinner = findViewById<Spinner>(R.id.user_gender)
                 val select = spinner.selectedItem.toString()
                 if(select == "男性") {
-                    spEditor.putString("user_gender", "1").apply()
+                    gender = 1
                 }
                 else if(select == "女性"){
-                    spEditor.putString("user_gender","2").apply()
+                    gender = 2
+                }
+                else if(select == "性別"){
+                    gender = 0
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                spEditor.putString("user_gender","0").apply()
+                gender = 0
             }
         }
         user_birthday.setOnClickListener { onBirthdaySetting() }
@@ -76,8 +82,14 @@ class SignUpActivity : AppCompatActivity() {
         val birthday = findViewById (R.id.user_birthday) as EditText
         DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
             val year = y.toString()
-            val month = m.toString()
-            val day = d.toString()
+            var month = (m+1).toString()
+            var day = d.toString()
+            if(m < 10 ){
+                month = "0" + month
+            }
+            if(d < 10){
+                day = "0" + day
+            }
             birthday.setText(year+"-"+month+"-"+day)
         }, year,month,day
         ).show()
@@ -122,13 +134,13 @@ class SignUpActivity : AppCompatActivity() {
                 user_id.error = "ユーザーIDの文字数が不正です"
                 false
             }
-            userID.equals("\"^[0-9a-zA-Z]+\$") ->{
-                user_id.error = null
-                true
-            }
-            else -> {
+            !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userID).find()-> {
                 user_id.error = "使用できない文字が含まれています"
                 false
+            }
+            else -> {
+                user_id.error = null
+                true
             }
         }
     }
@@ -162,13 +174,13 @@ class SignUpActivity : AppCompatActivity() {
                 user_password.error = "パスワードの文字数が不正です"
                 false
             }
-            userPass.equals("\"^[0-9a-zA-Z]+\$") -> {
-                user_password.error = null
-                true
-            }
-            else -> {
+            !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userPass).find() -> {
                 user_password.error = "使用できない文字が含まれています"
                 false
+            }
+            else -> {
+                user_password.error = null
+                true
             }
         }
     }
@@ -187,7 +199,7 @@ class SignUpActivity : AppCompatActivity() {
             "user_name" to user_name.editText?.text.toString(),
             "email" to user_email.editText?.text.toString(),
             "password" to user_password.editText?.text.toString(),
-            "gender" to user_gender.toString()
+            "gender" to gender.toString()
         )
         if (user_birthday.text != null) {
             param.put("birthday",user_birthday.text.toString())
@@ -224,7 +236,7 @@ class SignUpActivity : AppCompatActivity() {
                         }
                         startActivity(
                             Intent(
-                                this, MainActivity::class.java
+                        //        this, MainActivity::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
                     }
