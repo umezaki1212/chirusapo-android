@@ -11,6 +11,7 @@ import okhttp3.RequestBody
 import okhttp3.MultipartBody
 import java.io.File
 
+
 class ApiMediaPostTask(var callback: (JSONObject?) -> Unit) :
     AsyncTask<ApiParam, Unit, JSONObject>() {
 
@@ -83,6 +84,7 @@ class ApiMediaPostTask(var callback: (JSONObject?) -> Unit) :
                 bitmap.compress(CompressFormat.JPEG, 100, stream)
             }
         }
+        bitmap.compress(CompressFormat.JPEG, 100, stream)
         return stream.toByteArray()
     }
 
