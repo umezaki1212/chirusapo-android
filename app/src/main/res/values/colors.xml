@@ -3,4 +3,6 @@
     <color name="colorPrimary">@android:color/holo_orange_dark</color>
     <color name="colorPrimaryDark">@android:color/holo_blue_dark</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="menu_font_Main">#ffffff</color>
+    <color name="menu_font_Sab">#dc143c</color>
 </resources>

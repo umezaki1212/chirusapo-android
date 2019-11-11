@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import jp.ac.asojuku.st.chirusapo.ui.home.HomeFragment
 
 class ApiError {
 

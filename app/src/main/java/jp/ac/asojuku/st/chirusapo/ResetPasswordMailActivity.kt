@@ -48,8 +48,7 @@ class ResetPasswordMailActivity : AppCompatActivity() {
                 //statusを取得する
                 when (it.getString("status")) {
                     "200" -> {
-                        it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
-                        //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
+                        //ダイアログで成功を表示
 
                     }
                     "400" -> {
