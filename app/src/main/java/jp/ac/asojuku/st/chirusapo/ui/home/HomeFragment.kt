@@ -1,13 +1,10 @@
 package jp.ac.asojuku.st.chirusapo.ui.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -16,10 +13,10 @@ import jp.ac.asojuku.st.chirusapo.R
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
 import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.fragment_home.*
-import org.json.JSONObject
 
 class HomeFragment : Fragment() {
 
@@ -107,6 +104,33 @@ class HomeFragment : Fragment() {
                             */
                         }
                     }
+
+                    "400" -> {
+                        //messageからエラー文を配列で取得し格納する
+                        val errorArray = it.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                //グループ情報なし
+                                ApiError.UNKNOWN_GROUP -> {
+                                    ApiError.showToast(
+                                        activity!!,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
+                                }
+                                //値が不足している場合
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(
+                                        activity!!,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
+                                }
+                                //
+                            }
+                        }
+                    }
+
                     else -> Snackbar.make(view, "不明なエラーが発生しました", Snackbar.LENGTH_SHORT).show()
                 }
             }
