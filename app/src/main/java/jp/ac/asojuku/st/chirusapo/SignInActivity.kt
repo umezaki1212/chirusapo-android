@@ -209,7 +209,7 @@ class SignInActivity : AppCompatActivity() {
                                         errorArray.getString(i)
                                     )
                                 }
-                                //値が不足している場合
+                                //値が不足している
                                 ApiError.REQUIRED_PARAM -> {
                                     ApiError.showToast(
                                         this,
