@@ -8,6 +8,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import io.realm.Realm
 import io.realm.kotlin.where
+import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
@@ -124,7 +125,7 @@ class ResetPasswordActivity : AppCompatActivity() {
             }
         }.execute(
             ApiParam(
-                "account/password-change",
+                Api.SLIM + "account/password-change",
                 hashMapOf("old_password" to OldPassword,"new_password" to NewPassword,"token" to token)
             )
         )

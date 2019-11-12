@@ -211,7 +211,7 @@ class SignUpActivity : AppCompatActivity() {
                     "200" -> {
                         //Realmに保存する値を取得する
                         var token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
-                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getInt("user_id")
+                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getString("user_id")
                         var user_name = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
                         var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
                         //ユーザー情報をRealmに保存する

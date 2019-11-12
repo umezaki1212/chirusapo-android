@@ -371,6 +371,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    //ログアウト
     fun onSignOut(){
         //Dialog生成
         AlertDialog.Builder(this).apply {
@@ -382,7 +383,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
+    //ログアウトの為のトークン削除
     private fun onTokenDelete(){
         var account = realm.where<Account>().findFirst()
         var token = account?.Rtoken.toString()
@@ -427,7 +428,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.execute(
             ApiParam(
-                "account/signout",
+                Api.SLIM + "account/signout",
                 hashMapOf("token" to token)
             )
         )
