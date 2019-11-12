@@ -17,7 +17,7 @@ class StartUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_up)
         realm = Realm.getDefaultInstance()
-
+      
         autoLogin()
     }
 

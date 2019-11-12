@@ -4,14 +4,9 @@
     <item>
 
         <shape android:shape="rectangle">
-            <corners
-                android:topRightRadius="10dp"
-                android:bottomRightRadius="10dp"
-                android:bottomLeftRadius="10dp"
-                android:topLeftRadius="10dp"
-                ></corners>
+            <corners android:topRightRadius="10dp" android:bottomRightRadius="10dp" android:bottomLeftRadius="10dp" android:topLeftRadius="10dp" />
 <!--            ここで四角を丸くしている-->
-            <solid android:color="@android:color/holo_orange_dark"></solid>
+            <solid android:color="@android:color/holo_orange_dark" />
 <!--            背景色の変更-->
         </shape>
 

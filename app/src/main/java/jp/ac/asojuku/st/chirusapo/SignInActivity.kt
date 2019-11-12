@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
@@ -12,10 +13,20 @@ import kotlinx.android.synthetic.main.activity_sign_in.*
 import java.util.regex.Pattern
 
 class SignInActivity : AppCompatActivity() {
+    private lateinit var realm: Realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
+
+        //onCreateメソッドでRealmのインスタンスを取得する
+        realm = Realm.getDefaultInstance()
+    }
+
+    //Realmのインスタンスを解放
+    override fun onDestroy() {
+        super.onDestroy()
+        realm.close()
     }
 
     override fun onResume() {
@@ -91,6 +102,7 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
+
     private fun signIn() {//サインイン
 
         // クリックを無効にする
@@ -105,7 +117,7 @@ class SignInActivity : AppCompatActivity() {
         if (!validationUserId()) check = false
         if (!validationUserPassword()) check = false
 
-        if (!check){
+        if (!check) {
             // クリックを有効にする
             button_sign_in.isEnabled = true
             return
@@ -115,42 +127,100 @@ class SignInActivity : AppCompatActivity() {
             //データが取得できなかった場合
             if (it == null) {
                 ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+                button_sign_in.isEnabled = true
             }
             //なにかしら返答があった場合
             else {
                 //statusを取得する
                 when (it.getString("status")) {
                     "200" -> {
-                        it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
-                        //Realmにtokenを保存しホームに飛ばす// 処理を書く　ログイン時スタックを消す
-                        val intent = Intent(this, MainActivity::class.java)
+                        button_sign_in.isEnabled = true
+                        //dataの中のtokenを取得する
+                        //Realmにtokenを保存しホームに飛ばす
+                        //Realmに保存する値を取得する
+                        val token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+                        val realmUserId = it.getJSONObject("data").getJSONObject("user_info")
+                            .getString("user_id")
+                        val userName = it.getJSONObject("data").getJSONObject("user_info")
+                            .getString("user_name")
+                        val userIcon = it.getJSONObject("data").getJSONObject("user_info")
+                            .getString("user_icon")
+//                        var groupId = it.getJSONObject("data").getJSONObject("belong_group")
+
+                        //ログイン画面でのRealmの保存(ユーザーやグループのデータを保存)
+                        //ユーザー情報をRealmに保存する
+                        realm.executeTransaction { realm ->
+                            realm.createObject(Account::class.java, realmUserId).apply {
+//                                this.Ruser_id = realmUserId
+                                this.Ruser_name = userName
+                                this.Ruser_icon = userIcon
+                                this.Rtoken = token
+                            }
+                        }
+                        //参加・作成したグループ情報の取得
+                        val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")
+                        for (i in 0 until belongGroup.length()) {
+                            val groupInfo = belongGroup.getJSONObject(i)
+                            val groupInfoId = groupInfo.getString("group_id")
+                            val groupInfoName = groupInfo.getString("group_name")
+                            //グループ情報をRealmに保存
+                            realm.executeTransaction { realm ->
+                                realm.createObject(JoinGroup::class.java, groupInfoId).apply {
+//                                    this.Rgroup_id = groupInfoId
+                                    this.Rgroup_name = groupInfoName
+                                    //今回だけflagは１にする。じゃないと動かん
+                                    this.Rgroup_flag = 1
+                                }
+                            }
+                        }
+
+                        val intent = Intent(this, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
                         startActivity(intent)
+//                        finish():k
                     }
                     "400" -> {
                         //messageからエラー文を配列で取得し格納する
                         val errorArray = it.getJSONArray("message")
                         //エラーが出た分だけ回す。untilとは(int i = 0; i< 100; i++)と同じ意味
-                        for(i in 0 until errorArray.length()){
-                            when(errorArray.getString(i)){
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
                                 //ユーザー情報が見つからない場合に返される
                                 //ユーザーIDに一致する項目があり、パスワードが誤っている場合でもUNKNOWN_USERとして返される
                                 ApiError.UNKNOWN_USER -> {
-                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
                                 }
                                 //ユーザーIDがバリデーションに失敗した
                                 ApiError.VALIDATION_USER_ID -> {
-                                    ApiError.showEditTextError(text_input_user_id,errorArray.getString(i))
+                                    ApiError.showEditTextError(
+                                        text_input_user_id,
+                                        errorArray.getString(i)
+                                    )
                                 }
                                 //パスワードがバリデーションに失敗した
                                 ApiError.VALIDATION_PASSWORD -> {
-                                    ApiError.showEditTextError(text_input_password,errorArray.getString(i))
+                                    ApiError.showEditTextError(
+                                        text_input_password,
+                                        errorArray.getString(i)
+                                    )
                                 }
-                                //値が不足している場合
+                                //値が不足している
                                 ApiError.REQUIRED_PARAM -> {
-                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
                                 }
                             }
                         }
+                        // クリックを有効にする
+                        button_sign_in.isEnabled = true
                     }
                 }
             }
@@ -161,8 +231,6 @@ class SignInActivity : AppCompatActivity() {
                 hashMapOf("user_id" to userId, "password" to password)
             )
         )
-        // クリックを有効にする
-        button_sign_in.isEnabled = true
     }
 
 }
