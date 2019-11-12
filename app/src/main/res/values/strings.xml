@@ -17,4 +17,5 @@
     <string name="group_name">グループ名</string>
     <string name="group_id">グループID</string>
     <string name="title_activity_calender">CalenderActivity</string>
+    <string name="new_Accout">アカウントを作成する</string>
 </resources>
