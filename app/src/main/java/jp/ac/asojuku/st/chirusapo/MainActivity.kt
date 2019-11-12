@@ -386,12 +386,12 @@ class MainActivity : AppCompatActivity() {
         realm.executeTransaction{
             val user = realm.where<Account>().findAll()
             val group = realm.where<JoinGroup>().findAll()
-//            val vaccine = realm.where<Vaccine>().findAll()
+            val vaccine = realm.where<Vaccine>().findAll()
             val allergy = realm.where<Allergy>().findAll()
 
             user.deleteAllFromRealm()
             group.deleteAllFromRealm()
-            //vaccine.deleteAllFromRealm()
+            vaccine.deleteAllFromRealm()
             allergy.deleteAllFromRealm()
         }
     }
