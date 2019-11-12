@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_reset_password.*
@@ -91,11 +92,11 @@ class ResetPasswordActivity : AppCompatActivity() {
             else {
                 when(it.getString("status")){
                     "200" -> {
-//                        startActivity(
-//                            Intent(
-//                                this, MainActivity::class.java
-//                            )
-//                        )
+                        startActivity(
+                            Intent(
+                                this, MainActivity::class.java
+                            )
+                        )
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")

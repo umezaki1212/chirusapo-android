@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
 import io.realm.kotlin.createObject
@@ -376,23 +377,60 @@ class MainActivity : AppCompatActivity() {
             setTitle("ログアウト")
             setMessage("ログアウトしますか？")
             setPositiveButton("ログアウト",DialogInterface.OnClickListener{_,_->
-
+                onTokenDelete()
             })
         }
 
     }
 
-    private fun onReakmDekete(){
-        realm.executeTransaction{
-            val user = realm.where<Account>().findAll()
-            val group = realm.where<JoinGroup>().findAll()
-            val vaccine = realm.where<Vaccine>().findAll()
-            val allergy = realm.where<Allergy>().findAll()
+    private fun onTokenDelete(){
+        var account = realm.where<Account>().findFirst()
+        var token = account?.Rtoken.toString()
+        ApiPostTask{
+            if(it == null){
+                Toast.makeText(applicationContext,"APIとの通信に失敗しました",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                when(it.getString("status")){
+                    "200" -> {
+                        realm.executeTransaction{
+                            val user = realm.where<Account>().findAll()
+                            val group = realm.where<JoinGroup>().findAll()
+                            val vaccine = realm.where<Vaccine>().findAll()
+                            val allergy = realm.where<Allergy>().findAll()
 
-            user.deleteAllFromRealm()
-            group.deleteAllFromRealm()
-            vaccine.deleteAllFromRealm()
-            allergy.deleteAllFromRealm()
-        }
+                            user.deleteAllFromRealm()
+                            group.deleteAllFromRealm()
+                            vaccine.deleteAllFromRealm()
+                            allergy.deleteAllFromRealm()
+                        }
+                        startActivity(
+                            Intent(
+                                this,SignInActivity::class.java
+                            )
+                        )
+                    }
+                    "400" -> {
+                        val errorArray = it.getJSONArray("message")
+                        for(i in 0 until errorArray.length()){
+                            when(errorArray.getString(i)){
+                                ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
+                                }
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    ApiError.showToast(this,errorArray.getString(i), LENGTH_LONG)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                "account/signout",
+                hashMapOf("token" to token)
+            )
+        )
+
     }
 }
