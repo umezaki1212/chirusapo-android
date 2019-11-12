@@ -1,10 +1,7 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.accounts.Account
 import android.app.DatePickerDialog
-import android.content.ClipData
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -16,7 +13,6 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import kotlinx.android.synthetic.main.activity_reset_password.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.*
 import java.util.regex.Pattern
@@ -207,7 +203,7 @@ class SignUpActivity : AppCompatActivity() {
 
         ApiPostTask{
             if(it == null){
-               //応答null
+                //応答null
                 Toast.makeText(applicationContext, "APIとの通信に失敗しました", Toast.LENGTH_SHORT).show()
             }
             else {
@@ -236,7 +232,7 @@ class SignUpActivity : AppCompatActivity() {
                         }
                         startActivity(
                             Intent(
-                        //        this, MainActivity::class.java
+                                //        this, MainActivity::class.java
                             ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
                     }
@@ -271,16 +267,16 @@ class SignUpActivity : AppCompatActivity() {
                                 ApiError.ALREADY_EMAIL -> {
                                     ApiError.showEditTextError(user_email,errorArray.getString(i))
                                 }
-                                    }
-                                }
                             }
                         }
                     }
-                }.execute(
-                    ApiParam(
-                        Api.SLIM + "account/signup",
-                        param
-                    )
-                )
+                }
             }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "account/signup",
+                param
+            )
+        )
+    }
 }
