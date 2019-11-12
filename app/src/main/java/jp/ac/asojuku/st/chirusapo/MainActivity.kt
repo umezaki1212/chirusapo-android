@@ -391,7 +391,7 @@ class MainActivity : AppCompatActivity() {
 
             user.deleteAllFromRealm()
             group.deleteAllFromRealm()
-            vaccine.deleteAllFromRealm()
+            //vaccine.deleteAllFromRealm()
             allergy.deleteAllFromRealm()
         }
     }
