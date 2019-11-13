@@ -42,7 +42,20 @@ class ResetPasswordActivity : AppCompatActivity() {
                 old_password.error = "パスワードが未入力です"
                 false
             }
+            userPass.count() < 2 -> {
+                old_password.error = "パスワードの文字数が不正です"
+                false
+            }
+            userPass.count() > 30 -> {
+                old_password.error = "パスワードの文字数が不正です"
+                false
+            }
+            !Pattern.compile("^[a-zA-Z0-9-_]*\$").matcher(userPass).find() -> {
+                old_password.error = "使用できない文字が含まれています"
+                false
+            }
             else -> {
+                old_password.error = null
                 true
             }
         }
@@ -93,11 +106,7 @@ class ResetPasswordActivity : AppCompatActivity() {
             else {
                 when(it.getString("status")){
                     "200" -> {
-                        startActivity(
-                            Intent(
-                                this, MainActivity::class.java
-                            )
-                        )
+                        finish()
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")
