@@ -25,6 +25,7 @@ class SignUpActivity : AppCompatActivity() {
     val year = calender.get(Calendar.YEAR)
     val month = calender.get(Calendar.MONTH)
     val day = calender.get(Calendar.DAY_OF_MONTH)
+    var birthdayflg = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +46,9 @@ class SignUpActivity : AppCompatActivity() {
         realm.close()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return super.onSupportNavigateUp()
+    //TODO 修正
+    override fun onSupportNavigateUp():Boolean{
+        onBackPressed()
         return true
     }
 
@@ -75,6 +77,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun onBirthdaySetting(){
+        birthdayflg = 1
         val birthday = findViewById (R.id.user_birthday) as EditText
         DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
             val year = y.toString()
@@ -148,6 +151,14 @@ class SignUpActivity : AppCompatActivity() {
                 user_email.error = "メールアドレスが入力されていません"
                 false
             }
+            email.count() > 200 -> {
+                user_email.error = "200文字以下で入力してください"
+                false
+            }
+            !Pattern.compile("/^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\\._-]+)+\$/").matcher(email).find() -> {
+                user_email.error = "メールアドレスの書式が正しくありません"
+                false
+            }
             else -> {
                 user_email.error = null
                 true
@@ -197,7 +208,8 @@ class SignUpActivity : AppCompatActivity() {
             "password" to user_password.editText?.text.toString(),
             "gender" to gender.toString()
         )
-        if (user_birthday.text != null) {
+        //TODO 入力チェックを修正する
+        if (birthdayflg == 1) {
             param.put("birthday",user_birthday.text.toString())
         }
 
@@ -217,8 +229,9 @@ class SignUpActivity : AppCompatActivity() {
                         //ユーザー情報をRealmに保存する
                         //ID,Name,Token
                         realm = Realm.getDefaultInstance()
+                        //TODO 修正
                         realm.executeTransaction{
-                            it.createObject<jp.ac.asojuku.st.chirusapo.Account>().apply {
+                            realm.createObject(Account::class.java,user_id).apply {
                                 //user_id
                                 this.Ruser_id = user_id
 
@@ -230,11 +243,11 @@ class SignUpActivity : AppCompatActivity() {
 
                             }
                         }
-                        startActivity(
-                            Intent(
-                                        this, MainActivity::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
+//                        startActivity(
+//                            Intent(
+//                                        this, MainActivity::class.java
+//                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                        )
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")

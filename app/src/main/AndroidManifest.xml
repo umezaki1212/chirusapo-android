@@ -16,7 +16,11 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity android:name=".MainActivity"/>
         <activity android:name=".ResetPasswordMailActivity" />
-        <activity android:name=".SignUpActivity" />
+
+        <!--アカウント作成画面-->
+        <activity
+            android:name=".SignUpActivity"
+            android:parentActivityName=".SignInActivity"/>
 
         <!--ログイン画面-->
         <activity
