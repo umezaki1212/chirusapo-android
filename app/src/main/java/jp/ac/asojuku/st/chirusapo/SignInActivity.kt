@@ -159,6 +159,7 @@ class SignInActivity : AppCompatActivity() {
                         }
                         //参加・作成したグループ情報の取得
                         val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")
+                        var count = 0
                         for (i in 0 until belongGroup.length()) {
                             val groupInfo = belongGroup.getJSONObject(i)
                             val groupInfoId = groupInfo.getString("group_id")
@@ -168,8 +169,13 @@ class SignInActivity : AppCompatActivity() {
                                 realm.createObject(JoinGroup::class.java, groupInfoId).apply {
 //                                    this.Rgroup_id = groupInfoId
                                     this.Rgroup_name = groupInfoName
-                                    //今回だけflagは１にする。じゃないと動かん
-                                    this.Rgroup_flag = 1
+                                    //フラグでログイン後参照するタイムラインを指定している、最初に所属しているグループのタイムラインを参照する
+                                    if(count == 0){
+                                        this.Rgroup_flag = 1
+                                    }else{
+                                        this.Rgroup_flag = 0
+                                    }
+                                    count++
                                 }
                             }
                         }
