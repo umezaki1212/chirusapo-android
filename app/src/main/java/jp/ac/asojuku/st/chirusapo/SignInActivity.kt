@@ -170,12 +170,11 @@ class SignInActivity : AppCompatActivity() {
 //                                    this.Rgroup_id = groupInfoId
                                     this.Rgroup_name = groupInfoName
                                     //フラグでログイン後参照するタイムラインを指定している、最初に所属しているグループのタイムラインを参照する
-                                    if(count == 0){
+                                    if(i == 0){
                                         this.Rgroup_flag = 1
                                     }else{
                                         this.Rgroup_flag = 0
                                     }
-                                    count++
                                 }
                             }
                         }
