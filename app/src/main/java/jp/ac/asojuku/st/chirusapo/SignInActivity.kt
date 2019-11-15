@@ -159,7 +159,6 @@ class SignInActivity : AppCompatActivity() {
                         }
                         //参加・作成したグループ情報の取得
                         val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")
-                        var count = 0
                         for (i in 0 until belongGroup.length()) {
                             val groupInfo = belongGroup.getJSONObject(i)
                             val groupInfoId = groupInfo.getString("group_id")
