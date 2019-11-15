@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--    試着-->
+    <item
+        android:id="@+id/bottomNavigationView_dress"
+        android:icon="@drawable/ic_bottom_navigation_view_dress"
+        android:title="@string/bottom_navigation_var_title_dress"/>
+
+    <!--    アルバム-->
+    <item
+        android:id="@+id/bottomNavigationView_album"
+        android:icon="@drawable/ic_bottom_navigation_view_album"
+        android:title="@string/bottom_navigation_var_title_album"/>
+
 <!--    ホーム-->
     <item
         android:id="@+id/bottomNavigationView_home"
         android:icon="@drawable/ic_bottom_navigation_view_home"
-        android:title="@string/bottom_navigation_var_title_home"/>
+        android:title="@string/bottom_navigation_var_title_home" />
 
 <!--    子ども管理-->
     <item
@@ -19,16 +31,5 @@
         android:icon="@drawable/ic_bottom_navigation_view_calendar"
         android:title="@string/bottom_navigation_var_title_calendar"/>
 
-<!--    アルバム-->
-    <item
-        android:id="@+id/bottomNavigationView_album"
-        android:icon="@drawable/ic_bottom_navigation_view_album"
-        android:title="@string/bottom_navigation_var_title_album"/>
-
-<!--    試着-->
-    <item
-        android:id="@+id/bottomNavigationView_dress"
-        android:icon="@drawable/ic_bottom_navigation_view_dress"
-        android:title="@string/bottom_navigation_var_title_dress"/>
 
 </menu>
