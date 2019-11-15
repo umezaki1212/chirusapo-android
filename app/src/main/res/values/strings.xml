@@ -51,4 +51,9 @@
     <string name="layout_post_user_icon">ユーザーアイコン</string>
     <string name="layout_post_user_name">ユーザー名</string>
     <string name="layout_post_user_id">ユーザーID</string>
+    <string name="bottom_navigation_var_title_home">ホーム</string>
+    <string name="bottom_navigation_var_title_child">記録</string>
+    <string name="bottom_navigation_var_title_calendar">カレンダー</string>
+    <string name="bottom_navigation_var_title_album">アルバム</string>
+    <string name="bottom_navigation_var_title_dress">試着</string>
 </resources>
