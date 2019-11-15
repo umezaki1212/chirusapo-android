@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
@@ -56,14 +57,15 @@ class StartUpActivity : AppCompatActivity() {
                                 val JoinGroupName = it.getJSONObject("data").getJSONObject("belong_group")
                                     .getString("group_name")
                                 */
+
                                 // ユーザー情報を保存する処理
                                 realm.executeTransaction{
-                                    realm.createObject(Account::class.java,realmUserId).apply{
-                                        this.Ruser_name = userName
-                                        this.Ruser_icon = userIcon
-                                        this.Rtoken = token
-                                    }
+//                                    var updateAccount = realm.where<Account>().findFirst()
+//                                    account.Ruser_id = realmUserId
+                                    account.Ruser_name = userName
+                                    account.Ruser_icon = userIcon
                                 }
+
                                 val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")
                                 // 所属グループを保存する処理
                                 for(i in 0 until belongGroup.length()){
@@ -72,13 +74,23 @@ class StartUpActivity : AppCompatActivity() {
                                     val groupInfoName = groupInfo.getString("group_name")
 
                                     realm.executeTransaction {
-                                        realm.createObject(JoinGroup::class.java, groupInfoId).apply {
-//                                            this.Rgroup_id = groupInfoId
-                                            this.Rgroup_name = groupInfoName
-                                            this.Rgroup_flag = 1
+                                        if(realm.where<JoinGroup>().equalTo("Rgroup_name",groupInfoName).findFirst() != null){
+                                            var updateJoinGroup = realm.where<JoinGroup>().equalTo("Rgroup_name",groupInfoName).findFirst()
+                                            //                                            this.Rgroup_id = groupInfoId
+                                            updateJoinGroup?.Rgroup_name = groupInfoName
+                                            updateJoinGroup?.Rgroup_flag = 1
+
+                                        }else{
+                                            realm.createObject(JoinGroup::class.java,groupInfoId).apply{
+//                                                this.Rgroup_id = groupInfoId
+                                                this.Rgroup_name = groupInfoName
+                                                this.Rgroup_flag = 1
+                                            }
                                         }
+
                                     }
                                 }
+
 
                                 //タイムラインの画面MainActivityに遷移
                                 val intent = Intent(this, MainActivity::class.java).apply {
