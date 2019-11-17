@@ -1,4 +1,4 @@
-package jp.ac.asojuku.st.chirusapo.ui.home
+package jp.ac.asojuku.st.chirusapo
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,13 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
-import jp.ac.asojuku.st.chirusapo.R
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.ui.home.HomeViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {

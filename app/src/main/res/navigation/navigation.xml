@@ -3,31 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/navigation_home">
+    app:startDestination="@id/navigation_home"
+    tools:ignore="UnusedNavigation">
 <!--    app:startDestination="@id/navigation_first"-->
 <!--    tools:ignore="UnusedNavigation"-->
 
 
     <custom_fragment
         android:id="@+id/navigation_home"
-        android:name="jp.ac.asojuku.st.chirusapo.ui.home.HomeFragment"
+        android:name="jp.ac.asojuku.st.chirusapo.HomeFragment"
         android:label="ホーム" />
 
     <custom_fragment
-        android:id="@+id/navigation_second"
-        android:name="com.example.sample.SecondFragment"
+        android:id="@+id/navigation_child"
+        android:name="jp.ac.asojuku.st.chirusapo.ChildFragment"
         android:label="SecondFragment" />
 
     <custom_fragment
-        android:id="@+id/navigation_second"
-        android:name="com.example.sample.SecondFragment"
+        android:id="@+id/navigation_album"
+        android:name="jp.ac.asojuku.st.chirusapo.AlubamFragment"
         android:label="SecondFragment" />
     <custom_fragment
-        android:id="@+id/navigation_second"
-        android:name="com.example.sample.SecondFragment"
+        android:id="@+id/navigation_calendar"
+        android:name="jp.ac.asojuku.st.chirusapo.CalendarFragment"
         android:label="SecondFragment" />
     <custom_fragment
-        android:id="@+id/navigation_second"
-        android:name="com.example.sample.SecondFragment"
+        android:id="@+id/navigation_dress"
+        android:name="jp.ac.asojuku.st.chirusapo.DressFragment"
         android:label="SecondFragment" />
 </navigation>
