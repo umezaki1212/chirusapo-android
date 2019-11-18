@@ -1,14 +1,13 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import android.widget.Toast.LENGTH_LONG
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
@@ -25,35 +24,37 @@ class SignUpActivity : AppCompatActivity() {
     val year = calender.get(Calendar.YEAR)
     val month = calender.get(Calendar.MONTH)
     val day = calender.get(Calendar.DAY_OF_MONTH)
-    var birthdayflg = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+        realm = Realm.getDefaultInstance()
 
         supportActionBar?.let {
+            it.title = "アカウント作成"
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
         } ?: IllegalAccessException("Toolbar cannot be null")
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> finish()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
         realm.close()
     }
 
-    //TODO 修正
-    override fun onSupportNavigateUp():Boolean{
-        onBackPressed()
-        return true
-    }
-
     override fun onResume() {
         super.onResume()
+        user_birthday.setFocusable(false)
         user_gender.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val spinner = findViewById<Spinner>(R.id.user_gender)
@@ -77,13 +78,12 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun onBirthdaySetting(){
-        birthdayflg = 1
         val birthday = findViewById (R.id.user_birthday) as EditText
         DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
             val year = y.toString()
             var month = (m+1).toString()
             var day = d.toString()
-            if(m < 10 ){
+            if(m < 9 ){
                 month = "0" + month
             }
             if(d < 10){
@@ -146,8 +146,9 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun userEmailCheck():Boolean{
         val email = user_email.editText?.text.toString().trim()
+        Toast.makeText(applicationContext,email,Toast.LENGTH_SHORT).show()
         return when {
-            email.count() == 0 -> {
+            email.isEmpty() -> {
                 user_email.error = "メールアドレスが入力されていません"
                 false
             }
@@ -155,7 +156,7 @@ class SignUpActivity : AppCompatActivity() {
                 user_email.error = "200文字以下で入力してください"
                 false
             }
-            !Pattern.compile("/^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\\._-]+)+\$/").matcher(email).find() -> {
+            !Pattern.compile("^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\\._-]+)+\$").matcher(email).find() -> {
                 user_email.error = "メールアドレスの書式が正しくありません"
                 false
             }
@@ -192,26 +193,41 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
+    private fun userBirthdayCheck():Boolean {
+        val userBirthday = user_birthday.text.toString().trim()
+        return when {
+            userBirthday.isEmpty() -> {
+                user_birthday.error = ""
+                birthday_error.setText("誕生日が未入力です")
+                false
+            }
+            else -> {
+                user_birthday.error = null
+                birthday_error.setText(null)
+                true
+            }
+        }
+    }
+
     private fun onSignUp(){
         var check = true
         if(!userNameCheck())check = false
         if(!userIDCheck())check = false
         if(!userEmailCheck())check = false
         if(!userPassCheck())check = false
+        if(!userBirthdayCheck())check = false
 
-        if(!check) return
+        if(!check)return
+
 
         val param = hashMapOf(
             "user_id" to user_id.editText?.text.toString(),
             "user_name" to user_name.editText?.text.toString(),
             "email" to user_email.editText?.text.toString(),
             "password" to user_password.editText?.text.toString(),
-            "gender" to gender.toString()
+            "gender" to gender.toString(),
+            "birthday" to user_birthday.text.toString().trim()
         )
-        //TODO 入力チェックを修正する
-        if (birthdayflg == 1) {
-            param.put("birthday",user_birthday.text.toString())
-        }
 
         ApiPostTask{
             if(it == null){
@@ -229,7 +245,6 @@ class SignUpActivity : AppCompatActivity() {
                         //ユーザー情報をRealmに保存する
                         //ID,Name,Token
                         realm = Realm.getDefaultInstance()
-                        //TODO 修正
                         realm.executeTransaction{
                             realm.createObject(Account::class.java,user_id).apply {
                                 //user_id
@@ -279,6 +294,9 @@ class SignUpActivity : AppCompatActivity() {
                                 }
                                 ApiError.ALREADY_EMAIL -> {
                                     ApiError.showEditTextError(user_email,errorArray.getString(i))
+                                    Toast.makeText(applicationContext, "ALREADY_EMAIL", Toast.LENGTH_SHORT).show()
+                                }
+                                else ->{
                                 }
                             }
                         }
