@@ -22,7 +22,7 @@
 
     <custom_fragment
         android:id="@+id/bottomNavigationView_album"
-        android:name="jp.ac.asojuku.st.chirusapo.AlubamFragment"
+        android:name="jp.ac.asojuku.st.chirusapo.AlbumFragment"
         android:label="@string/bottom_navigation_var_title_album"
         android:tag="@string/bottom_navigation_var_title_album"/>
 
