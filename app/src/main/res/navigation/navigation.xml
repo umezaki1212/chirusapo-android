@@ -3,32 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/navigation_home"
+    app:startDestination="@id/bottomNavigationView_home"
     tools:ignore="UnusedNavigation">
 <!--    app:startDestination="@id/navigation_first"-->
 <!--    tools:ignore="UnusedNavigation"-->
 
-
     <custom_fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/bottomNavigationView_home"
         android:name="jp.ac.asojuku.st.chirusapo.HomeFragment"
-        android:label="ホーム" />
+        android:label="@string/bottom_navigation_var_title_home"
+        android:tag="@string/bottom_navigation_var_title_home"/>
 
     <custom_fragment
-        android:id="@+id/navigation_child"
+        android:id="@+id/bottomNavigationView_child"
         android:name="jp.ac.asojuku.st.chirusapo.ChildFragment"
-        android:label="SecondFragment" />
+        android:label="@string/bottom_navigation_var_title_child"
+        android:tag="@string/bottom_navigation_var_title_child"/>
 
     <custom_fragment
-        android:id="@+id/navigation_album"
+        android:id="@+id/bottomNavigationView_album"
         android:name="jp.ac.asojuku.st.chirusapo.AlubamFragment"
-        android:label="SecondFragment" />
+        android:label="@string/bottom_navigation_var_title_album"
+        android:tag="@string/bottom_navigation_var_title_album"/>
+
     <custom_fragment
-        android:id="@+id/navigation_calendar"
+        android:id="@+id/bottomNavigationView_calendar"
         android:name="jp.ac.asojuku.st.chirusapo.CalendarFragment"
-        android:label="SecondFragment" />
+        android:label="@string/bottom_navigation_var_title_calendar"
+        android:tag="@string/bottom_navigation_var_title_calendar"/>
+
     <custom_fragment
-        android:id="@+id/navigation_dress"
+        android:id="@+id/bottomNavigationView_dress"
         android:name="jp.ac.asojuku.st.chirusapo.DressFragment"
-        android:label="SecondFragment" />
+        android:label="@string/bottom_navigation_var_title_dress"
+        android:tag="@string/bottom_navigation_var_title_dress"/>
 </navigation>
