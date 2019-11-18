@@ -8,11 +8,15 @@
     <string name="user_id">ユーザーID or メールアドレス</string>
     <string name="user_password">パスワード</string>
     <string name="user_login">ログイン</string>
-    <string name="new_Accout">アカウントを作成する</string>
+    <string name="new_accout">アカウントを作成する</string>
     <string name="password_forget_button">パスワードを忘れましたか？</string>
     <string name="mail">ユーザーID or メールアドレス</string>
     <string name="mail_text">登録したメールアドレスを入力してください</string>
     <string name="send_text">送信</string>
+    <string name="userid_mail_text">ユーザーID or メールアドレス</string>
+    <string name="group_name">グループ名</string>
+    <string name="group_id">グループID</string>
+    <string name="new_Accout">アカウントを作成する</string>
     <string name="userId_mail_text">ユーザーID or メールアドレス</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

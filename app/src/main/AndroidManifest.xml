@@ -21,18 +21,21 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".MainActivity"/>
         <activity android:name=".ResetPasswordMailActivity" />
-        <activity android:name=".SignUpActivity" /> <!-- ログイン画面 -->
+        <activity android:name=".SignUpActivity" />
+
+        <!--ログイン画面-->
         <activity
             android:name=".SignInActivity"
             android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".StartUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StartUpActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
