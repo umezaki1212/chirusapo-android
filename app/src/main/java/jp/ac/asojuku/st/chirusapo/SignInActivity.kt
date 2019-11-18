@@ -168,8 +168,12 @@ class SignInActivity : AppCompatActivity() {
                                 realm.createObject(JoinGroup::class.java, groupInfoId).apply {
 //                                    this.Rgroup_id = groupInfoId
                                     this.Rgroup_name = groupInfoName
-                                    //今回だけflagは１にする。じゃないと動かん
-                                    this.Rgroup_flag = 1
+                                    //フラグでログイン後参照するタイムラインを指定している、最初に所属しているグループのタイムラインを参照する
+                                    if(i == 0){
+                                        this.Rgroup_flag = 1
+                                    }else{
+                                        this.Rgroup_flag = 0
+                                    }
                                 }
                             }
                         }
