@@ -11,8 +11,12 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.*
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
 import io.realm.kotlin.createObject
@@ -33,13 +37,44 @@ class MainActivity : AppCompatActivity(),
 
     lateinit var realm:Realm
 
-    override fun onFragmentInteraction(uri: Uri) { }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        val drawerLayout:DrawerLayout = findViewById(R.id.drawer_layout)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+
+        val navigationView:NavigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_group_participation -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    groupJoin()
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_create_group -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    groupCreate()
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_config -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_logout -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener false
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
 
         val navBottomController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigation, navBottomController)
@@ -49,6 +84,9 @@ class MainActivity : AppCompatActivity(),
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
+
+    override fun onFragmentInteraction(uri: Uri) { }
+
     //Realmのインスタンスを解放
     override fun onDestroy() {
         super.onDestroy()
