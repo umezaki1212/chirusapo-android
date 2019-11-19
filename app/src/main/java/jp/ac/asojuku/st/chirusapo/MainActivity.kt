@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.navigation.findNavController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -85,6 +87,31 @@ class MainActivity : AppCompatActivity(),
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_Line -> {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("line://nv/chat")
+                    startActivity(intent)
+                } catch (e:ActivityNotFoundException) {
+                    Toast.makeText(this, "LINEが見つからないため起動できません", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+            R.id.action_MenberList -> {
+                true
+            }
+            R.id.action_Group_invitation -> {
+                true
+            }
+            R.id.action_config -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onFragmentInteraction(uri: Uri) { }
