@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import io.realm.Realm
+import io.realm.exceptions.RealmPrimaryKeyConstraintException
+import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
@@ -21,6 +23,13 @@ class SignInActivity : AppCompatActivity() {
 
         //onCreateメソッドでRealmのインスタンスを取得する
         realm = Realm.getDefaultInstance()
+
+        realm.executeTransaction{
+            val user = realm.where<Account>().findAll()
+            val group = realm.where<JoinGroup>().findAll()
+            user.deleteAllFromRealm()
+            group.deleteAllFromRealm()
+        }
     }
 
     //Realmのインスタンスを解放
@@ -149,13 +158,17 @@ class SignInActivity : AppCompatActivity() {
 
                         //ログイン画面でのRealmの保存(ユーザーやグループのデータを保存)
                         //ユーザー情報をRealmに保存する
-                        realm.executeTransaction { realm ->
-                            realm.createObject(Account::class.java, realmUserId).apply {
-//                                this.Ruser_id = realmUserId
-                                this.Ruser_name = userName
-                                this.Ruser_icon = userIcon
-                                this.Rtoken = token
+                        try {
+                            realm.executeTransaction { realm ->
+                                realm.createObject(Account::class.java, realmUserId).apply {
+                                    //                                this.Ruser_id = realmUserId
+                                    this.Ruser_name = userName
+                                    this.Ruser_icon = userIcon
+                                    this.Rtoken = token
+                                }
                             }
+                        }catch (e: RealmPrimaryKeyConstraintException) {
+                            Toast.makeText(this, "エラーが発生しました。", Toast.LENGTH_SHORT).show()
                         }
                         //参加・作成したグループ情報の取得
                         val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")

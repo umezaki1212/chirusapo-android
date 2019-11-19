@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/bottomNavigationView_home"
+    tools:ignore="UnusedNavigation">
+<!--    app:startDestination="@id/navigation_first"-->
+<!--    tools:ignore="UnusedNavigation"-->
+
+    <custom_fragment
+        android:id="@+id/bottomNavigationView_home"
+        android:name="jp.ac.asojuku.st.chirusapo.HomeFragment"
+        android:label="@string/bottom_navigation_var_title_home"
+        android:tag="@string/bottom_navigation_var_title_home"/>
+
+    <custom_fragment
+        android:id="@+id/bottomNavigationView_child"
+        android:name="jp.ac.asojuku.st.chirusapo.ChildFragment"
+        android:label="@string/bottom_navigation_var_title_child"
+        android:tag="@string/bottom_navigation_var_title_child"/>
+
+    <custom_fragment
+        android:id="@+id/bottomNavigationView_album"
+        android:name="jp.ac.asojuku.st.chirusapo.AlbumFragment"
+        android:label="@string/bottom_navigation_var_title_album"
+        android:tag="@string/bottom_navigation_var_title_album"/>
+
+    <custom_fragment
+        android:id="@+id/bottomNavigationView_calendar"
+        android:name="jp.ac.asojuku.st.chirusapo.CalendarFragment"
+        android:label="@string/bottom_navigation_var_title_calendar"
+        android:tag="@string/bottom_navigation_var_title_calendar"/>
+
+    <custom_fragment
+        android:id="@+id/bottomNavigationView_dress"
+        android:name="jp.ac.asojuku.st.chirusapo.DressFragment"
+        android:label="@string/bottom_navigation_var_title_dress"
+        android:tag="@string/bottom_navigation_var_title_dress"/>
+</navigation>

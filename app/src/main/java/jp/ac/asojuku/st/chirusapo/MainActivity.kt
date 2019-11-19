@@ -1,14 +1,18 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import android.os.Bundle
 import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.navigation.findNavController
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import android.view.Menu
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.navigation.ui.*
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
 import io.realm.kotlin.createObject
@@ -17,20 +21,34 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import kotlinx.android.synthetic.main.content_main.*
 import java.util.regex.Pattern
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    HomeFragment.OnFragmentInteractionListener,
+    ChildFragment.OnFragmentInteractionListener,
+    CalendarFragment.OnFragmentInteractionListener,
+    AlbumFragment.OnFragmentInteractionListener,
+    DressFragment.OnFragmentInteractionListener {
 
-    //グローバル変数としてRealmの変数を作る
     lateinit var realm:Realm
+
+    override fun onFragmentInteraction(uri: Uri) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-        //onCreateメソッドでRealmのインスタンスを取得する
+        val navBottomController = findNavController(R.id.nav_host_fragment)
+        NavigationUI.setupWithNavController(navigation, navBottomController)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
     //Realmのインスタンスを解放
     override fun onDestroy() {
         super.onDestroy()
@@ -46,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
         val layoutGroupName = inputView.findViewById(R.id.group_name) as TextInputLayout
 
-        layoutGroupId.editText?.addTextChangedListener(object:TextWatcher {
+        layoutGroupId.editText?.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 val inputGroupId = layoutGroupId.editText?.text.toString().trim()
 
@@ -130,12 +148,12 @@ class MainActivity : AppCompatActivity() {
                                         val groupInfoGroupName = groupInfo.getString("group_name")
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
 
-                                                realm.createObject<JoinGroup>().apply{
-                                                    Rgroup_id = groupInfoGroupId
-                                                    Rgroup_name = groupInfoGroupName
-                                                    //現在見ているグループに設定するためフラグを(1)にする
-                                                    Rgroup_flag = num1
-                                                }
+                                            realm.createObject<JoinGroup>().apply{
+                                                Rgroup_id = groupInfoGroupId
+                                                Rgroup_name = groupInfoGroupName
+                                                //現在見ているグループに設定するためフラグを(1)にする
+                                                Rgroup_flag = num1
+                                            }
                                         }
                                     }
                                     //realmに保存する
@@ -228,12 +246,12 @@ class MainActivity : AppCompatActivity() {
 
         layoutGroupPin.editText?.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(p0: Editable?) {
-               val inputGroupPin = layoutGroupPin.editText?.text.toString().trim()
+                val inputGroupPin = layoutGroupPin.editText?.text.toString().trim()
 
                 if(!Pattern.compile("^[0-9]{4}$").matcher(inputGroupPin).find()){
                     layoutGroupPin.error = "4文字の数字で入力してください"
                 }else{
-                        layoutGroupPin.error = null
+                    layoutGroupPin.error = null
                 }
             }
 
@@ -359,10 +377,12 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-                }.execute(ApiParam(
+                }.execute(
+                    ApiParam(
                     Api.SLIM + "group/join" ,
                     hashMapOf("token" to token_group,"group_id" to groupId,"pin_code" to groupPin)
-                ))
+                )
+                )
             }
             .setNegativeButton("キャンセル", null)
             .create()
