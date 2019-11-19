@@ -1,6 +1,7 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -30,6 +31,8 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
         realm = Realm.getDefaultInstance()
+
+
 
         supportActionBar?.let {
             it.title = "アカウント作成"
@@ -146,7 +149,6 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun userEmailCheck():Boolean{
         val email = user_email.editText?.text.toString().trim()
-        Toast.makeText(applicationContext,email,Toast.LENGTH_SHORT).show()
         return when {
             email.isEmpty() -> {
                 user_email.error = "メールアドレスが入力されていません"
@@ -244,12 +246,10 @@ class SignUpActivity : AppCompatActivity() {
                         var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
                         //ユーザー情報をRealmに保存する
                         //ID,Name,Token
-                        realm = Realm.getDefaultInstance()
                         realm.executeTransaction{
                             realm.createObject(Account::class.java,user_id).apply {
                                 //user_id
-                                this.Ruser_id = user_id
-
+//                                this.Ruser_id = user_id
                                 //user_name
                                 this.Ruser_name = user_name
 
@@ -258,11 +258,10 @@ class SignUpActivity : AppCompatActivity() {
 
                             }
                         }
-//                        startActivity(
-//                            Intent(
-//                                        this, MainActivity::class.java
-//                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-//                        )
+                       val intent = Intent(this, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        startActivity(intent)
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")
@@ -295,8 +294,6 @@ class SignUpActivity : AppCompatActivity() {
                                 ApiError.ALREADY_EMAIL -> {
                                     ApiError.showEditTextError(user_email,errorArray.getString(i))
                                     Toast.makeText(applicationContext, "ALREADY_EMAIL", Toast.LENGTH_SHORT).show()
-                                }
-                                else ->{
                                 }
                             }
                         }
