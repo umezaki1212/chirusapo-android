@@ -47,6 +47,20 @@ class ApiError {
         const val DUPLICATE_MEDIA_FILE = "DUPLICATE_MEDIA_FILE"
         const val VALIDATION_TIMELINE_POST_CONTENT = "VALIDATION_TIMELINE_POST_CONTENT"
         const val GENERATE_THUMBNAIL = "GENERATE_THUMBNAIL"
+        const val UNKNOWN_POST = "UNKNOWN_POST"
+        const val UNAUTHORIZED_OPERATION = "UNAUTHORIZED_OPERATION"
+        const val VALIDATION_TIMELINE_POST_COMMENT = "VALIDATION_TIMELINE_POST_COMMENT"
+        const val UNKNOWN_COMMENT = "UNKNOWN_COMMENT"
+        // Child
+        const val VALIDATION_AGE = "VALIDATION_AGE"
+        const val VALIDATION_BLOOD_TYPE = "VALIDATION_BLOOD_TYPE"
+        const val VALIDATION_BODY_HEIGHT = "VALIDATION_BODY_HEIGHT"
+        const val VALIDATION_BODY_WEIGHT = "VALIDATION_BODY_WEIGHT"
+        const val VALIDATION_CLOTHES_SIZE = "VALIDATION_CLOTHES_SIZE"
+        const val VALIDATION_SHOES_SIZE = "VALIDATION_SHOES_SIZE"
+        const val VALIDATION_VACCINATION = "VALIDATION_VACCINATION"
+        const val VALIDATION_ALLERGY = "VALIDATION_ALLERGY"
+        const val UNKNOWN_CHILD = "UNKNOWN_CHILD"
 
         fun showToast(context: Context, message: String, duration: Int) {
             Toast.makeText(context, switchMessage(message), duration).show()
@@ -160,6 +174,46 @@ class ApiError {
                 }
                 GENERATE_THUMBNAIL -> {
                     "サムネイルの生成に失敗しました"
+                }
+                UNKNOWN_POST -> {
+                    "投稿が見つかりません"
+                }
+                UNAUTHORIZED_OPERATION -> {
+                    "許可がないため実行できません"
+                }
+                VALIDATION_TIMELINE_POST_COMMENT -> {
+                    "コメントに使用できない文字が含まれています"
+                }
+                UNKNOWN_COMMENT -> {
+                    "コメントが見つかりません"
+                }
+                // Child
+                VALIDATION_AGE -> {
+                    "年齢に使用できない文字が含まれています"
+                }
+                VALIDATION_BLOOD_TYPE -> {
+                    "血液型に使用できない文字が含まれています"
+                }
+                VALIDATION_BODY_HEIGHT -> {
+                    "身長に使用できない文字が含まれています"
+                }
+                VALIDATION_BODY_WEIGHT -> {
+                    "体重に使用できない文字が含まれています"
+                }
+                VALIDATION_CLOTHES_SIZE -> {
+                    "服のサイズに使用できない文字が含まれています"
+                }
+                VALIDATION_SHOES_SIZE -> {
+                    "靴のサイズに使用できない文字が含まれています"
+                }
+                VALIDATION_VACCINATION -> {
+                    "予防接種に使用できない文字が含まれています"
+                }
+                VALIDATION_ALLERGY -> {
+                    "アレルギーに使用できない文字が含まれています"
+                }
+                UNKNOWN_CHILD -> {
+                    "子ども情報が見つかりません"
                 }
                 else -> message
             }

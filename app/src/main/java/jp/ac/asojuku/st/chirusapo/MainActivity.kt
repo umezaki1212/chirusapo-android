@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,10 +10,15 @@ import androidx.navigation.findNavController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.*
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
 import io.realm.kotlin.createObject
@@ -33,13 +39,46 @@ class MainActivity : AppCompatActivity(),
 
     lateinit var realm:Realm
 
-    override fun onFragmentInteraction(uri: Uri) { }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        realm = Realm.getDefaultInstance()
+
+        val drawerLayout:DrawerLayout = findViewById(R.id.drawer_layout)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+
+        val navigationView:NavigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_group_participation -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    groupJoin()
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_create_group -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    groupCreate()
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_config -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener false
+                }
+                R.id.nav_logout -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener false
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
 
         val navBottomController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigation, navBottomController)
@@ -49,6 +88,34 @@ class MainActivity : AppCompatActivity(),
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_Line -> {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse("line://nv/chat")
+                    startActivity(intent)
+                } catch (e:ActivityNotFoundException) {
+                    Toast.makeText(this, "LINEが見つからないため起動できません", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+            R.id.action_MenberList -> {
+                true
+            }
+            R.id.action_Group_invitation -> {
+                true
+            }
+            R.id.action_config -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onFragmentInteraction(uri: Uri) { }
+
     //Realmのインスタンスを解放
     override fun onDestroy() {
         super.onDestroy()
@@ -57,9 +124,7 @@ class MainActivity : AppCompatActivity(),
 
     // グループ作成
     private fun groupCreate(){
-
         val inputView = View.inflate(this, R.layout.layout_group_create, null)
-        realm = Realm.getDefaultInstance()
         //関連付け
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
         val layoutGroupName = inputView.findViewById(R.id.group_name) as TextInputLayout
@@ -102,21 +167,21 @@ class MainActivity : AppCompatActivity(),
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
 
-        //Dialog生成
+        // Dialog生成
         AlertDialog.Builder(this)
             .setTitle("グループ作成")
             .setView(inputView)
             .setPositiveButton(
                 "作成"
-            ) { dialog, which ->
+            ) { _, _ ->
                 val token_group = "sTFhvUCcVLQqAkxQN60pfCaHyU7Dg2"
                 val groupId = layoutGroupId.editText?.text.toString()
                 val groupName = layoutGroupName.editText?.text.toString()
 
-                //グループ参加・作成でのRealmの保存と送信するためトークンを取得
-                //トークンの取得(ApiPostTaskに送るデータだからそれより上に書いて)
+                // グループ参加・作成でのRealmの保存と送信するためトークンを取得
+                // トークンの取得(ApiPostTaskに送るデータだからそれより上に書いて)
                 var account = realm.where<Account>().findFirst()
-//                var token = account?.Rtoken
+                // var token = account?.Rtoken
 
                 // APIとの通信を行う
                 ApiPostTask{
@@ -124,40 +189,45 @@ class MainActivity : AppCompatActivity(),
                     if (it == null) {
                         ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
                     }
-                    //なにかしら返答があった場合
+                    // なにかしら返答があった場合
                     else {
                         //statusを取得する
                         when (it.getString("status")) {
                             "200" -> {
-                                var num1 :Int = 1
-                                var num2 :Int = 0
+                                val num1 = 1
+                                val num2 = 0
                                 realm.executeTransaction{
-                                    var group = realm.where<JoinGroup>().equalTo("Rgroup_flag",num1).findAll()
+                                    val group = realm.where<JoinGroup>().equalTo("Rgroup_flag",num1).findAll()
                                     if(group != null){
                                         for(x in group){
                                             x.Rgroup_flag = num2
                                         }
                                     }
                                 }
-                                //参加・作成したグループ情報の取得
+                                // 参加・作成したグループ情報の取得
                                 val belongGroup = it.getJSONObject("data").getJSONArray("belong_group")
                                 realm.executeTransaction{
                                     for (i in 0 until belongGroup.length()) {
                                         val groupInfo = belongGroup.getJSONObject(i)
                                         val groupInfoGroupId = groupInfo.getString("group_id")
                                         val groupInfoGroupName = groupInfo.getString("group_name")
-                                        if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
-
-                                            realm.createObject<JoinGroup>().apply{
-                                                Rgroup_id = groupInfoGroupId
+                                        if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null) {
+                                            // realmに保存する
+                                            realm.createObject(JoinGroup::class.java, groupInfoGroupId).apply {
                                                 Rgroup_name = groupInfoGroupName
-                                                //現在見ているグループに設定するためフラグを(1)にする
+                                                // 現在見ているグループに設定するためフラグを(1)にする
                                                 Rgroup_flag = num1
                                             }
                                         }
                                     }
-                                    //realmに保存する
                                 }
+
+                                // メッセージ表示
+                                AlertDialog.Builder(this)
+                                    .setMessage("グループを作成しました")
+                                    .setNegativeButton("閉じる", null)
+                                    .create()
+                                    .show()
                             }
                             "400" -> {
                                 val errorArray = it.getJSONArray("message")
@@ -278,17 +348,17 @@ class MainActivity : AppCompatActivity(),
                     if (it == null) {
                         ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
                     }
-                    //なにかしら返答があった場合
+                    // なにかしら返答があった場合
                     else {
                         //statusを取得する
                         when (it.getString("status")) {
                             "200" -> {
-                                var num1 :Int = 1
-                                var num2 :Int = 0
+                                val num1 = 1
+                                val num2 = 0
                                 realm.executeTransaction{
-                                    var group = realm.where<JoinGroup>().equalTo("Rgroup_flag",num1).findAll()
+                                    val group = realm.where<JoinGroup>().equalTo("Rgroup_flag", num1).findAll()
                                     if(group != null){
-                                        for(x in group){
+                                        for(x in group) {
                                             x.Rgroup_flag = num2
                                         }
                                     }
@@ -301,7 +371,7 @@ class MainActivity : AppCompatActivity(),
                                         val groupInfoGroupId = groupInfo.getString("group_id")
                                         val groupInfoGroupName = groupInfo.getString("group_name")
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
-
+                                            // realmに保存する
                                             realm.createObject<JoinGroup>().apply{
                                                 Rgroup_id = groupInfoGroupId
                                                 Rgroup_name = groupInfoGroupName
@@ -310,7 +380,6 @@ class MainActivity : AppCompatActivity(),
                                             }
                                         }
                                     }
-                                    //realmに保存する
                                 }
                             }
                             "400" -> {
