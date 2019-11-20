@@ -465,7 +465,7 @@ class MainActivity : AppCompatActivity(),
             .setPositiveButton(
                 "ログアウト"
             ){_,_->
-                var account = realm.where<Account>().findFirst()
+                var account:Account? = realm.where<Account>().findFirst()
                 var token = account!!.Rtoken
                 var param = hashMapOf("token" to token)
                 ApiPostTask{
