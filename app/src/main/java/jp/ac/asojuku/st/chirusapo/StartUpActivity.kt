@@ -46,8 +46,14 @@ class StartUpActivity : AppCompatActivity() {
                             "200" -> {
                                 val userName = it.getJSONObject("data").getJSONObject("user_info")
                                     .getString("user_name")
-                                val userIcon = it.getJSONObject("data").getJSONObject("user_info")
-                                    .getString("user_icon")
+//                                val userIcon = it.getJSONObject("data").getJSONObject("user_info")
+//                                    .getString("user_icon")
+
+                                val userIcon = if (it.getJSONObject("data").getJSONObject("user_info").isNull("user_icon")) {
+                                    null
+                                } else {
+                                    it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
+                                }
 
                                 // ユーザー情報を保存する処理
                                 realm.executeTransaction {

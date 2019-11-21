@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.*
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
+import com.squareup.picasso.Picasso
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
@@ -78,6 +81,17 @@ class MainActivity : AppCompatActivity(),
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             return@setNavigationItemSelectedListener true
+        }
+
+        val account = realm.where(Account::class.java).findFirst()
+        if (account != null) {
+            val headerView = navigationView.getHeaderView(0)
+            headerView.findViewById<TextView>(R.id.account_user_id).text = account.Ruser_id
+            headerView.findViewById<TextView>(R.id.account_name).text = account.Ruser_name
+
+            if (!account.Ruser_icon.isNullOrEmpty()) {
+                Picasso.get().load(account.Ruser_icon).into(headerView.findViewById<ImageView>(R.id.account_image))
+            }
         }
 
         val navBottomController = findNavController(R.id.nav_host_fragment)

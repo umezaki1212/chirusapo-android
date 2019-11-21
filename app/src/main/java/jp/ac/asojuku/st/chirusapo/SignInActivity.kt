@@ -152,8 +152,13 @@ class SignInActivity : AppCompatActivity() {
                             .getString("user_id")
                         val userName = it.getJSONObject("data").getJSONObject("user_info")
                             .getString("user_name")
-                        val userIcon = it.getJSONObject("data").getJSONObject("user_info")
-                            .getString("user_icon")
+//                        val userIcon = it.getJSONObject("data").getJSONObject("user_info")
+//                            .getString("user_icon")
+                        val userIcon = if (it.getJSONObject("data").getJSONObject("user_info").isNull("user_icon")) {
+                            null
+                        } else {
+                            it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
+                        }
 //                        var groupId = it.getJSONObject("data").getJSONObject("belong_group")
 
                         //ログイン画面でのRealmの保存(ユーザーやグループのデータを保存)
