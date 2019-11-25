@@ -24,13 +24,13 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.exceptions.RealmException
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.lang.Exception
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity(),
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(),
     DressFragment.OnFragmentInteractionListener {
 
     lateinit var realm:Realm
+    private lateinit var userToken:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity(),
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 
+        //Bottom Navigation View
         val navigationView:NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -83,11 +85,13 @@ class MainActivity : AppCompatActivity(),
             return@setNavigationItemSelectedListener true
         }
 
+        //SideMenuの表示情報取得
         val account = realm.where(Account::class.java).findFirst()
         if (account != null) {
             val headerView = navigationView.getHeaderView(0)
             headerView.findViewById<TextView>(R.id.account_user_id).text = account.Ruser_id
             headerView.findViewById<TextView>(R.id.account_name).text = account.Ruser_name
+            userToken = account.Rtoken
 
             if (!account.Ruser_icon.isNullOrEmpty()) {
                 Picasso.get().load(account.Ruser_icon).into(headerView.findViewById<ImageView>(R.id.account_image))
@@ -96,6 +100,64 @@ class MainActivity : AppCompatActivity(),
 
         val navBottomController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigation, navBottomController)
+
+        //Side Menuの所属グループ取得
+        val belongGroup = realm.where(JoinGroup::class.java).findAll()
+        val menu = navigationView.menu
+        val menuGroup = menu.addSubMenu("所属グループ")
+
+        if (belongGroup != null) {
+            for (group in belongGroup) {
+                val groupId = group.Rgroup_id
+                val groupName = group.Rgroup_name
+
+                val menuItem = menuGroup.add("$groupName ($groupId)")
+                menuItem.setOnMenuItemClickListener {
+                    Toast.makeText(this, groupId, Toast.LENGTH_SHORT).show()
+
+                    try {
+                        val showNumber = 1
+                        val oldGroup: RealmResults<JoinGroup>? =
+                            realm.where<JoinGroup>().equalTo("Rgroup_flag", showNumber).findAll()
+                        if (oldGroup == null) {
+                            Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
+                        } else {
+                            for (g in oldGroup) {
+                                realm.executeTransaction {
+                                    g.Rgroup_flag = 0
+                                }
+                            }
+                        }
+                        val newGroup: JoinGroup? =
+                            realm.where<JoinGroup>().equalTo("Rgroup_id", groupId).findFirst()
+
+                        if (newGroup == null) {
+                            Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
+                        } else {
+                            realm.executeTransaction {
+                                newGroup.Rgroup_flag = 1
+                            }
+                        }
+
+                    }catch (e:Exception){
+                        when(e){
+                            //テスト中エラーがおきたらここに追加する
+                            RealmException::class.java -> {
+                                Toast.makeText(this, "nya-n", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }finally {
+                        val intent = Intent(this, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        startActivity(intent)
+                    }
+
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setOnMenuItemClickListener false
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -103,6 +165,7 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
+    //Line起動
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_Line -> {
@@ -188,14 +251,8 @@ class MainActivity : AppCompatActivity(),
             .setPositiveButton(
                 "作成"
             ) { _, _ ->
-                val token_group = "sTFhvUCcVLQqAkxQN60pfCaHyU7Dg2"
                 val groupId = layoutGroupId.editText?.text.toString()
                 val groupName = layoutGroupName.editText?.text.toString()
-
-                // グループ参加・作成でのRealmの保存と送信するためトークンを取得
-                // トークンの取得(ApiPostTaskに送るデータだからそれより上に書いて)
-                var account = realm.where<Account>().findFirst()
-                // var token = account?.Rtoken
 
                 // APIとの通信を行う
                 ApiPostTask{
@@ -294,7 +351,7 @@ class MainActivity : AppCompatActivity(),
                     }
                 }.execute(ApiParam(
                     Api.SLIM + "group/create" ,
-                    hashMapOf("token" to token_group,"group_id" to groupId,"group_name" to groupName)
+                    hashMapOf("token" to userToken,"group_id" to groupId,"group_name" to groupName)
                 ))
             }
             .setNegativeButton("キャンセル", null)
@@ -352,7 +409,6 @@ class MainActivity : AppCompatActivity(),
             .setPositiveButton(
                 "参加"
             ) { _, _ ->
-                val token_group = "sTFhvUCcVLQqAkxQN60pfCaHyU7Dg2"
                 val groupId = layoutGroupId.editText?.text.toString()
                 val groupPin = layoutGroupPin.editText?.text.toString()
 
@@ -462,9 +518,9 @@ class MainActivity : AppCompatActivity(),
                     }
                 }.execute(
                     ApiParam(
-                    Api.SLIM + "group/join" ,
-                    hashMapOf("token" to token_group,"group_id" to groupId,"pin_code" to groupPin)
-                )
+                        Api.SLIM + "group/join" ,
+                        hashMapOf("token" to userToken,"group_id" to groupId,"pin_code" to groupPin)
+                    )
                 )
             }
             .setNegativeButton("キャンセル", null)
