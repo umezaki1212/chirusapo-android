@@ -5,11 +5,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import jp.ac.asojuku.st.chirusapo.apis.*
 
 class StartUpActivity : AppCompatActivity() {
 
@@ -18,7 +16,9 @@ class StartUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start_up)
         realm = Realm.getDefaultInstance()
 
+        masterData()
         autoLogin()
+
     }
 
     override fun onDestroy() {
@@ -124,5 +124,37 @@ class StartUpActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun masterData(){
+        //タイトル画面でのRealmの保存(ワクチン、アレルギー)
+        //ApiGetTaskでマスターデータからワクチン,アレルギーそれぞれのデータを取得しRealmの各インスタンスに保存
+        ApiGetTask{
+            //ワクチンとアレルギーのデータを取得
+            var vaccine = it?.getJSONObject("data")?.getJSONArray("vaccination")
+            var allergy = it?.getJSONObject("data")?.getJSONArray("allergy")
+            //ワクチンのデータをRealmに保存する
+            realm.executeTransaction{
+                val vaccine = realm.where<Vaccine>().findAll()
+                vaccine.deleteAllFromRealm()
+                for(x in vaccine.toString()){
+                    it.createObject(Vaccine::class.java,x.toString()).apply {
+                    }
+                }
+            }
+            //アレルギーのデータをRealmに保存する
+            realm.executeTransaction{
+                val allergy = realm.where<Allergy>().findAll()
+                allergy.deleteAllFromRealm()
+                for(y in allergy.toString()){
+                    it.createObject(Allergy::class.java,y.toString()).apply{
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "start/master-download"
+            )
+        )
     }
 }
