@@ -200,6 +200,7 @@ class SignInActivity : AppCompatActivity() {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                         startActivity(intent)
+                        finish()
                     }
                     "400" -> {
                         //messageからエラー文を配列で取得し格納する
