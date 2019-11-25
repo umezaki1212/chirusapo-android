@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import android.widget.Toast.LENGTH_LONG
@@ -17,38 +16,30 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 import java.util.*
 import java.util.regex.Pattern
 
-
 class SignUpActivity : AppCompatActivity() {
     var gender = 0
     lateinit var realm:Realm
-    val calender = Calendar.getInstance()
-    val year = calender.get(Calendar.YEAR)
-    val month = calender.get(Calendar.MONTH)
-    val day = calender.get(Calendar.DAY_OF_MONTH)
-
+    private val calender = Calendar.getInstance()
+    private val year = calender.get(Calendar.YEAR)
+    private val month = calender.get(Calendar.MONTH)
+    private val day = calender.get(Calendar.DAY_OF_MONTH)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
         realm = Realm.getDefaultInstance()
 
-
-
         supportActionBar?.let {
             it.title = "アカウント作成"
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
-        } ?: IllegalAccessException("Toolbar cannot be null")
+        }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            android.R.id.home -> finish()
-            else -> return super.onOptionsItemSelected(item)
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
         return true
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
@@ -57,19 +48,14 @@ class SignUpActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        user_birthday.setFocusable(false)
+        user_birthday.isFocusable = false
         user_gender.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val spinner = findViewById<Spinner>(R.id.user_gender)
-                val select = spinner.selectedItem.toString()
-                if(select == "男性") {
-                    gender = 1
-                }
-                else if(select == "女性"){
-                    gender = 2
-                }
-                else if(select == "性別"){
-                    gender = 0
+                when (spinner.selectedItem.toString()) {
+                    "男性" -> gender = 1
+                    "女性" -> gender = 2
+                    "性別" -> gender = 0
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -81,18 +67,18 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun onBirthdaySetting(){
-        val birthday = findViewById (R.id.user_birthday) as EditText
-        DatePickerDialog(this,DatePickerDialog.OnDateSetListener{view,y,m,d ->
+        val birthday = findViewById<EditText>(R.id.user_birthday)
+        DatePickerDialog(this,DatePickerDialog.OnDateSetListener{ _, y, m, d ->
             val year = y.toString()
             var month = (m+1).toString()
             var day = d.toString()
             if(m < 9 ){
-                month = "0" + month
+                month = "0$month"
             }
             if(d < 10){
-                day = "0" + day
+                day = "0$day"
             }
-            birthday.setText(year+"-"+month+"-"+day)
+            birthday.setText("%s-%s-%s".format(year, month, day))
         }, year,month,day
         ).show()
     }
@@ -200,12 +186,12 @@ class SignUpActivity : AppCompatActivity() {
         return when {
             userBirthday.isEmpty() -> {
                 user_birthday.error = ""
-                birthday_error.setText("誕生日が未入力です")
+                birthday_error.text = "誕生日が未入力です"
                 false
             }
             else -> {
                 user_birthday.error = null
-                birthday_error.setText(null)
+                birthday_error.text = null
                 true
             }
         }
@@ -220,7 +206,6 @@ class SignUpActivity : AppCompatActivity() {
         if(!userBirthdayCheck())check = false
 
         if(!check)return
-
 
         val param = hashMapOf(
             "user_id" to user_id.editText?.text.toString(),
@@ -240,18 +225,15 @@ class SignUpActivity : AppCompatActivity() {
                 when(it.getString("status")) {
                     "200" -> {
                         //Realmに保存する値を取得する
-                        var token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
-                        var user_id = it.getJSONObject("data").getJSONObject("user_info").getString("user_id")
-                        var user_name = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
-                        var user_icon = it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
+                        val token = it.getJSONObject("data").getString("token")//dataの中のtokenを取得する
+                        val userId = it.getJSONObject("data").getJSONObject("user_info").getString("user_id")
+                        val userName = it.getJSONObject("data").getJSONObject("user_info").getString("user_name")
                         //ユーザー情報をRealmに保存する
                         //ID,Name,Token
                         realm.executeTransaction{
-                            realm.createObject(Account::class.java,user_id).apply {
-                                //user_id
-//                                this.Ruser_id = user_id
+                            realm.createObject(Account::class.java,userId).apply {
                                 //user_name
-                                this.Ruser_name = user_name
+                                this.Ruser_name = userName
 
                                 //token
                                 this.Rtoken = token
@@ -268,7 +250,7 @@ class SignUpActivity : AppCompatActivity() {
                         for (i in 0 until errorArray.length()) {
                             when (errorArray.getString(i)) {
                                 ApiError.REQUIRED_PARAM -> {
-                                    ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                    ApiError.showToast(this,errorArray.getString(i),LENGTH_LONG)
                                 }
                                 ApiError.VALIDATION_USER_ID -> {
                                     ApiError.showEditTextError(user_id,errorArray.getString(i))
@@ -293,7 +275,6 @@ class SignUpActivity : AppCompatActivity() {
                                 }
                                 ApiError.ALREADY_EMAIL -> {
                                     ApiError.showEditTextError(user_email,errorArray.getString(i))
-                                    Toast.makeText(applicationContext, "ALREADY_EMAIL", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }

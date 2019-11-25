@@ -1,19 +1,17 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_reset_password.*
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import kotlinx.android.synthetic.main.activity_reset_password.*
 import java.util.regex.Pattern
-
 
 class ResetPasswordActivity : AppCompatActivity() {
     lateinit var realm: Realm
@@ -94,10 +92,10 @@ class ResetPasswordActivity : AppCompatActivity() {
 
         if(!check) return
 
-        var account = realm.where<Account>().findFirst()
-        var token = account?.Rtoken.toString()
-        val NewPassword = new_password.editText?.text.toString()
-        val OldPassword = old_password.editText?.text.toString()
+        val account = realm.where<Account>().findFirst()
+        val token = account?.Rtoken.toString()
+        val newPassword = new_password.editText?.text.toString()
+        val oldPassword = old_password.editText?.text.toString()
 
         ApiPostTask{
             if(it == null){
@@ -135,7 +133,7 @@ class ResetPasswordActivity : AppCompatActivity() {
         }.execute(
             ApiParam(
                 Api.SLIM + "account/password-change",
-                hashMapOf("old_password" to OldPassword,"new_password" to NewPassword,"token" to token)
+                hashMapOf("old_password" to oldPassword,"new_password" to newPassword,"token" to token)
             )
         )
     }
