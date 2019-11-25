@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(),
 
                 val menuItem = menuGroup.add("$groupName ($groupId)")
                 menuItem.setOnMenuItemClickListener {
-                    Toast.makeText(this, groupId, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, groupId, Toast.LENGTH_SHORT).show()
 
                     try {
                         val showNumber = 1
