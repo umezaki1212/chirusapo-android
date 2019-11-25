@@ -22,6 +22,7 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ResetPasswordMailActivity" />
+        <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
 
         <!--ログイン画面-->
