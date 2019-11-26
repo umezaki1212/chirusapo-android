@@ -18,6 +18,8 @@ class StartUpActivity : AppCompatActivity() {
 
         masterData()
         autoLogin()
+//        val intent = Intent(this,TryonActivity::class.java)
+//        startActivity(intent)
 
     }
 
