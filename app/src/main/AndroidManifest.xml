@@ -14,8 +14,15 @@
         android:theme="@style/AppTheme"
         android:name=".InitRealm"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity"/>
+<!--        <activity-->
+<!--            android:name=".MainPostAddActivity"-->
+<!--            android:theme="@style/AppTheme.NoActionBar"/>-->
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ResetPasswordMailActivity" />
+        <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".TryonActivity"/>
         <activity android:name=".SelectTryonDateActivity"/>
@@ -26,7 +33,6 @@
         <activity
             android:name=".SignInActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-
         <activity android:name=".StartUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

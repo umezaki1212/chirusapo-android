@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--    試着-->
+    <item
+        android:id="@+id/bottomNavigationView_dress"
+        android:icon="@drawable/ic_bottom_navigation_view_dress"
+        android:title="@string/bottom_navigation_var_title_dress"/>
+
+    <!--    アルバム-->
+    <item
+        android:id="@+id/bottomNavigationView_album"
+        android:icon="@drawable/ic_bottom_navigation_view_album"
+        android:title="@string/bottom_navigation_var_title_album"/>
+
+<!--    ホーム-->
+    <item
+        android:id="@+id/bottomNavigationView_home"
+        android:icon="@drawable/ic_bottom_navigation_view_home"
+        android:title="@string/bottom_navigation_var_title_home" />
+
+<!--    子ども管理-->
+    <item
+        android:id="@+id/bottomNavigationView_child"
+        android:icon="@drawable/ic_bottom_navigation_view_child"
+        android:title="@string/bottom_navigation_var_title_child"/>
+
+<!--    カレンダー-->
+    <item
+        android:id="@+id/bottomNavigationView_calendar"
+        android:icon="@drawable/ic_bottom_navigation_view_calendar"
+        android:title="@string/bottom_navigation_var_title_calendar"/>
+
+
+</menu>

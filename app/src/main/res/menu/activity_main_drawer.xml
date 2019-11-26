@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+<!--    <item-->
+<!--        android:id="@+id/belong_group"-->
+<!--        android:title="所属グループ">-->
+<!--        <menu>-->
+<!--        </menu>-->
+<!--    </item>-->
+
+    <item
+        android:id="@+id/Group"
+        android:title="@string/group">
+        <menu>
+            <item
+                android:id="@+id/nav_group_participation"
+                android:title="@string/group_participation" />
+            <item
+                android:id="@+id/nav_create_group"
+                android:title="@string/create_group" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/user"
+        android:title="@string/menu_user">
+        <menu>
+            <item
+                android:id="@+id/nav_config"
+                android:title="@string/nav_config" />
+            <item
+                android:id="@+id/nav_logout"
+                android:title="@string/nav_logout" />
+        </menu>
+    </item>
+
+
+</menu>
