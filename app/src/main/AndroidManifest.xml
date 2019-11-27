@@ -24,10 +24,6 @@
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".TryonActivity"/>
-        <activity android:name=".SelectTryonDateActivity"/>
-        <activity android:name=".RegistrationChildModel"/>
-        <activity android:name=".TryonPhotoListActivity"/>
 
         <!--ログイン画面-->
         <activity
