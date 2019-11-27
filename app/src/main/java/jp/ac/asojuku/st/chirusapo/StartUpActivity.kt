@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
 
@@ -138,24 +137,41 @@ class StartUpActivity : AppCompatActivity() {
         //タイトル画面でのRealmの保存(ワクチン、アレルギー)
         //ApiGetTaskでマスターデータからワクチン,アレルギーそれぞれのデータを取得しRealmの各インスタンスに保存
         ApiGetTask{
-            //ワクチンとアレルギーのデータを取得
-            var vaccine = it?.getJSONObject("data")?.getJSONArray("vaccination")
-            var allergy = it?.getJSONObject("data")?.getJSONArray("allergy")
-            //ワクチンのデータをRealmに保存する
-            realm.executeTransaction{
-                val vaccine = realm.where<Vaccine>().findAll()
-                vaccine.deleteAllFromRealm()
-                for(x in vaccine.toString()){
-                    it.createObject(Vaccine::class.java,x.toString()).apply {
+            if (it == null) {
+                ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+            }
+            else {
+                var vaccineArray = it.getJSONObject("data").getJSONArray("vaccination")
+                var allergyArray = it.getJSONObject("data").getJSONArray("allergy")
+                //ワクチンのデータをRealmに保存する
+                realm.executeTransaction {
+                    val vaccine = realm.where<Vaccine>().findAll()
+                    vaccine.deleteAllFromRealm()
+                }
+                if (vaccineArray != null) {
+                    for (i in 0 until vaccineArray.length()) {
+                        realm.executeTransaction { realm ->
+                            realm.createObject(
+                                Vaccine::class.java,
+                                vaccineArray.getString(i)
+                            ).apply {}
+                        }
                     }
                 }
-            }
-            //アレルギーのデータをRealmに保存する
-            realm.executeTransaction{
-                val allergy = realm.where<Allergy>().findAll()
-                allergy.deleteAllFromRealm()
-                for(y in allergy.toString()){
-                    it.createObject(Allergy::class.java,y.toString()).apply{
+                //アレルギーのデータをRealmに保存する
+                realm.executeTransaction {
+                    val allergy = realm.where<Allergy>().findAll()
+                    allergy.deleteAllFromRealm()
+                }
+                if (allergyArray != null) {
+                    for (j in 0 until allergyArray.length()) {
+                        realm.executeTransaction { realm ->
+                            realm.createObject(
+                                Allergy::class.java,
+                                allergyArray.getString(j)
+                            ).apply {}
+                        }
+
                     }
                 }
             }
