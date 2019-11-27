@@ -17,9 +17,6 @@ class StartUpActivity : AppCompatActivity() {
 
         masterData()
         autoLogin()
-//        val intent = Intent(this,TryonActivity::class.java)
-//        startActivity(intent)
-
     }
 
     override fun onDestroy() {
@@ -104,16 +101,14 @@ class StartUpActivity : AppCompatActivity() {
 
                                 // realmを削除する処理
                                 realm.executeTransaction {
-                                    realm.executeTransaction {
-                                        val user = realm.where<Account>().findAll()
-                                        val group = realm.where<JoinGroup>().findAll()
-                                        val vaccine = realm.where<Vaccine>().findAll()
-                                        val allergy = realm.where<Allergy>().findAll()
-                                        user.deleteAllFromRealm()
-                                        group.deleteAllFromRealm()
-                                        vaccine.deleteAllFromRealm()
-                                        allergy.deleteAllFromRealm()
-                                    }
+                                    val user = realm.where<Account>().findAll()
+                                    val group = realm.where<JoinGroup>().findAll()
+                                    val vaccine = realm.where<Vaccine>().findAll()
+                                    val allergy = realm.where<Allergy>().findAll()
+                                    user.deleteAllFromRealm()
+                                    group.deleteAllFromRealm()
+                                    vaccine.deleteAllFromRealm()
+                                    allergy.deleteAllFromRealm()
                                 }
                             }
                         }
@@ -141,37 +136,30 @@ class StartUpActivity : AppCompatActivity() {
                 ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
             }
             else {
-                var vaccineArray = it.getJSONObject("data").getJSONArray("vaccination")
-                var allergyArray = it.getJSONObject("data").getJSONArray("allergy")
+                val vaccineArray = it.getJSONObject("data").getJSONArray("vaccination")
+                val allergyArray = it.getJSONObject("data").getJSONArray("allergy")
                 //ワクチンのデータをRealmに保存する
-                realm.executeTransaction {
+                realm.executeTransaction { realm ->
                     val vaccine = realm.where<Vaccine>().findAll()
                     vaccine.deleteAllFromRealm()
-                }
-                if (vaccineArray != null) {
+
                     for (i in 0 until vaccineArray.length()) {
-                        realm.executeTransaction { realm ->
-                            realm.createObject(
-                                Vaccine::class.java,
-                                vaccineArray.getString(i)
-                            ).apply {}
-                        }
+                        realm.createObject(
+                            Vaccine::class.java,
+                            vaccineArray.getString(i)
+                        ).apply {}
                     }
                 }
                 //アレルギーのデータをRealmに保存する
-                realm.executeTransaction {
+                realm.executeTransaction { realm ->
                     val allergy = realm.where<Allergy>().findAll()
                     allergy.deleteAllFromRealm()
-                }
-                if (allergyArray != null) {
-                    for (j in 0 until allergyArray.length()) {
-                        realm.executeTransaction { realm ->
-                            realm.createObject(
-                                Allergy::class.java,
-                                allergyArray.getString(j)
-                            ).apply {}
-                        }
 
+                    for (j in 0 until allergyArray.length()) {
+                        realm.createObject(
+                            Allergy::class.java,
+                            allergyArray.getString(j)
+                        ).apply {}
                     }
                 }
             }
