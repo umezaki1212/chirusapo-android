@@ -26,11 +26,11 @@ import com.squareup.picasso.Picasso
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.exceptions.RealmException
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Exception
+import java.net.URLEncoder
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity(),
@@ -182,6 +182,24 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.action_Group_invitation -> {
+                val key = 1
+                val group = realm.where<JoinGroup>().equalTo("Rgroup_flag", key).findFirst()
+
+                if (group == null) {
+                    Toast.makeText(this, "グループ情報の取得に失敗しました", Toast.LENGTH_SHORT).show()
+                } else {
+                    val groupId = group.Rgroup_id
+                    val message = "グループID：$groupId"
+                    val encode = URLEncoder.encode(message, "UTF-8")
+
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.data = Uri.parse("line://msg/text/?$encode")
+                        startActivity(intent)
+                    } catch (e:ActivityNotFoundException) {
+                        Toast.makeText(this, "LINEが見つからないため起動できません", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 true
             }
             R.id.action_config -> {
@@ -446,8 +464,7 @@ class MainActivity : AppCompatActivity(),
                                         val groupInfoGroupName = groupInfo.getString("group_name")
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
                                             // realmに保存する
-                                            realm.createObject<JoinGroup>().apply{
-                                                Rgroup_id = groupInfoGroupId
+                                            realm.createObject(JoinGroup::class.java, groupInfoGroupId).apply{
                                                 Rgroup_name = groupInfoGroupName
                                                 //現在見ているグループに設定するためフラグを(1)にする
                                                 Rgroup_flag = num1
@@ -455,6 +472,13 @@ class MainActivity : AppCompatActivity(),
                                         }
                                     }
                                 }
+
+                                // メッセージ表示
+                                AlertDialog.Builder(this)
+                                    .setMessage("グループに参加しました")
+                                    .setNegativeButton("閉じる", null)
+                                    .create()
+                                    .show()
                             }
                             "400" -> {
                                 val errorArray = it.getJSONArray("message")
