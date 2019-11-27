@@ -199,53 +199,71 @@ class MainActivity : AppCompatActivity(),
         realm.close()
     }
 
+    private fun judgeGroupCreate(layoutGroupId:TextInputLayout, layoutGroupName:TextInputLayout):Boolean {
+        return judgeGroupId(layoutGroupId) && judgeGroupName(layoutGroupName)
+    }
+
+    private fun judgeGroupJoin(layoutGroupId:TextInputLayout, layoutGroupPin:TextInputLayout):Boolean {
+        return judgeGroupId(layoutGroupId) && judgeGroupPin(layoutGroupPin)
+    }
+
+    private fun judgeGroupId(layoutGroupId:TextInputLayout):Boolean {
+        val inputGroupId = layoutGroupId.editText?.text.toString().trim()
+
+        return if (inputGroupId.length < 5) {
+            layoutGroupId.error = "5文字以上で入力してください"
+            false
+        } else if (inputGroupId.length > 30) {
+            layoutGroupId.error = "30文字以下で入力してください"
+            false
+        } else if (!Pattern.compile("^[a-zA-Z0-9-_]{1,30}\$").matcher(inputGroupId).find()) {
+            layoutGroupId.error = "使用できない文字が含まれています"
+            false
+        } else {
+            layoutGroupId.error = null
+            true
+        }
+    }
+
+    private fun judgeGroupName(layoutGroupName: TextInputLayout):Boolean {
+        val inputGroupName = layoutGroupName.editText?.text.toString().trim()
+
+        return if (inputGroupName.isEmpty()) {
+            layoutGroupName.error = "1文字以上で入力してください"
+            false
+        } else if (inputGroupName.length > 30) {
+            layoutGroupName.error = "30文字以下で入力してください"
+            false
+        } else if (!Pattern.compile("^.{1,30}\$").matcher(inputGroupName).find()) {
+            layoutGroupName.error = "使用できない文字が含まれています"
+            false
+        } else {
+            layoutGroupName.error = null
+            true
+        }
+    }
+
+    private fun judgeGroupPin(layoutGroupPin: TextInputLayout):Boolean {
+        val inputGroupPin = layoutGroupPin.editText?.text.toString().trim()
+
+        return if(!Pattern.compile("^[0-9]{4}$").matcher(inputGroupPin).find()){
+            layoutGroupPin.error = "4文字の数字で入力してください"
+            false
+        }else{
+            layoutGroupPin.error = null
+            true
+        }
+    }
+
     // グループ作成
     private fun groupCreate(){
         val inputView = View.inflate(this, R.layout.layout_group_create, null)
-        //関連付け
+        // 関連付け
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
         val layoutGroupName = inputView.findViewById(R.id.group_name) as TextInputLayout
 
-        layoutGroupId.editText?.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                val inputGroupId = layoutGroupId.editText?.text.toString().trim()
-
-                if (inputGroupId.length < 5) {
-                    layoutGroupId.error = "5文字以上で入力してください"
-                } else if (inputGroupId.length > 30) {
-                    layoutGroupId.error = "30文字以下で入力してください"
-                } else if (!Pattern.compile("^[a-zA-Z0-9-_]{1,30}\$").matcher(inputGroupId).find()) {
-                    layoutGroupId.error = "使用できない文字が含まれています"
-                } else {
-                    layoutGroupId.error = null
-                }
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-        })
-
-        layoutGroupName.editText?.addTextChangedListener(object :TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-                val inputGroupName = layoutGroupName.editText?.text.toString().trim()
-
-                if (inputGroupName.isEmpty()) {
-                    layoutGroupName.error = "1文字以上で入力してください"
-                } else if (inputGroupName.length > 30) {
-                    layoutGroupName.error = "30文字以下で入力してください"
-                } else if (!Pattern.compile("^.{1,30}\$").matcher(inputGroupName).find()) {
-                    layoutGroupName.error = "使用できない文字が含まれています"
-                } else {
-                    layoutGroupName.error = null
-                }
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-        })
-
         // Dialog生成
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("グループ作成")
             .setView(inputView)
             .setPositiveButton(
@@ -356,7 +374,28 @@ class MainActivity : AppCompatActivity(),
             }
             .setNegativeButton("キャンセル", null)
             .create()
-            .show()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+        layoutGroupId.editText?.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    judgeGroupCreate(layoutGroupId, layoutGroupName)
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        })
+
+        layoutGroupName.editText?.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    judgeGroupCreate(layoutGroupId, layoutGroupName)
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        })
     }
 
     // グループ参加
@@ -367,43 +406,8 @@ class MainActivity : AppCompatActivity(),
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
         val layoutGroupPin = inputView.findViewById(R.id.pin_code) as TextInputLayout
 
-        layoutGroupId.editText?.addTextChangedListener(object :TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-                val inputGroupId = layoutGroupId.editText?.text.toString().trim()
-
-                if(inputGroupId.length < 5){
-                    layoutGroupId.error = "5文字以上入力してください"
-                }else if (inputGroupId.length > 30) {
-                    layoutGroupId.error = "30文字以下で入力してください"
-                } else if (!Pattern.compile("^[a-zA-Z0-9-_]{1,30}\$").matcher(inputGroupId).find()) {
-                    layoutGroupId.error = "使用できない文字が含まれています"
-                } else {
-                    layoutGroupId.error = null
-                }
-            }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-        })
-
-        layoutGroupPin.editText?.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-                val inputGroupPin = layoutGroupPin.editText?.text.toString().trim()
-
-                if(!Pattern.compile("^[0-9]{4}$").matcher(inputGroupPin).find()){
-                    layoutGroupPin.error = "4文字の数字で入力してください"
-                }else{
-                    layoutGroupPin.error = null
-                }
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
-        })
-
-
         // Dialog生成
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("グループ参加")
             .setView(inputView)
             .setPositiveButton(
@@ -525,6 +529,26 @@ class MainActivity : AppCompatActivity(),
             }
             .setNegativeButton("キャンセル", null)
             .create()
-            .show()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+        layoutGroupId.editText?.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    judgeGroupJoin(layoutGroupId, layoutGroupPin)
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        })
+
+        layoutGroupPin.editText?.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(p0: Editable?) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    judgeGroupJoin(layoutGroupId, layoutGroupPin)
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+        })
     }
 }
