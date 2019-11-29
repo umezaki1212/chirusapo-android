@@ -314,6 +314,10 @@ class MainActivity : AppCompatActivity(),
                                 AlertDialog.Builder(this)
                                     .setMessage("グループを作成しました")
                                     .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
                                     .create()
                                     .show()
                             }
@@ -454,6 +458,16 @@ class MainActivity : AppCompatActivity(),
                                         }
                                     }
                                 }
+
+                                AlertDialog.Builder(this)
+                                    .setMessage("グループに参加しました")
+                                    .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                    .create()
+                                    .show()
                             }
                             "400" -> {
                                 val errorArray = it.getJSONArray("message")

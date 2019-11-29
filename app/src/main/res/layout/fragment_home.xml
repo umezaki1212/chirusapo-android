@@ -7,6 +7,42 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/time_line_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/root_view">
+
+        <TextView
+            android:id="@+id/time_line_start_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_line_message" />
+
+        <Button
+            android:id="@+id/time_line_group_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/create_group"
+            android:textColor="@color/design_default_color_on_primary" />
+
+        <Button
+            android:id="@+id/time_line_group_participation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:text="@string/group_participation"
+            android:textColor="@color/design_default_color_on_primary" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/root_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -14,14 +50,20 @@
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="invisible">
 
 
         <ListView
             android:id="@+id/timeline"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content">
+
+        </ListView>
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,14 +76,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_pen" />
-
-<!--    <android.support.design.widget.FloatingActionButton-->
-<!--        android:id="@+id/addButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="end|bottom"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintRight_toRightOf="parent"-->
-<!--        app:srcCompat="@drawable/ic_add" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
