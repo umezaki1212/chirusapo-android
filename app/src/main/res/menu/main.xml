@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_MenberList"
+        android:id="@+id/action_member_list"
         android:orderInCategory="100"
         android:title="@string/action_MenberList"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_Group_invitation"
+        android:id="@+id/action_group_invitation"
         android:orderInCategory="101"
         android:title="@string/action_Group_invitation"
         app:showAsAction="never" />
@@ -17,7 +17,7 @@
         android:title="@string/action_config"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_Line"
+        android:id="@+id/action_line"
         android:icon="@drawable/ic_line"
         android:orderInCategory="105"
         android:title="@string/action_Line"

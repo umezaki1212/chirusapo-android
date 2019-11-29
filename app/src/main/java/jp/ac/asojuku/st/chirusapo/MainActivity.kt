@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity(),
     //Line起動
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_Line -> {
+            R.id.action_line -> {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse("line://nv/chat")
@@ -178,10 +178,10 @@ class MainActivity : AppCompatActivity(),
                 }
                 true
             }
-            R.id.action_MenberList -> {
+            R.id.action_member_list -> {
                 true
             }
-            R.id.action_Group_invitation -> {
+            R.id.action_group_invitation -> {
                 val key = 1
                 val group = realm.where<JoinGroup>().equalTo("Rgroup_flag", key).findFirst()
 
