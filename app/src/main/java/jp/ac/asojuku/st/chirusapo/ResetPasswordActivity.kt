@@ -19,7 +19,13 @@ class ResetPasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password)
+
         realm = Realm.getDefaultInstance()
+
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
+        }
     }
 
     override fun onResume() {
@@ -30,7 +36,13 @@ class ResetPasswordActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         realm.close()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun onPasswordCheck():Boolean{

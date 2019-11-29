@@ -14,8 +14,8 @@
     <string name="mail_text">登録したメールアドレスを入力してください</string>
     <string name="send_text">送信</string>
     <string name="userid_mail_text">ユーザーID or メールアドレス</string>
-<!--    <string name="group_name">グループ名</string>-->
-<!--    <string name="group_id">グループID</string>-->
+    <!--    <string name="group_name">グループ名</string>-->
+    <!--    <string name="group_id">グループID</string>-->
     <string name="new_Accout">アカウントを作成する</string>
     <string name="userId_mail_text">ユーザーID or メールアドレス</string>
     <string name="title_activity_main">MainActivity</string>
@@ -61,9 +61,9 @@
     <string name="bottom_navigation_var_title_album">アルバム</string>
     <string name="bottom_navigation_var_title_dress">試着</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="group_id">グループID</string>
     <string name="group_name">グループ名</string>
     <string name="time_line_message">グループを作成するか参加してください</string>
+    <string name="title_activity_settings">設定</string>
 </resources>

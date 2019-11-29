@@ -495,11 +495,14 @@ class HomeFragment : Fragment() {
                                         val groupInfo = belongGroup.getJSONObject(i)
                                         val groupInfoGroupId = groupInfo.getString("group_id")
                                         val groupInfoGroupName = groupInfo.getString("group_name")
+                                        val groupInfoPinCode = groupInfo.getString("pin_code")
+
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
                                             // realmに保存する
                                             realm.createObject<JoinGroup>().apply{
                                                 Rgroup_id = groupInfoGroupId
                                                 Rgroup_name = groupInfoGroupName
+                                                Rpin_code = groupInfoPinCode
                                                 //現在見ているグループに設定するためフラグを(1)にする
                                                 Rgroup_flag = num1
                                             }
