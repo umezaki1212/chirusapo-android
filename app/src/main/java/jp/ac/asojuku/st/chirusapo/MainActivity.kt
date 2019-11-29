@@ -75,6 +75,8 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_config -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
                     return@setNavigationItemSelectedListener false
                 }
                 R.id.nav_logout -> {
