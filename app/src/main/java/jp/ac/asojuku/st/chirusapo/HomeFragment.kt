@@ -50,6 +50,11 @@ class HomeFragment : Fragment() {
         realm = Realm.getDefaultInstance()
 
         setHomeList(root_view)
+
+        button_post_add.setOnClickListener {
+            val intent = Intent(activity,MainPostAddActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     lateinit var realm: Realm
