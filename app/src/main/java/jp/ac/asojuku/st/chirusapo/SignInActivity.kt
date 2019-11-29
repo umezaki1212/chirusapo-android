@@ -111,9 +111,8 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun signIn() {//サインイン
-
+    // サインイン
+    private fun signIn() {
         // クリックを無効にする
         button_sign_in.isEnabled = false
 
@@ -163,7 +162,6 @@ class SignInActivity : AppCompatActivity() {
                         try {
                             realm.executeTransaction { realm ->
                                 realm.createObject(Account::class.java, realmUserId).apply {
-                                    //                                this.Ruser_id = realmUserId
                                     this.Ruser_name = userName
                                     this.Ruser_icon = userIcon
                                     this.Rtoken = token
@@ -185,9 +183,9 @@ class SignInActivity : AppCompatActivity() {
                                     this.Rgroup_name = groupInfoName
                                     this.Rpin_code = groupInfoPinCode
                                     //フラグでログイン後参照するタイムラインを指定している、最初に所属しているグループのタイムラインを参照する
-                                    if(i == 0){
+                                    if(i == 0) {
                                         this.Rgroup_flag = 1
-                                    }else{
+                                    } else {
                                         this.Rgroup_flag = 0
                                     }
                                 }

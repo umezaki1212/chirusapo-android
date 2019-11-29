@@ -44,7 +44,6 @@ class StartUpActivity : AppCompatActivity() {
                             "200" -> {
                                 val userName = it.getJSONObject("data").getJSONObject("user_info")
                                     .getString("user_name")
-
                                 val userIcon = if (it.getJSONObject("data").getJSONObject("user_info").isNull("user_icon")) {
                                     null
                                 } else {
@@ -76,15 +75,11 @@ class StartUpActivity : AppCompatActivity() {
                                                 .equalTo("Rgroup_name", groupInfoName).findFirst()
                                             updateJoinGroup?.Rgroup_name = groupInfoName
                                             updateJoinGroup?.Rpin_code = groupInfoPinCode
-                                            updateJoinGroup?.Rgroup_flag = 1
-
                                         } else {
-                                            realm.createObject(JoinGroup::class.java, groupInfoId)
-                                                .apply {
-                                                    this.Rgroup_name = groupInfoName
-                                                    this.Rpin_code = groupInfoPinCode
-                                                    this.Rgroup_flag = 1
-                                                }
+                                            realm.createObject(JoinGroup::class.java, groupInfoId).apply {
+                                                this.Rgroup_name = groupInfoName
+                                                this.Rpin_code = groupInfoPinCode
+                                            }
                                         }
                                     }
                                 }

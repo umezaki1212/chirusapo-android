@@ -6,9 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.navigation.findNavController
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,19 +14,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.ui.*
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import io.realm.Realm
-import io.realm.RealmResults
 import io.realm.exceptions.RealmException
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.apis.*
+import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import kotlinx.android.synthetic.main.content_main.*
-import java.lang.Exception
 import java.net.URLEncoder
 import java.util.regex.Pattern
 
@@ -113,12 +114,8 @@ class MainActivity : AppCompatActivity(),
 
                 val menuItem = menuGroup.add("$groupName ($groupId)")
                 menuItem.setOnMenuItemClickListener {
-//                    Toast.makeText(this, groupId, Toast.LENGTH_SHORT).show()
-
                     try {
-                        val showNumber = 1
-                        val oldGroup: RealmResults<JoinGroup>? =
-                            realm.where<JoinGroup>().equalTo("Rgroup_flag", showNumber).findAll()
+                        val oldGroup = realm.where<JoinGroup>().findAll()
                         if (oldGroup == null) {
                             Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
                         } else {
@@ -128,9 +125,7 @@ class MainActivity : AppCompatActivity(),
                                 }
                             }
                         }
-                        val newGroup: JoinGroup? =
-                            realm.where<JoinGroup>().equalTo("Rgroup_id", groupId).findFirst()
-
+                        val newGroup = realm.where<JoinGroup>().equalTo("Rgroup_id", groupId).findFirst()
                         if (newGroup == null) {
                             Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
                         } else {
@@ -138,15 +133,14 @@ class MainActivity : AppCompatActivity(),
                                 newGroup.Rgroup_flag = 1
                             }
                         }
-
-                    }catch (e:Exception){
+                    } catch (e:Exception) {
                         when(e){
                             //テスト中エラーがおきたらここに追加する
                             RealmException::class.java -> {
                                 Toast.makeText(this, "nya-n", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    }finally {
+                    } finally {
                         val intent = Intent(this, MainActivity::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
@@ -165,7 +159,7 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
-    //Line起動
+    // Line起動
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_line -> {
