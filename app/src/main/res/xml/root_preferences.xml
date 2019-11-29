@@ -1,12 +1,9 @@
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceScreen
         android:key="profile_edit"
         android:title="プロフィール変更"
-        android:summary="プロフィール情報を変更します">
-    </PreferenceScreen>
+        android:summary="プロフィール情報を変更します" />
 
     <PreferenceScreen
         android:key="password_change"
@@ -22,45 +19,11 @@
     <PreferenceScreen
         android:key="line_cooperation"
         android:title="LINE連携"
-        android:summary="LINEアカウントと連携します">
-    </PreferenceScreen>
+        android:summary="LINEアカウントと連携します" />
 
     <PreferenceScreen
         android:key="account_resign"
         android:title="アカウント削除"
-        android:summary="ちるサポから退会します">
-    </PreferenceScreen>
-
-<!--    <PreferenceCategory app:title="@string/messages_header">-->
-
-<!--        <EditTextPreference-->
-<!--            app:key="signature"-->
-<!--            app:title="@string/signature_title"-->
-<!--            app:useSimpleSummaryProvider="true" />-->
-
-<!--        <ListPreference-->
-<!--            app:defaultValue="reply"-->
-<!--            app:entries="@array/reply_entries"-->
-<!--            app:entryValues="@array/reply_values"-->
-<!--            app:key="reply"-->
-<!--            app:title="@string/reply_title"-->
-<!--            app:useSimpleSummaryProvider="true" />-->
-
-<!--    </PreferenceCategory>-->
-
-<!--    <PreferenceCategory app:title="@string/sync_header">-->
-
-<!--        <SwitchPreferenceCompat-->
-<!--            app:key="sync"-->
-<!--            app:title="@string/sync_title" />-->
-
-<!--        <SwitchPreferenceCompat-->
-<!--            app:dependency="sync"-->
-<!--            app:key="attachment"-->
-<!--            app:summaryOff="@string/attachment_summary_off"-->
-<!--            app:summaryOn="@string/attachment_summary_on"-->
-<!--            app:title="@string/attachment_title" />-->
-
-<!--    </PreferenceCategory>-->
+        android:summary="ちるサポから退会します" />
 
 </PreferenceScreen>
