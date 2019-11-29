@@ -1,8 +1,10 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceScreen
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -19,6 +21,21 @@ class SettingsActivity : AppCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            val accountResign = findPreference<PreferenceScreen>("account_resign")
+            accountResign!!.setOnPreferenceClickListener {
+                AlertDialog.Builder(activity!!)
+                    .setTitle("アカウント削除")
+                    .setMessage("アカウントを削除しますか？")
+                    .setPositiveButton("削除") { _, _ ->
+                        // 退会処理
+                    }
+                    .setNegativeButton("キャンセル", null)
+                    .create()
+                    .show()
+
+                return@setOnPreferenceClickListener true
+            }
         }
     }
 }
