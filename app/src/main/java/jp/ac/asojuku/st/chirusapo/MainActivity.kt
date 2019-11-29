@@ -184,12 +184,16 @@ class MainActivity : AppCompatActivity(),
             R.id.action_group_invitation -> {
                 val key = 1
                 val group = realm.where<JoinGroup>().equalTo("Rgroup_flag", key).findFirst()
+                val user = realm.where<Account>().findFirst()
 
-                if (group == null) {
+                if (group == null || user == null) {
                     Toast.makeText(this, "グループ情報の取得に失敗しました", Toast.LENGTH_SHORT).show()
                 } else {
+                    val userName = user.Ruser_name
                     val groupId = group.Rgroup_id
-                    val message = "グループID：$groupId"
+                    val pinCode = group.Rpin_code
+                    val message = "%sさんから招待されました\n以下の情報を入力することでグループに参加できます\nグループID：%s\nPINコード：%s"
+                        .format(userName, groupId, pinCode)
                     val encode = URLEncoder.encode(message, "UTF-8")
 
                     try {
