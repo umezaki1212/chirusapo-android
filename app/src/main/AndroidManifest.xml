@@ -24,6 +24,7 @@
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".MainPostAddActivity" />
 
         <!--ログイン画面-->
         <activity

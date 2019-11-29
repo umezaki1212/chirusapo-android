@@ -68,9 +68,11 @@ class HomeFragment : Fragment() {
             val test = 1
             val group:JoinGroup? =
                 realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
-            //存在しなかった
+            //存在しなかった(グループに参加を促すようにする
             if (group == null) {
-                Toast.makeText(context, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
+
+
+
             } else {
                 val groupId = group.Rgroup_id
                 ApiGetTask {
@@ -150,16 +152,13 @@ class HomeFragment : Fragment() {
                                 postTimelineListAdapter.setPostTimelineList(list)
                                 postTimelineListAdapter.notifyDataSetChanged()
                                 listView.adapter = postTimelineListAdapter
-                                listView.setOnItemClickListener { _, _, _, _ ->
                                 /*
+                                listView.setOnItemClickListener { adapterView, _, i, _ ->
                                val item =
                                    adapterView.getItemAtPosition(i) as PostTimelineListItem
-                               val intent = Intent(activity!!, MainPostDetailActivity::class.java).apply {
-                                   putExtra("post_id", item.postId)
-                               }
-                               startActivity(intent)
-                               */
+                                    Toast.makeText(activity, item.text, Toast.LENGTH_SHORT).show()
                                 }
+                                */
                             }
 
                             "400" -> {

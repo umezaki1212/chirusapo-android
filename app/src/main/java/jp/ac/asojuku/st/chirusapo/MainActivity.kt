@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity(),
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 
-        //Bottom Navigation View
         val navigationView:NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -143,7 +142,7 @@ class MainActivity : AppCompatActivity(),
                         when(e){
                             //テスト中エラーがおきたらここに追加する
                             RealmException::class.java -> {
-                                Toast.makeText(this, "nya-n", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Realmでエラーがおきました", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }finally {
