@@ -10,6 +10,8 @@ import android.widget.*
 import androidx.core.view.setPadding
 import com.squareup.picasso.Picasso
 import jp.ac.asojuku.st.chirusapo.R
+import android.widget.HorizontalScrollView
+
 
 class PostTimelineListAdapter(context: Context) : BaseAdapter() {
     private var _context: Context = context
@@ -47,6 +49,11 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
         view.findViewById<TextView>(R.id.user_id).text = item.userId
         view.findViewById<TextView>(R.id.user_name).text = item.userName
 
+        //リストにボタン
+        view.findViewById<LinearLayout>(R.id.timeline_layout).setOnClickListener {
+            Toast.makeText(_context, "test", Toast.LENGTH_SHORT).show()
+        }
+
         if (!item.userIcon.isNullOrEmpty()) {
             Picasso.get().load(item.userIcon).into(view.findViewById<ImageView>(R.id.user_icon))
         }
@@ -54,7 +61,9 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
         if (!item.text.isNullOrEmpty()) {
             view.findViewById<TextView>(R.id.content).visibility = View.VISIBLE
             view.findViewById<TextView>(R.id.content).text = item.text
+
         }
+
 
         if (!item.image01.isNullOrEmpty()) {
             val linerLayout = view.findViewById<LinearLayout>(R.id.linear_layout)
@@ -68,6 +77,9 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
             imageView01.setPadding(10)
             imageView01.layoutParams = layoutParams
             imageView01.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView01.setOnClickListener{
+                Toast.makeText(_context, "画像１", Toast.LENGTH_SHORT).show()
+            }
 
             Picasso.get().load(item.image01).into(imageView01)
             linerLayout.addView(imageView01)
@@ -78,6 +90,9 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                 imageView02.setPadding(10)
                 imageView02.layoutParams = layoutParams
                 imageView02.scaleType = ImageView.ScaleType.CENTER_CROP
+                imageView02.setOnClickListener {
+                    Toast.makeText(_context, "画像2", Toast.LENGTH_SHORT).show()
+                }
                 Picasso.get().load(item.image02).into(imageView02)
                 linerLayout.addView(imageView02)
 
@@ -87,6 +102,9 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                     imageView03.setPadding(10)
                     imageView03.layoutParams = layoutParams
                     imageView03.scaleType = ImageView.ScaleType.CENTER_CROP
+                    imageView03.setOnClickListener {
+                        Toast.makeText(_context, "画像3", Toast.LENGTH_SHORT).show()
+                    }
                     Picasso.get().load(item.image03).into(imageView03)
                     linerLayout.addView(imageView03)
 
@@ -96,10 +114,37 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                         imageView04.setPadding(10)
                         imageView04.layoutParams = layoutParams
                         imageView04.scaleType = ImageView.ScaleType.CENTER_CROP
+                        imageView04.setOnClickListener {
+                            Toast.makeText(_context, "画像4", Toast.LENGTH_SHORT).show()
+                        }
                         Picasso.get().load(item.image04).into(imageView04)
                         linerLayout.addView(imageView04)
                     }
                 }
+            }
+            else {
+                val hScrollView = HorizontalScrollView(_context)
+                hScrollView.isHorizontalScrollBarEnabled = false
+
+                val nullButton01 = ImageView(_context)
+                nullButton01.id = 2
+                nullButton01.setPadding(10)
+                nullButton01.layoutParams = layoutParams
+                nullButton01.scaleType = ImageView.ScaleType.CENTER_CROP
+                nullButton01.setOnClickListener {
+                    Toast.makeText(_context, "おめでとう", Toast.LENGTH_SHORT).show()
+                }
+                val nullButton02 = ImageView(_context)
+                nullButton02.id = 2
+                nullButton02.setPadding(10)
+                nullButton02.layoutParams = layoutParams
+                nullButton02.scaleType = ImageView.ScaleType.CENTER_CROP
+                nullButton02.setOnClickListener {
+                    Toast.makeText(_context, "おめでとう", Toast.LENGTH_SHORT).show()
+                }
+                linerLayout.addView(nullButton01)
+                linerLayout.addView(nullButton02)
+//            }
             }
         }
 

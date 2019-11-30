@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(),
                         when(e){
                             //テスト中エラーがおきたらここに追加する
                             RealmException::class.java -> {
-                                Toast.makeText(this, "nya-n", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Realmでエラーがおきました", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } finally {
@@ -333,6 +333,10 @@ class MainActivity : AppCompatActivity(),
                                 AlertDialog.Builder(this)
                                     .setMessage("グループを作成しました")
                                     .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
                                     .create()
                                     .show()
                             }
@@ -462,10 +466,13 @@ class MainActivity : AppCompatActivity(),
                                         val groupInfo = belongGroup.getJSONObject(i)
                                         val groupInfoGroupId = groupInfo.getString("group_id")
                                         val groupInfoGroupName = groupInfo.getString("group_name")
+                                        val groupInfoPinCode = groupInfo.getString("pin_code")
+
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
                                             // realmに保存する
                                             realm.createObject(JoinGroup::class.java, groupInfoGroupId).apply{
                                                 Rgroup_name = groupInfoGroupName
+                                                Rpin_code = groupInfoPinCode
                                                 //現在見ているグループに設定するためフラグを(1)にする
                                                 Rgroup_flag = num1
                                             }
@@ -473,10 +480,13 @@ class MainActivity : AppCompatActivity(),
                                     }
                                 }
 
-                                // メッセージ表示
                                 AlertDialog.Builder(this)
                                     .setMessage("グループに参加しました")
                                     .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
                                     .create()
                                     .show()
                             }

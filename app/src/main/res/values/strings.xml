@@ -64,5 +64,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="group_id">グループID</string>
     <string name="group_name">グループ名</string>
+    <string name="time_line_message">グループを作成するか参加してください</string>
     <string name="title_activity_settings">設定</string>
 </resources>

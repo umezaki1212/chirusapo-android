@@ -9,6 +9,6 @@ open class JoinGroup : RealmObject() {
     open var Rgroup_id: String = ""
     @Required
     open var Rgroup_name: String = ""
-    open var Rpin_code: String = ""
+    open var Rpin_code: String = "0000"
     open var Rgroup_flag: Int = 0
 }
