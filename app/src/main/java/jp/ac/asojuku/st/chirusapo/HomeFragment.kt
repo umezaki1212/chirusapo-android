@@ -3,24 +3,28 @@ package jp.ac.asojuku.st.chirusapo
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
+import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import java.util.regex.Pattern
 
 class HomeFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
+    private lateinit var userToken: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,9 +51,33 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         realm = Realm.getDefaultInstance()
 
+        val account = realm.where<Account>().findFirst()
+        if (account == null) {
+            Toast.makeText(activity, "アカウント情報が取得できません", Toast.LENGTH_SHORT).show()
+        } else {
+            userToken = account.Rtoken
+        }
+
+        val mainActivity = activity
+        if (mainActivity is MainActivity) {
+            time_line_group_create.setOnClickListener {
+                mainActivity.groupCreate()
+            }
+
+            time_line_group_participation.setOnClickListener {
+                mainActivity.groupJoin()
+            }
+        }
+
         setHomeList(root_view)
+
+        button_post_add.setOnClickListener {
+            val intent = Intent(activity,MainPostAddActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     lateinit var realm: Realm
@@ -68,10 +96,13 @@ class HomeFragment : Fragment() {
             val test = 1
             val group:JoinGroup? =
                 realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
-            //存在しなかった
+            //存在しなかった(グループに参加を促すようにする
             if (group == null) {
-                Toast.makeText(context, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
+
+                root_view.visibility = View.INVISIBLE
+                button_post_add.visibility = View.INVISIBLE
             } else {
+                time_line_start.visibility = View.INVISIBLE
                 val groupId = group.Rgroup_id
                 ApiGetTask {
                     if (it == null) {
@@ -150,16 +181,13 @@ class HomeFragment : Fragment() {
                                 postTimelineListAdapter.setPostTimelineList(list)
                                 postTimelineListAdapter.notifyDataSetChanged()
                                 listView.adapter = postTimelineListAdapter
-                                listView.setOnItemClickListener { _, _, _, _ ->
                                 /*
+                                listView.setOnItemClickListener { adapterView, _, i, _ ->
                                val item =
                                    adapterView.getItemAtPosition(i) as PostTimelineListItem
-                               val intent = Intent(activity!!, MainPostDetailActivity::class.java).apply {
-                                   putExtra("post_id", item.postId)
-                               }
-                               startActivity(intent)
-                               */
+                                    Toast.makeText(activity, item.text, Toast.LENGTH_SHORT).show()
                                 }
+                                */
                             }
 
                             "400" -> {

@@ -111,9 +111,8 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun signIn() {//サインイン
-
+    // サインイン
+    private fun signIn() {
         // クリックを無効にする
         button_sign_in.isEnabled = false
 
@@ -152,21 +151,17 @@ class SignInActivity : AppCompatActivity() {
                             .getString("user_id")
                         val userName = it.getJSONObject("data").getJSONObject("user_info")
                             .getString("user_name")
-//                        val userIcon = it.getJSONObject("data").getJSONObject("user_info")
-//                            .getString("user_icon")
                         val userIcon = if (it.getJSONObject("data").getJSONObject("user_info").isNull("user_icon")) {
                             null
                         } else {
                             it.getJSONObject("data").getJSONObject("user_info").getString("user_icon")
                         }
-//                        var groupId = it.getJSONObject("data").getJSONObject("belong_group")
 
                         //ログイン画面でのRealmの保存(ユーザーやグループのデータを保存)
                         //ユーザー情報をRealmに保存する
                         try {
                             realm.executeTransaction { realm ->
                                 realm.createObject(Account::class.java, realmUserId).apply {
-                                    //                                this.Ruser_id = realmUserId
                                     this.Ruser_name = userName
                                     this.Ruser_icon = userIcon
                                     this.Rtoken = token
@@ -181,15 +176,16 @@ class SignInActivity : AppCompatActivity() {
                             val groupInfo = belongGroup.getJSONObject(i)
                             val groupInfoId = groupInfo.getString("group_id")
                             val groupInfoName = groupInfo.getString("group_name")
+                            val groupInfoPinCode = groupInfo.getString("pin_code")
                             //グループ情報をRealmに保存
                             realm.executeTransaction { realm ->
                                 realm.createObject(JoinGroup::class.java, groupInfoId).apply {
-//                                    this.Rgroup_id = groupInfoId
                                     this.Rgroup_name = groupInfoName
+                                    this.Rpin_code = groupInfoPinCode
                                     //フラグでログイン後参照するタイムラインを指定している、最初に所属しているグループのタイムラインを参照する
-                                    if(i == 0){
+                                    if(i == 0) {
                                         this.Rgroup_flag = 1
-                                    }else{
+                                    } else {
                                         this.Rgroup_flag = 0
                                     }
                                 }

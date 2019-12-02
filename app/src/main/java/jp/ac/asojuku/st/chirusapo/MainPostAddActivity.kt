@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
+import io.realm.Realm
+import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.activity_main_post_add.*
 import kotlinx.android.synthetic.main.content_main_post_add.*
@@ -28,14 +30,36 @@ class MainPostAddActivity : AppCompatActivity() {
     private var resultPickImage03: Bitmap? = null
     private var resultPickImage04: Bitmap? = null
 
+    lateinit var realm: Realm
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_post_add)
+        realm = Realm.getDefaultInstance()
 
         val pref = getSharedPreferences("data", MODE_PRIVATE)
-        userToken = "Uel1KebSmQRH2I6yqoro1JgVLkskDi"
-        group_id = "raigekka"
 
+        //Tokenの取得
+        val account: Account? = realm.where<Account>().findFirst()
+        //Tokenが存在するか？
+        if (account == null) {
+            // 新規登録orログインが行われていないのでSignInActivityに遷移
+            val intent = Intent(this,SignInActivity::class.java)
+            startActivity(intent)
+        }else {
+            val token = account.Rtoken
+            //現在見ているグループIDの取得
+            val test = 1
+            val group:JoinGroup? =
+                realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
+            if (group == null){
+                val intent = Intent(this,SignInActivity::class.java)
+                startActivity(intent)
+            }else{
+                userToken = account.Rtoken
+                group_id = group.Rgroup_id
+            }
+        }
         loading_background.visibility = View.GONE
     }
 
