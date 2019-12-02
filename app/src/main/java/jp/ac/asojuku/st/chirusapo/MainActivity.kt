@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_logout -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    signOut()
                     return@setNavigationItemSelectedListener false
                 }
             }
@@ -587,7 +588,7 @@ class MainActivity : AppCompatActivity(),
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
     }
-    //ログアウト
+    // ログアウト
     private fun signOut(){
         //Dialog生成
         AlertDialog.Builder(this)
@@ -635,7 +636,8 @@ class MainActivity : AppCompatActivity(),
             }
             .setNegativeButton("キャンセル", null)
     }
-    //ログアウト時Realmで保存したデータをすべて削除する
+
+    // ログアウト時Realmで保存したデータをすべて削除する
     private fun onRealmDelete(){
         realm.executeTransaction{
             val user = realm.where<Account>().findAll()
