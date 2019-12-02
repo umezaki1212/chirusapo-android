@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity(),
 
         realm = Realm.getDefaultInstance()
 
-//        TODO メニューバーのログアウトボタンから関連付ける
-//        nav_logout.setOnClickListener{}
         val drawerLayout:DrawerLayout = findViewById(R.id.drawer_layout)
         val actionBarDrawerToggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
