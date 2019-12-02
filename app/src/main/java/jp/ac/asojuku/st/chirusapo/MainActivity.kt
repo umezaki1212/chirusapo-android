@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_logout -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    signOut()
                     return@setNavigationItemSelectedListener false
                 }
             }
@@ -585,4 +586,63 @@ class MainActivity : AppCompatActivity(),
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
     }
+    // ログアウト
+    private fun signOut(){
+        //Dialog生成
+        AlertDialog.Builder(this)
+            .setTitle("ログアウトしますか？")
+            .setPositiveButton(
+                "ログアウト"
+            ){_,_->
+                val account:Account? = realm.where<Account>().findFirst()
+                val token = account!!.Rtoken
+                val param = hashMapOf("token" to token)
+                ApiPostTask{
+                    if(it==null){
+                        //応答null
+                        Toast.makeText(applicationContext, "APIとの通信に失敗しました", Toast.LENGTH_SHORT).show()
+                    }else{
+                        when(it.getString("status")){
+                            "200" -> {
+                                onRealmDelete()
+                                val intent = Intent(this, SignInActivity::class.java).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                startActivity(intent)
+                            }
+                            "400" -> {
+                                val errorArray = it.getJSONArray("message")
+                                for(i in 0 until errorArray.length()){
+                                    when(errorArray.getString(i)){
+                                        ApiError.REQUIRED_PARAM -> {
+                                            ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                        }
+                                        ApiError.UNKNOWN_TOKEN -> {
+                                            ApiError.showToast(this,errorArray.getString(i),Toast.LENGTH_LONG)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.execute(
+                    ApiParam(
+                        Api.SLIM + "account/signout",
+                        param
+                    )
+                )
+            }
+            .setNegativeButton("キャンセル", null)
+    }
+
+    // ログアウト時Realmで保存したデータをすべて削除する
+    private fun onRealmDelete(){
+        realm.executeTransaction{
+            val user = realm.where<Account>().findAll()
+            val group = realm.where<JoinGroup>().findAll()
+            user.deleteAllFromRealm()
+            group.deleteAllFromRealm()
+        }
+    }
+
 }
