@@ -633,6 +633,8 @@ class MainActivity : AppCompatActivity(),
                 )
             }
             .setNegativeButton("キャンセル", null)
+            .create()
+            .show()
     }
 
     // ログアウト時Realmで保存したデータをすべて削除する
