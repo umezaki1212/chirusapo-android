@@ -6,9 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.navigation.findNavController
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,20 +14,24 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.ui.*
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import io.realm.Realm
-import io.realm.RealmResults
 import io.realm.exceptions.RealmException
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.apis.*
+import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import kotlinx.android.synthetic.main.content_main.*
-import java.lang.Exception
+import java.net.URLEncoder
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity(),
@@ -76,6 +77,8 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_config -> {
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
                     return@setNavigationItemSelectedListener false
                 }
                 R.id.nav_logout -> {
@@ -115,12 +118,8 @@ class MainActivity : AppCompatActivity(),
 
                 val menuItem = menuGroup.add("$groupName ($groupId)")
                 menuItem.setOnMenuItemClickListener {
-//                    Toast.makeText(this, groupId, Toast.LENGTH_SHORT).show()
-
                     try {
-                        val showNumber = 1
-                        val oldGroup: RealmResults<JoinGroup>? =
-                            realm.where<JoinGroup>().equalTo("Rgroup_flag", showNumber).findAll()
+                        val oldGroup = realm.where<JoinGroup>().findAll()
                         if (oldGroup == null) {
                             Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
                         } else {
@@ -130,9 +129,7 @@ class MainActivity : AppCompatActivity(),
                                 }
                             }
                         }
-                        val newGroup: JoinGroup? =
-                            realm.where<JoinGroup>().equalTo("Rgroup_id", groupId).findFirst()
-
+                        val newGroup = realm.where<JoinGroup>().equalTo("Rgroup_id", groupId).findFirst()
                         if (newGroup == null) {
                             Toast.makeText(this, "グループの取得に失敗しました", Toast.LENGTH_LONG).show()
                         } else {
@@ -140,15 +137,14 @@ class MainActivity : AppCompatActivity(),
                                 newGroup.Rgroup_flag = 1
                             }
                         }
-
-                    }catch (e:Exception){
+                    } catch (e:Exception) {
                         when(e){
                             //テスト中エラーがおきたらここに追加する
                             RealmException::class.java -> {
-                                Toast.makeText(this, "nya-n", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Realmでエラーがおきました", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    }finally {
+                    } finally {
                         val intent = Intent(this, MainActivity::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
@@ -167,10 +163,10 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
-    //Line起動
+    // Line起動
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_Line -> {
+            R.id.action_line -> {
                 try {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse("line://nv/chat")
@@ -180,10 +176,32 @@ class MainActivity : AppCompatActivity(),
                 }
                 true
             }
-            R.id.action_MenberList -> {
+            R.id.action_member_list -> {
                 true
             }
-            R.id.action_Group_invitation -> {
+            R.id.action_group_invitation -> {
+                val key = 1
+                val group = realm.where<JoinGroup>().equalTo("Rgroup_flag", key).findFirst()
+                val user = realm.where<Account>().findFirst()
+
+                if (group == null || user == null) {
+                    Toast.makeText(this, "グループ情報の取得に失敗しました", Toast.LENGTH_SHORT).show()
+                } else {
+                    val userName = user.Ruser_name
+                    val groupId = group.Rgroup_id
+                    val pinCode = group.Rpin_code
+                    val message = "%sさんから招待されました\n以下の情報を入力することでグループに参加できます\nグループID：%s\nPINコード：%s"
+                        .format(userName, groupId, pinCode)
+                    val encode = URLEncoder.encode(message, "UTF-8")
+
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.data = Uri.parse("line://msg/text/?$encode")
+                        startActivity(intent)
+                    } catch (e:ActivityNotFoundException) {
+                        Toast.makeText(this, "LINEが見つからないため起動できません", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 true
             }
             R.id.action_config -> {
@@ -258,7 +276,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // グループ作成
-    private fun groupCreate(){
+    fun groupCreate(){
         val inputView = View.inflate(this, R.layout.layout_group_create, null)
         // 関連付け
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
@@ -317,6 +335,10 @@ class MainActivity : AppCompatActivity(),
                                 AlertDialog.Builder(this)
                                     .setMessage("グループを作成しました")
                                     .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
                                     .create()
                                     .show()
                             }
@@ -401,7 +423,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // グループ参加
-    private fun groupJoin(){
+    fun groupJoin() {
         val inputView = View.inflate(this, R.layout.layout_group_join, null)
 
         // 関連付け
@@ -446,17 +468,29 @@ class MainActivity : AppCompatActivity(),
                                         val groupInfo = belongGroup.getJSONObject(i)
                                         val groupInfoGroupId = groupInfo.getString("group_id")
                                         val groupInfoGroupName = groupInfo.getString("group_name")
+                                        val groupInfoPinCode = groupInfo.getString("pin_code")
+
                                         if(realm.where<JoinGroup>().equalTo("Rgroup_id",groupInfoGroupId).findFirst() == null){
                                             // realmに保存する
-                                            realm.createObject<JoinGroup>().apply{
-                                                Rgroup_id = groupInfoGroupId
+                                            realm.createObject(JoinGroup::class.java, groupInfoGroupId).apply{
                                                 Rgroup_name = groupInfoGroupName
+                                                Rpin_code = groupInfoPinCode
                                                 //現在見ているグループに設定するためフラグを(1)にする
                                                 Rgroup_flag = num1
                                             }
                                         }
                                     }
                                 }
+
+                                AlertDialog.Builder(this)
+                                    .setMessage("グループに参加しました")
+                                    .setNegativeButton("閉じる", null)
+                                    .setOnDismissListener {
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                    .create()
+                                    .show()
                             }
                             "400" -> {
                                 val errorArray = it.getJSONArray("message")

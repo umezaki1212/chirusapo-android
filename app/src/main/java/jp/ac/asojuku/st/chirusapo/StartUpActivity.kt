@@ -44,9 +44,6 @@ class StartUpActivity : AppCompatActivity() {
                             "200" -> {
                                 val userName = it.getJSONObject("data").getJSONObject("user_info")
                                     .getString("user_name")
-//                                val userIcon = it.getJSONObject("data").getJSONObject("user_info")
-//                                    .getString("user_icon")
-
                                 val userIcon = if (it.getJSONObject("data").getJSONObject("user_info").isNull("user_icon")) {
                                     null
                                 } else {
@@ -66,6 +63,7 @@ class StartUpActivity : AppCompatActivity() {
                                     val groupInfo = belongGroup.getJSONObject(i)
                                     val groupInfoId = groupInfo.getString("group_id")
                                     val groupInfoName = groupInfo.getString("group_name")
+                                    val groupInfoPinCode = groupInfo.getString("pin_code")
 
                                     realm.executeTransaction {
                                         if (realm.where<JoinGroup>().equalTo(
@@ -76,14 +74,12 @@ class StartUpActivity : AppCompatActivity() {
                                             val updateJoinGroup = realm.where<JoinGroup>()
                                                 .equalTo("Rgroup_name", groupInfoName).findFirst()
                                             updateJoinGroup?.Rgroup_name = groupInfoName
-                                            updateJoinGroup?.Rgroup_flag = 1
-
+                                            updateJoinGroup?.Rpin_code = groupInfoPinCode
                                         } else {
-                                            realm.createObject(JoinGroup::class.java, groupInfoId)
-                                                .apply {
-                                                    this.Rgroup_name = groupInfoName
-                                                    this.Rgroup_flag = 1
-                                                }
+                                            realm.createObject(JoinGroup::class.java, groupInfoId).apply {
+                                                this.Rgroup_name = groupInfoName
+                                                this.Rpin_code = groupInfoPinCode
+                                            }
                                         }
                                     }
                                 }
@@ -103,12 +99,12 @@ class StartUpActivity : AppCompatActivity() {
                                 realm.executeTransaction {
                                     val user = realm.where<Account>().findAll()
                                     val group = realm.where<JoinGroup>().findAll()
-                                    val vaccine = realm.where<Vaccine>().findAll()
-                                    val allergy = realm.where<Allergy>().findAll()
+                                    // val vaccine = realm.where<Vaccine>().findAll()
+                                    // val allergy = realm.where<Allergy>().findAll()
                                     user.deleteAllFromRealm()
                                     group.deleteAllFromRealm()
-                                    vaccine.deleteAllFromRealm()
-                                    allergy.deleteAllFromRealm()
+                                    // vaccine.deleteAllFromRealm()
+                                    // allergy.deleteAllFromRealm()
                                 }
                             }
                         }
