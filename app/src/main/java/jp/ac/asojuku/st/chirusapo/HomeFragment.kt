@@ -20,6 +20,7 @@ import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.layout_group_join.*
 import java.util.regex.Pattern
 
 class HomeFragment : Fragment() {
@@ -62,11 +63,17 @@ class HomeFragment : Fragment() {
         }
 
         time_line_group_create.setOnClickListener {
-            groupCreate()
+            val mainActivity = activity
+            if (mainActivity is MainActivity){
+                mainActivity.groupCreate()
+            }
         }
 
         time_line_group_participation.setOnClickListener {
-            groupJoin()
+            val mainActivity = activity
+            if (mainActivity is MainActivity) {
+                mainActivity.groupJoin()
+            }
         }
 
         setHomeList(root_view)
