@@ -15,7 +15,10 @@ class SettingsActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(R.id.settings, SettingsFragment())
             .commit()
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
+        }
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -37,5 +40,10 @@ class SettingsActivity : AppCompatActivity() {
                 return@setOnPreferenceClickListener true
             }
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

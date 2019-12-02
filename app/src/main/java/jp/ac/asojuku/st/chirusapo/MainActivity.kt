@@ -274,7 +274,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // グループ作成
-    private fun groupCreate(){
+    fun groupCreate(){
         val inputView = View.inflate(this, R.layout.layout_group_create, null)
         // 関連付け
         val layoutGroupId = inputView.findViewById(R.id.group_id) as TextInputLayout
@@ -421,7 +421,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // グループ参加
-    private fun groupJoin(){
+    fun groupJoin() {
         val inputView = View.inflate(this, R.layout.layout_group_join, null)
 
         // 関連付け
