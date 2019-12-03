@@ -421,7 +421,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // グループ参加
-    fun groupJoin(){
+    fun groupJoin() {
         val inputView = View.inflate(this, R.layout.layout_group_join, null)
 
         // 関連付け

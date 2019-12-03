@@ -66,4 +66,5 @@
     <string name="group_name">グループ名</string>
     <string name="time_line_message">グループを作成するか参加してください</string>
     <string name="title_activity_settings">設定</string>
+    <string name="no_Coment">まだ何も投稿されていません。最初に投稿してみましょう！</string>
 </resources>
