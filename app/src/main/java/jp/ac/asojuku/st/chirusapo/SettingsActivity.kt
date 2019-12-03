@@ -43,6 +43,13 @@ class SettingsActivity : AppCompatActivity() {
             }
             userToken = account.Rtoken
 
+            val accountEdit = findPreference<PreferenceScreen>("profile_edit")
+            accountEdit!!.setOnPreferenceClickListener {
+                val intent = Intent(activity, ChangeProfileActivity::class.java)
+                startActivity(intent)
+                return@setOnPreferenceClickListener true
+            }
+
             val accountResign = findPreference<PreferenceScreen>("account_resign")
             accountResign!!.setOnPreferenceClickListener {
                 AlertDialog.Builder(activity!!)
