@@ -1,7 +1,7 @@
 package jp.ac.asojuku.st.chirusapo.adapters
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.graphics.drawable.BitmapDrawable
@@ -67,9 +67,36 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
             val linerLayout = view.findViewById<LinearLayout>(R.id.linear_layout)
             val layoutParams = ViewGroup.LayoutParams(500, 500)
 
-            view.findViewById<HorizontalScrollView>(jp.ac.asojuku.st.chirusapo.R.id.horizontal_scroll_view).visibility =
+            view.findViewById<HorizontalScrollView>(R.id.horizontal_scroll_view).visibility =
                 View.VISIBLE
 
+
+            val imageView01 = ImageView(_context).apply {
+                id = 1
+                setPadding(10)
+                this.layoutParams = layoutParams
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            imageView01.setOnClickListener {
+                val image01 = ImageView(_context).apply {
+                    setImageBitmap((imageView01.drawable as BitmapDrawable).bitmap)
+                    this.layoutParams = ViewGroup.LayoutParams(300, 300)
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                }
+
+                val metrics = view.resources.displayMetrics
+                val dialogWidth = (metrics.widthPixels * 0.8).toInt()
+                val dialogHeight = (metrics.heightPixels * 0.7).toInt()
+                val dialog = Dialog(_context)
+                dialog.setContentView(image01)
+                val lp = dialog.window?.attributes
+                lp?.width = dialogWidth
+                lp?.height = dialogHeight
+                dialog.window?.attributes = lp
+                dialog.show()
+            }
+
+            /*
             val imageView01 = ImageView(_context)
             imageView01.id = 1
             imageView01.setPadding(10)
@@ -86,6 +113,7 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                     show()
                 }
             }
+            */
 
             Picasso.get().load(item.image01).into(imageView01)
             linerLayout.addView(imageView01)
@@ -97,15 +125,22 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                 imageView02.layoutParams = layoutParams
                 imageView02.scaleType = ImageView.ScaleType.CENTER_CROP
                 imageView02.setOnClickListener {
-                    val image = ImageView(_context).apply {
+                    val image02 = ImageView(_context).apply {
                         setImageBitmap((imageView02.drawable as BitmapDrawable).bitmap)
+                        this.layoutParams = ViewGroup.LayoutParams(300, 300)
+                        scaleType = ImageView.ScaleType.FIT_CENTER
                     }
 
-                    AlertDialog.Builder(_context).apply {
-                        setView(image)
-                        create()
-                        show()
-                    }
+                    val metrics = view.resources.displayMetrics
+                    val dialogWidth = (metrics.widthPixels * 0.8).toInt()
+                    val dialogHeight = (metrics.heightPixels * 0.7).toInt()
+                    val dialog = Dialog(_context)
+                    dialog.setContentView(image02)
+                    val lp = dialog.window?.attributes
+                    lp?.width = dialogWidth
+                    lp?.height = dialogHeight
+                    dialog.window?.attributes = lp
+                    dialog.show()
                 }
                 Picasso.get().load(item.image02).into(imageView02)
                 linerLayout.addView(imageView02)
@@ -117,15 +152,22 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                     imageView03.layoutParams = layoutParams
                     imageView03.scaleType = ImageView.ScaleType.CENTER_CROP
                     imageView03.setOnClickListener {
-                        val image = ImageView(_context).apply {
+                        val image03 = ImageView(_context).apply {
                             setImageBitmap((imageView03.drawable as BitmapDrawable).bitmap)
+                            this.layoutParams = ViewGroup.LayoutParams(300, 300)
+                            scaleType = ImageView.ScaleType.FIT_CENTER
                         }
 
-                        AlertDialog.Builder(_context).apply {
-                            setView(image)
-                            create()
-                            show()
-                        }
+                        val metrics = view.resources.displayMetrics
+                        val dialogWidth = (metrics.widthPixels * 0.8).toInt()
+                        val dialogHeight = (metrics.heightPixels * 0.7).toInt()
+                        val dialog = Dialog(_context)
+                        dialog.setContentView(image03)
+                        val lp = dialog.window?.attributes
+                        lp?.width = dialogWidth
+                        lp?.height = dialogHeight
+                        dialog.window?.attributes = lp
+                        dialog.show()
                     }
                     Picasso.get().load(item.image03).into(imageView03)
                     linerLayout.addView(imageView03)
@@ -137,15 +179,22 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
                         imageView04.layoutParams = layoutParams
                         imageView04.scaleType = ImageView.ScaleType.CENTER_CROP
                         imageView04.setOnClickListener {
-                            val image = ImageView(_context).apply {
+                            val image04 = ImageView(_context).apply {
                                 setImageBitmap((imageView04.drawable as BitmapDrawable).bitmap)
+                                this.layoutParams = ViewGroup.LayoutParams(300, 300)
+                                scaleType = ImageView.ScaleType.FIT_CENTER
                             }
 
-                            AlertDialog.Builder(_context).apply {
-                                setView(image)
-                                create()
-                                show()
-                            }
+                            val metrics = view.resources.displayMetrics
+                            val dialogWidth = (metrics.widthPixels * 0.8).toInt()
+                            val dialogHeight = (metrics.heightPixels * 0.7).toInt()
+                            val dialog = Dialog(_context)
+                            dialog.setContentView(image04)
+                            val lp = dialog.window?.attributes
+                            lp?.width = dialogWidth
+                            lp?.height = dialogHeight
+                            dialog.window?.attributes = lp
+                            dialog.show()
                         }
                         Picasso.get().load(item.image04).into(imageView04)
                         linerLayout.addView(imageView04)
