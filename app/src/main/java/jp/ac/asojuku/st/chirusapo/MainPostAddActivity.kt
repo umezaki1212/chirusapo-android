@@ -234,7 +234,7 @@ class MainPostAddActivity : AppCompatActivity() {
                                         ).show()
                                         else -> Snackbar.make(
                                             view,
-                                            "不明なエラーが発生しました",
+                                            "不明なエラーが発生しました!",
                                             Snackbar.LENGTH_SHORT
                                         ).show()
                                     }
