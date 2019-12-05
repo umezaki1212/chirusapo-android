@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
@@ -31,7 +31,7 @@ class ChangeProfileActivity : AppCompatActivity() {
     private var oldLineId: String = ""
     private var oldIntroduction: String = ""
     // image
-    private var userIcon:Bitmap? = null
+    private var userIcon: Bitmap? = null
     private val userIconRequestCode = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +83,7 @@ class ChangeProfileActivity : AppCompatActivity() {
             return@setOnLongClickListener true
         }
 
-        button_edit_profile.setOnClickListener {view ->
+        button_edit_profile.setOnClickListener { view ->
             editMyProfile(view)
         }
     }
@@ -127,7 +127,7 @@ class ChangeProfileActivity : AppCompatActivity() {
         return image
     }
 
-    private fun validationUserName(): Boolean{
+    private fun validationUserName(): Boolean {
         val userName = inputUserName.editText?.text.toString()
         return when {
             userName.isEmpty() -> {
@@ -145,7 +145,7 @@ class ChangeProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun validationLineId():Boolean {
+    private fun validationLineId(): Boolean {
         val lineId = inputLineId.editText?.text.toString()
         return when {
             lineId.isEmpty() -> {
@@ -203,7 +203,8 @@ class ChangeProfileActivity : AppCompatActivity() {
                             userInfoJson.getString("introduction")
                         }
                         if (!userInfoJson.isNull("user_icon")) {
-                            Picasso.get().load(userInfoJson.getString("user_icon")).into(button_user_icon)
+                            Picasso.get().load(userInfoJson.getString("user_icon"))
+                                .into(button_user_icon)
                         }
 
                         inputUserName.editText?.setText(userName)
@@ -225,7 +226,11 @@ class ChangeProfileActivity : AppCompatActivity() {
                                     )
                                 }
                                 ApiError.UNKNOWN_TOKEN -> {
-                                    ApiError.showToast(this, ApiError.UNKNOWN_TOKEN, Toast.LENGTH_SHORT)
+                                    ApiError.showToast(
+                                        this,
+                                        ApiError.UNKNOWN_TOKEN,
+                                        Toast.LENGTH_SHORT
+                                    )
                                     val intent = Intent(this, SignInActivity::class.java).apply {
                                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                     }
@@ -255,10 +260,6 @@ class ChangeProfileActivity : AppCompatActivity() {
         if (!validationUserName()) check = false
         if (!validationLineId()) check = false
         if (!validationIntroduction()) check = false
-
-        Log.d("TEST", "name -> " + (validationUserName()).toString())
-        Log.d("TEST", "line -> " + (validationLineId()).toString())
-        Log.d("TEST", "into -> " + (validationIntroduction()).toString())
 
         if (!check) return
 
@@ -326,7 +327,8 @@ class ChangeProfileActivity : AppCompatActivity() {
                             val userIcon = if (userInfoJson.isNull("user_icon")) {
                                 null
                             } else {
-                                Picasso.get().load(userInfoJson.getString("user_icon")).into(button_user_icon)
+                                Picasso.get().load(userInfoJson.getString("user_icon"))
+                                    .into(button_user_icon)
                                 userInfoJson.getString("user_icon")
                             }
 
@@ -361,26 +363,48 @@ class ChangeProfileActivity : AppCompatActivity() {
                                         )
                                     }
                                     ApiError.UNKNOWN_TOKEN -> {
-                                        ApiError.showToast(this, ApiError.UNKNOWN_TOKEN, Toast.LENGTH_SHORT)
-                                        val intent = Intent(this, SignInActivity::class.java).apply {
-                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        }
+                                        ApiError.showToast(
+                                            this,
+                                            ApiError.UNKNOWN_TOKEN,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        val intent =
+                                            Intent(this, SignInActivity::class.java).apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
                                         startActivity(intent)
                                     }
                                     ApiError.VALIDATION_USER_NAME -> {
-                                        ApiError.showEditTextError(inputUserName, ApiError.VALIDATION_USER_NAME)
+                                        ApiError.showEditTextError(
+                                            inputUserName,
+                                            ApiError.VALIDATION_USER_NAME
+                                        )
                                     }
                                     ApiError.VALIDATION_LINE_ID -> {
-                                        ApiError.showEditTextError(inputLineId, ApiError.VALIDATION_LINE_ID)
+                                        ApiError.showEditTextError(
+                                            inputLineId,
+                                            ApiError.VALIDATION_LINE_ID
+                                        )
                                     }
                                     ApiError.VALIDATION_INTRODUCTION -> {
-                                        ApiError.showEditTextError(inputIntroduction, ApiError.VALIDATION_INTRODUCTION)
+                                        ApiError.showEditTextError(
+                                            inputIntroduction,
+                                            ApiError.VALIDATION_INTRODUCTION
+                                        )
                                     }
                                     ApiError.UPLOAD_FAILED -> {
-                                        ApiError.showToast(this, ApiError.UPLOAD_FAILED, Toast.LENGTH_SHORT)
+                                        ApiError.showToast(
+                                            this,
+                                            ApiError.UPLOAD_FAILED,
+                                            Toast.LENGTH_SHORT
+                                        )
                                     }
                                     ApiError.ALLOW_EXTENSION -> {
-                                        ApiError.showToast(this, ApiError.ALLOW_EXTENSION, Toast.LENGTH_SHORT)
+                                        ApiError.showToast(
+                                            this,
+                                            ApiError.ALLOW_EXTENSION,
+                                            Toast.LENGTH_SHORT
+                                        )
                                     }
                                     else -> {
                                         ApiError.showToast(
