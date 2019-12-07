@@ -73,4 +73,11 @@
     <string name="change_profile_introduction">自己紹介</string>
     <string name="change_profile_user_icon">ユーザーアイコン</string>
     <string name="change_profile_button">変更</string>
+    <!-- きせかえ画面 -->
+    <string name="dress_model_child_add">子どもモデル登録</string>
+    <string name="dress_model_clothes_add">洋服モデル登録</string>
+    <string name="dress_model_generate">背景透過モデル画像生成</string>
+    <string name="dress_model_list">モデルリスト</string>
+    <string name="dress_try_on">試着"</string>
+    <string name="dress_try_on_photo">試着後写真一覧</string>
 </resources>

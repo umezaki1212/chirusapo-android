@@ -64,4 +64,7 @@ dependencies {
     // LINE
     // https://developers.line.biz/ja/docs/android-sdk/integrate-line-login/
     implementation 'com.linecorp:linesdk:5.0.1'
+    // Fetch
+    // https://github.com/tonyofrancis/Fetch
+    implementation "com.tonyodev.fetch2:fetch2:3.0.10"
 }
