@@ -7,4 +7,8 @@
         <item>@string/dress_try_on</item>
         <item>@string/dress_try_on_photo</item>
     </string-array>
+    <string-array name="dress_fragment_model_dialog">
+        <item>@string/dress_model_dialog_camera</item>
+        <item>@string/dress_model_dialog_file</item>
+    </string-array>
 </resources>

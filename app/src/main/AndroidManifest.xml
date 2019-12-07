@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".DressModelViewer" />
         <activity android:name=".ChangeProfileActivity" />
         <activity
             android:name=".SettingsActivity"
@@ -28,9 +29,7 @@
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".MainPostAddActivity" />
-
-        <!--ログイン画面-->
+        <activity android:name=".MainPostAddActivity" /> <!-- ログイン画面 -->
         <activity
             android:name=".SignInActivity"
             android:theme="@style/AppTheme.NoActionBar" />

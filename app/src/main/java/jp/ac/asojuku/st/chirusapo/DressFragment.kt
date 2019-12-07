@@ -28,11 +28,21 @@ import java.io.IOException
 class DressFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var realm: Realm
+    private lateinit var userToken: String
+    private lateinit var groupId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         realm = Realm.getDefaultInstance()
+        val account = realm.where(Account::class.java).findFirst()
+        val group = realm.where(JoinGroup::class.java).equalTo("Rgroup_flag", 1.toInt()).findFirst()
+        if (account == null || group == null) {
+
+        } else {
+            userToken = account.Rtoken
+            groupId = group.Rgroup_id
+        }
     }
 
     override fun onCreateView(
@@ -57,16 +67,17 @@ class DressFragment : Fragment() {
         list_view.setOnItemClickListener { adapterView, _, i, _ ->
             when (adapterView.getItemAtPosition(i)) {
                 resources.getString(R.string.dress_model_child_add) -> {
-
+                    onModelChildAddPicker()
                 }
                 resources.getString(R.string.dress_model_clothes_add) -> {
-
+                    onModelClothesAddPicker()
                 }
                 resources.getString(R.string.dress_model_generate) -> {
                     onModelGenerateSelect()
                 }
                 resources.getString(R.string.dress_model_list) -> {
-
+                    val intent = Intent(activity, DressModelViewer::class.java)
+                    startActivity(intent)
                 }
                 resources.getString(R.string.dress_try_on) -> {
 
@@ -76,6 +87,100 @@ class DressFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun onModelChildAddPicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "image/*"
+        }
+        startActivityForResult(intent, MODEL_CHILD_SELECT_CODE)
+    }
+
+    private fun onModelChildAdd(bitmap: Bitmap) {
+        Snackbar.make(root_view, "登録しています…", Snackbar.LENGTH_SHORT).show()
+        ApiMediaPostTask {jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showToast(activity!!, ApiError.UNKNOWN_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        Snackbar.make(root_view, "子どもモデルを登録しました", Snackbar.LENGTH_SHORT).show()
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM,
+                                ApiError.UNKNOWN_TOKEN,
+                                ApiError.UNKNOWN_GROUP,
+                                ApiError.UNREADY_BELONG_GROUP,
+                                ApiError.ALLOW_EXTENSION,
+                                ApiError.UPLOAD_FAILED -> {
+                                    ApiError.showSnackBar(root_view, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                                else -> {
+                                    ApiError.showSnackBar(root_view, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "model/add/child",
+                hashMapOf("token" to userToken, "group_id" to groupId),
+                arrayListOf(ApiParamImage("image/png", "model.png", "model", bitmap))
+            )
+        )
+    }
+
+    private fun onModelClothesAddPicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "image/*"
+        }
+        startActivityForResult(intent, MODEL_CLOTHES_SELECT_CODE)
+    }
+
+    private fun onModelClothesAdd(bitmap: Bitmap) {
+        Snackbar.make(root_view, "登録しています…", Snackbar.LENGTH_SHORT).show()
+        ApiMediaPostTask {jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showToast(activity!!, ApiError.UNKNOWN_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        Snackbar.make(root_view, "洋服モデルを登録しました", Snackbar.LENGTH_SHORT).show()
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM,
+                                ApiError.UNKNOWN_TOKEN,
+                                ApiError.UNKNOWN_GROUP,
+                                ApiError.UNREADY_BELONG_GROUP,
+                                ApiError.ALLOW_EXTENSION,
+                                ApiError.UPLOAD_FAILED -> {
+                                    ApiError.showSnackBar(root_view, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                                else -> {
+                                    ApiError.showSnackBar(root_view, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "model/add/clothes",
+                hashMapOf("token" to userToken, "group_id" to groupId),
+                arrayListOf(ApiParamImage("image/png", "model.png", "model", bitmap))
+            )
+        )
     }
 
     private fun onModelGenerateSelect() {
@@ -89,13 +194,7 @@ class DressFragment : Fragment() {
             return
         }
         AlertDialog.Builder(activity).apply {
-            setTitle("背景透過モデル画像生成")
-            setItems(
-                arrayOf(
-                    "カメラで撮影して生成",
-                    "ファイルを選択して生成"
-                )
-            ) { _: DialogInterface?, i: Int ->
+            setItems(resources.getStringArray(R.array.dress_fragment_model_dialog)) { dialog: DialogInterface?, i: Int ->
                 when (i) {
                     0 -> {
                         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -126,16 +225,38 @@ class DressFragment : Fragment() {
                             val bitmap = resultData.extras?.get("data") as Bitmap
                             onModelGenerate(bitmap)
                         } catch (e: Exception) {
-                            Toast.makeText(activity, "撮影画像を取得できませんでした", Toast.LENGTH_SHORT).show()
+                            Snackbar.make(root_view, "撮影画像を取得できませんでした", Snackbar.LENGTH_SHORT)
+                                .show()
                         }
                     }
                     MODEL_GENERATE_SELECT_CODE -> {
                         val uri = resultData.data as Uri
                         try {
-                            val bitmap: Bitmap = getBitmapFromUri(uri)
+                            val bitmap = getBitmapFromUri(uri)
                             onModelGenerate(bitmap)
                         } catch (e: IOException) {
-                            e.printStackTrace()
+                            Snackbar.make(root_view, "選択された画像を取得できませんでした", Snackbar.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    MODEL_CHILD_SELECT_CODE -> {
+                        val uri = resultData.data as Uri
+                        try {
+                            val bitmap = getBitmapFromUri(uri)
+                            onModelChildAdd(bitmap)
+                        } catch (e: Exception) {
+                            Snackbar.make(root_view, "選択された画像を取得できませんでした", Snackbar.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    MODEL_CLOTHES_SELECT_CODE -> {
+                        val uri = resultData.data as Uri
+                        try {
+                            val bitmap = getBitmapFromUri(uri)
+                            onModelClothesAdd(bitmap)
+                        } catch (e: Exception) {
+                            Snackbar.make(root_view, "選択された画像を取得できませんでした", Snackbar.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
@@ -153,8 +274,8 @@ class DressFragment : Fragment() {
     }
 
     private fun onModelGenerate(bitmap: Bitmap) {
+        Snackbar.make(root_view, "処理しています…", Snackbar.LENGTH_SHORT).show()
         val apiKey = realm.where(RemoveBgApiKey::class.java).findFirst() ?: return
-
         ApiMediaPostTask { jsonObject ->
             if (jsonObject == null) {
                 ApiError.showToast(activity!!, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
@@ -169,7 +290,7 @@ class DressFragment : Fragment() {
                         onModelDownload(imagePath, "$path/$fileName")
                     }
                     "400" -> {
-                        ApiError.showToast(activity!!, "透過画像を生成できませんでした", Toast.LENGTH_SHORT)
+                        Snackbar.make(root_view, "透過画像を生成できませんでした", Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -184,7 +305,7 @@ class DressFragment : Fragment() {
 
     private fun onModelDownload(url: String, fileName: String) {
         val fetchConfiguration = FetchConfiguration.Builder(activity!!).apply {
-            setDownloadConcurrentLimit(1)
+            setDownloadConcurrentLimit(3)
         }.build()
         val fetch = Fetch.Impl.getInstance(fetchConfiguration)
 
@@ -194,8 +315,8 @@ class DressFragment : Fragment() {
         }
 
         fetch.enqueue(request,
-            Func { Toast.makeText(activity, "ダウンロードしました", Toast.LENGTH_SHORT).show() },
-            Func { Toast.makeText(activity, "ダウンロードに失敗しました", Toast.LENGTH_SHORT).show() }
+            Func { Snackbar.make(root_view, "モデル画像を保存しました", Snackbar.LENGTH_SHORT).show() },
+            Func { Snackbar.make(root_view, "ダウンロードに失敗しました", Snackbar.LENGTH_SHORT).show() }
         )
     }
 
@@ -217,5 +338,7 @@ class DressFragment : Fragment() {
     companion object {
         const val MODEL_GENERATE_CAMERA_CODE = 1000
         const val MODEL_GENERATE_SELECT_CODE = 1001
+        const val MODEL_CHILD_SELECT_CODE = 1002
+        const val MODEL_CLOTHES_SELECT_CODE = 1003
     }
 }
