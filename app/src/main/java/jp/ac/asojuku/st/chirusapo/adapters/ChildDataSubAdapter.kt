@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.*
 import jp.ac.asojuku.st.chirusapo.R
 
-class ChildDataAdapter (context: Context) : BaseAdapter() {
+class ChildDataSubAdapter(context: Context):BaseAdapter() {
 
     private var layoutInflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private lateinit var item: ArrayList<ChildDataListItem>
+    private lateinit var item: ArrayList<ChildDataListSub>
 
     override fun getCount(): Int {
         return try {
@@ -22,7 +22,7 @@ class ChildDataAdapter (context: Context) : BaseAdapter() {
         }
     }
 
-    fun setChildDataAdapter(item: ArrayList<ChildDataListItem>) {
+    fun setChildDataSubAdapter(item: ArrayList<ChildDataListSub>) {
         this.item = item
     }
 
@@ -40,13 +40,13 @@ class ChildDataAdapter (context: Context) : BaseAdapter() {
 
     @SuppressLint("ViewHolder", "ResourceType")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = layoutInflater.inflate(R.layout.child_list_item, parent, false)
+        val view = layoutInflater.inflate(R.layout.child_list_item_sub, parent, false)
 
         val item = item[position]
 
-        view.findViewById<TextView>(R.id.child_data_title).text = item.dataTitle
-        view.findViewById<TextView>(R.id.child_data_main).text = item.dataMain
+        view.findViewById<TextView>(R.id.child_data_title_sub).text = item.dataTitle
 
         return view
     }
+
 }

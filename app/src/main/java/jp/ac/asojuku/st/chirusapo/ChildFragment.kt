@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
@@ -15,13 +16,13 @@ import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListItem
+import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
+import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.layout_child_item.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ChildFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -50,6 +51,29 @@ class ChildFragment : Fragment() {
     }
 
     interface OnFragmentInteractionListener
+
+    private fun setListViewHeightBasedOnChildren(listView: ListView) {
+        val listAdapter = listView.adapter ?: return
+        var totalHeight = listView.paddingTop + listView.paddingBottom
+        for (i in 0 until listAdapter.count) {
+            val listItem = listAdapter.getView(i, null, listView)
+            if (listItem is ViewGroup) {
+                listItem.setLayoutParams(
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            }
+            listItem.measure(0, 0)
+            totalHeight += listItem.measuredHeight
+        }
+
+        val params = listView.layoutParams
+        params.height = totalHeight + listView.dividerHeight * (listAdapter.count - 1)
+        listView.layoutParams = params
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -84,7 +108,7 @@ class ChildFragment : Fragment() {
                             val list = ArrayList<ChildDataListItem>()
                             var customListView = ChildDataListItem()
                             //書き換え
-                            val i = 2
+                            val i = 4
                             var item = childData.getJSONObject(i)
 
                             customListView.dataTitle = "名前"
@@ -102,15 +126,7 @@ class ChildFragment : Fragment() {
 
                             customListView = ChildDataListItem()
                             customListView.dataTitle = "年齢"
-                            var age =  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy")).toInt() - nen.toInt()
-                            if (LocalDate.now().format(DateTimeFormatter.ofPattern("MM")).toInt() < man.toInt()){
-                                age --
-                            }else if (LocalDate.now().format(DateTimeFormatter.ofPattern("MM")).toInt() == man.toInt()){
-                                if (LocalDate.now().format(DateTimeFormatter.ofPattern("dd")).toInt() < day.toInt()){
-                                    age --
-                                }
-                            }
-                            customListView.dataMain = age.toString() +"歳"
+                            customListView.dataMain = item.getString("age")  +"歳"
                             list.add(customListView)
 
                             customListView = ChildDataListItem()
@@ -169,15 +185,57 @@ class ChildFragment : Fragment() {
                             childDataAdapter.notifyDataSetChanged()
                             listView.adapter = childDataAdapter
 
-                            val vaccinationListView = activity!!.findViewById<ListView>(R.id.child_vaccination_list)
-                            val dataArray = arrayListOf<String>().apply {
+                            setListViewHeightBasedOnChildren(child_main_data_list)
+
+                            val listSub = ArrayList<ChildDataListSub>()
+                            arrayListOf<String>().apply {
                                 (0 until item.getJSONArray("vaccination").length()).forEach {i ->
-                                    this.add(item.getJSONArray("vaccination").getJSONObject(i).getString("vaccine_name"))
+                                    val childDataListSub = ChildDataListSub()
+                                    val vaccinationItem = item.getJSONArray("vaccination").getJSONObject(i)
+                                    childDataListSub.id = i.toLong()
+                                    childDataListSub.dataTitle = vaccinationItem.getString("vaccine_name")
+                                        // vaccinationItem.getString("vaccine_name")
+                                    listSub.add(childDataListSub)
+                                }
+                                if (item.getJSONArray("vaccination").length() == 0){
+                                    val childDataListSub = ChildDataListSub()
+                                    childDataListSub.id = i.toLong()
+                                    childDataListSub.dataTitle = "登録なし"
+                                    listSub.add(childDataListSub)
                                 }
                             }
-                            // arrayOf(item.getJSONArray("vaccination"))
-                            val adapter = ArrayAdapter(context!!, android.R.layout.simple_list_item_1, dataArray)
-                            vaccinationListView.adapter = adapter
+                            val listSubViewAllergy = child_vaccination_list
+                            val childDataAllergyAdapter = ChildDataSubAdapter(activity!!)
+                            childDataAllergyAdapter.setChildDataSubAdapter(listSub)
+                            listSubViewAllergy.adapter = childDataAllergyAdapter
+
+                            setListViewHeightBasedOnChildren(child_vaccination_list)
+
+                            val listAllergy = ArrayList<ChildDataListSub>()
+                            arrayListOf<String>().apply {
+                                (0 until item.getJSONArray("allergy").length()).forEach {i ->
+                                    val childDataListAllergy = ChildDataListSub()
+                                    val vaccinationItem = item.getJSONArray("allergy").getJSONObject(i)
+                                    childDataListAllergy.id = i.toLong()
+                                    childDataListAllergy.dataTitle = vaccinationItem.getString("allergy_name")
+                                    // vaccinationItem.getString("vaccine_name")
+                                    listAllergy.add(childDataListAllergy)
+                                }
+                                if (item.getJSONArray("allergy").length() == 0){
+                                    val childDataListAllergy = ChildDataListSub()
+                                    childDataListAllergy.id = i.toLong()
+                                    childDataListAllergy.dataTitle = "登録なし"
+                                    listAllergy.add(childDataListAllergy)
+                                }
+                            }
+                            val listSubView = child_list_allergy
+                            val childDataSubAdapter = ChildDataSubAdapter(activity!!)
+                            childDataSubAdapter.setChildDataSubAdapter(listAllergy)
+                            listSubView.adapter = childDataSubAdapter
+
+                            setListViewHeightBasedOnChildren(child_list_allergy)
+
+
                         }
                         "400" -> {
                             //messageからエラー文を配列で取得し格納する

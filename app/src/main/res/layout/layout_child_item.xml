@@ -35,22 +35,25 @@
         android:id="@+id/child_title_allergy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/child_allergies" />
+        android:text="@string/child_allergies"
+        android:textSize="18sp"/>
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:id="@+id/child_list_allergy"
+        android:background="@drawable/list_view_border">
     </ListView>
 
     <TextView
         android:id="@+id/child_record"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/child_record" />
+        android:text="@string/child_record"
+        android:textSize="18sp"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+<!--    <ListView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
 
 </LinearLayout>
