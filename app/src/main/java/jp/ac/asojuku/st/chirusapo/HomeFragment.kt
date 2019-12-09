@@ -2,35 +2,39 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.fragment_home.*
-import java.util.regex.Pattern
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var userToken: String
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        mSwipeRefreshLayout = view!!.findViewById(R.id.swipe_refresh_layout)
+        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener)
+        mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
+
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -53,6 +57,7 @@ class HomeFragment : Fragment() {
         super.onResume()
 
         realm = Realm.getDefaultInstance()
+
 
         val account = realm.where<Account>().findFirst()
         if (account == null) {
@@ -78,6 +83,15 @@ class HomeFragment : Fragment() {
             val intent = Intent(activity,MainPostAddActivity::class.java)
             startActivity(intent)
         }
+
+    }
+
+    override fun onRefresh() {
+        setHomeList(root_view)
+    }
+
+    private val mOnRefreshListener = SwipeRefreshLayout.OnRefreshListener {
+        setHomeList(root_view)
     }
 
     lateinit var realm: Realm
@@ -101,8 +115,10 @@ class HomeFragment : Fragment() {
 
                 root_view.visibility = View.INVISIBLE
                 button_post_add.visibility = View.INVISIBLE
+                no_coment.visibility = View.INVISIBLE
             } else {
                 time_line_start.visibility = View.INVISIBLE
+                no_coment.visibility = View.INVISIBLE
                 val groupId = group.Rgroup_id
                 ApiGetTask {
                     if (it == null) {
@@ -113,6 +129,9 @@ class HomeFragment : Fragment() {
                                 val timelineData =
                                     it.getJSONObject("data").getJSONArray("timeline_data")
                                 val list = ArrayList<PostTimelineListItem>()
+                                if (timelineData.length() == 0){
+                                    no_coment.visibility = View.VISIBLE
+                                }
                                 for (i in 0 until timelineData.length()) {
                                     val postTimelineListItem = PostTimelineListItem()
                                     val item = timelineData.getJSONObject(i)
@@ -189,7 +208,6 @@ class HomeFragment : Fragment() {
                                 }
                                 */
                             }
-
                             "400" -> {
                                 //messageからエラー文を配列で取得し格納する
                                 val errorArray = it.getJSONArray("message")
@@ -230,7 +248,6 @@ class HomeFragment : Fragment() {
                                     }
                                 }
                             }
-
                             else -> Snackbar.make(
                                 view,
                                 "不明なエラーが発生しました",
@@ -238,7 +255,7 @@ class HomeFragment : Fragment() {
                             ).show()
                         }
                     }
-//            mSwipeRefreshLayout.isRefreshing = false
+                    mSwipeRefreshLayout.isRefreshing = false
                 }.execute(
                     ApiParam(
                         Api.SLIM + "timeline/get",

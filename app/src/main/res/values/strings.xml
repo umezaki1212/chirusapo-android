@@ -66,4 +66,11 @@
     <string name="group_name">グループ名</string>
     <string name="time_line_message">グループを作成するか参加してください</string>
     <string name="title_activity_settings">設定</string>
+    <string name="no_Coment">まだ何も投稿されていません。最初に投稿してみましょう！</string>
+    <!-- プロフィール変更画面 -->
+    <string name="change_profile_user_id">ユーザー名</string>
+    <string name="change_profile_line_id">LINE ID</string>
+    <string name="change_profile_introduction">自己紹介</string>
+    <string name="change_profile_user_icon">ユーザーアイコン</string>
+    <string name="change_profile_button">変更</string>
 </resources>
