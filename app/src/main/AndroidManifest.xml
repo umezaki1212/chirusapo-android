@@ -28,6 +28,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
+        <activity
+            android:name=".GroupSettingsActivity"
+            android:label="@string/title_activity_group_setting" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MainPostAddActivity" /> <!-- ログイン画面 -->
         <activity

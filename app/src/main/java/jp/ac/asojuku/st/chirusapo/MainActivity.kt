@@ -102,6 +102,13 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+        val nowGroup = realm.where(JoinGroup::class.java).equalTo("Rgroup_flag", 1.toInt()).findFirst()
+        title = if (nowGroup == null) {
+            "ホーム"
+        } else {
+            "${nowGroup.Rgroup_name} [${nowGroup.Rgroup_id}]"
+        }
+
         val navBottomController = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(navigation, navBottomController)
 
@@ -109,6 +116,13 @@ class MainActivity : AppCompatActivity(),
         val belongGroup = realm.where(JoinGroup::class.java).findAll()
         val menu = navigationView.menu
         val menuGroup = menu.addSubMenu("所属グループ")
+
+        if (belongGroup.size == 0) {
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            for (i in 0 until navigation.menu.size()) {
+                navigation.menu.getItem(i).isEnabled = false
+            }
+        }
 
         if (belongGroup != null) {
             for (group in belongGroup) {
@@ -158,7 +172,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
+        val group = realm.where(JoinGroup::class.java).findAll()
+        if (group.size != 0) {
+            menuInflater.inflate(R.menu.main, menu)
+        }
         return true
     }
 
@@ -204,6 +221,8 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.action_config -> {
+                val intent = Intent(this, GroupSettingsActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
