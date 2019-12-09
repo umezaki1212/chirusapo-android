@@ -67,4 +67,10 @@
     <string name="time_line_message">グループを作成するか参加してください</string>
     <string name="title_activity_settings">設定</string>
     <string name="no_Coment">まだ何も投稿されていません。最初に投稿してみましょう！</string>
+    <string name="child_data_title">title</string>
+    <string name="child_data_main">main</string>
+    <string name="child_title_main">基本情報</string>
+    <string name="child_vaccination">ワクチン</string>
+    <string name="child_allergies">アレルギー</string>
+    <string name="child_record">記録</string>
 </resources>

@@ -22,6 +22,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var userToken: String
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    lateinit var realm: Realm
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,7 +95,6 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
         setHomeList(root_view)
     }
 
-    lateinit var realm: Realm
 
     private fun setHomeList(view: View) {
         //Tokenの取得
@@ -112,7 +112,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                 realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
             //存在しなかった(グループに参加を促すようにする
             if (group == null) {
-
+                Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
                 root_view.visibility = View.INVISIBLE
                 button_post_add.visibility = View.INVISIBLE
                 no_coment.visibility = View.INVISIBLE
