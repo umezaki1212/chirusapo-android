@@ -10,11 +10,11 @@
         android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
-        android:verticalSpacing="1dp"
-        android:horizontalSpacing="1dp"
-        android:numColumns="auto_fit"
         android:columnWidth="150dp"
+        android:gravity="center"
+        android:horizontalSpacing="1dp"
+        android:numColumns="2"
+        android:padding="10dp"
         android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:verticalSpacing="1dp" />
 </FrameLayout>
