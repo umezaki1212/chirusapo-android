@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.adapters.ChildListAdapter
-import jp.ac.asojuku.st.chirusapo.adapters.SampleChildItem
+import jp.ac.asojuku.st.chirusapo.adapters.ChildListItem
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
@@ -87,7 +87,7 @@ class CheckProfileActivity : AppCompatActivity() {
                         }
                         findViewById<TextView>(R.id.introduction).text = userIntroduction
 
-                        val list = ArrayList<SampleChildItem>()
+                        val list = ArrayList<ChildListItem>()
                         // 子供情報取得・表示
                         val userChild = it.getJSONObject("data").getJSONArray("child_info")
                         for (i in 0 until userChild.length()) {
@@ -96,7 +96,7 @@ class CheckProfileActivity : AppCompatActivity() {
                             val childName = childInfo.getString("user_name")
                             val childAge = childInfo.getString("age")
 
-                            val item = SampleChildItem()
+                            val item = ChildListItem()
                             item.id = i.toLong()
                             item.childId = childId
                             item.childName = childName

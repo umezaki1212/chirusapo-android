@@ -14,7 +14,7 @@ class ChildListAdapter(context: Context) : BaseAdapter() {
 
     private var layoutInflater: LayoutInflater =
         context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private lateinit var item: ArrayList<SampleChildItem>
+    private lateinit var item: ArrayList<ChildListItem>
 
     override fun getCount(): Int {
         return try {
@@ -24,7 +24,7 @@ class ChildListAdapter(context: Context) : BaseAdapter() {
         }
     }
 
-    fun setSampleChildItem(item: ArrayList<SampleChildItem>) {
+    fun setSampleChildItem(item: ArrayList<ChildListItem>) {
         this.item = item
     }
 
@@ -38,7 +38,7 @@ class ChildListAdapter(context: Context) : BaseAdapter() {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = layoutInflater.inflate(R.layout.child_list, parent, false)
+        val view = layoutInflater.inflate(R.layout.layout_child_list, parent, false)
 
         val item = item[position]
 

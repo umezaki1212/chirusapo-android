@@ -16,7 +16,7 @@ class GroupMemberListAdapter(context: Context) : BaseAdapter() {
 
     private var layoutInflater: LayoutInflater =
         context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private lateinit var item: ArrayList<SampleListItem>
+    private lateinit var item: ArrayList<GroupMemberListItem>
 
     override fun getCount(): Int {
         return try {
@@ -26,7 +26,7 @@ class GroupMemberListAdapter(context: Context) : BaseAdapter() {
         }
     }
 
-    fun setSampleListItem(item: ArrayList<SampleListItem>) {
+    fun setSampleListItem(item: ArrayList<GroupMemberListItem>) {
         this.item = item
     }
 
@@ -38,9 +38,9 @@ class GroupMemberListAdapter(context: Context) : BaseAdapter() {
         return item[position].id
     }
 
-    @SuppressLint("ViewHolder", "ResourceType")
+    @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = layoutInflater.inflate(R.layout.member_list, parent, false)
+        val view = layoutInflater.inflate(R.layout.layout_group_member_list, parent, false)
 
         val item = item[position]
 

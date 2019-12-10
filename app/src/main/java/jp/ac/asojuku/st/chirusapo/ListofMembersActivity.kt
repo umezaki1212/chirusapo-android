@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.GroupMemberListAdapter
-import jp.ac.asojuku.st.chirusapo.adapters.SampleListItem
+import jp.ac.asojuku.st.chirusapo.adapters.GroupMemberListItem
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
@@ -63,7 +63,7 @@ class ListOfMembersActivity : AppCompatActivity() {
                                 val belongMember =
                                     it.getJSONObject("data").getJSONArray("belong_member")
 
-                                val list = ArrayList<SampleListItem>()
+                                val list = ArrayList<GroupMemberListItem>()
                                 for (i in 0 until belongMember.length()) {
                                     val memberInfo = belongMember.getJSONObject(i)
                                     val memberId = memberInfo.getString("user_id")
@@ -74,7 +74,7 @@ class ListOfMembersActivity : AppCompatActivity() {
                                         memberInfo.getString("user_icon")
                                     }
 
-                                    val item = SampleListItem()
+                                    val item = GroupMemberListItem()
                                     item.id = i.toLong()
                                     item.userId = memberId
                                     item.userName = memberName
@@ -88,7 +88,7 @@ class ListOfMembersActivity : AppCompatActivity() {
                                 adapter.notifyDataSetChanged()
                                 listView.adapter = adapter
                                 listView.setOnItemClickListener { adapterView, view, i, l ->
-                                    val item = adapterView.getItemAtPosition(i) as SampleListItem
+                                    val item = adapterView.getItemAtPosition(i) as GroupMemberListItem
                                     val intent =
                                         Intent(application, CheckProfileActivity::class.java)
                                     intent.putExtra("USER_ID", item.userId)

@@ -1,6 +1,6 @@
 package jp.ac.asojuku.st.chirusapo.adapters
 
-class SampleChildItem {
+class ChildListItem {
     var id:Long = 0
     var childId: String? = null
     var childName: String? = null
