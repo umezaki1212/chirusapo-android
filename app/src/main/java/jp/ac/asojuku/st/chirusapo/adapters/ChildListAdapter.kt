@@ -11,7 +11,6 @@ import android.widget.TextView
 import jp.ac.asojuku.st.chirusapo.R
 
 class ChildListAdapter(context: Context) : BaseAdapter() {
-    private var _context: Context = context
 
     private var layoutInflater: LayoutInflater =
         context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater

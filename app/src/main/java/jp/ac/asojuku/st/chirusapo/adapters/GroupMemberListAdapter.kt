@@ -3,16 +3,16 @@ package jp.ac.asojuku.st.chirusapo.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.BaseAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import com.squareup.picasso.Picasso
 import jp.ac.asojuku.st.chirusapo.R
 
 class GroupMemberListAdapter(context: Context) : BaseAdapter() {
-    private var _context: Context = context
 
     private var layoutInflater: LayoutInflater =
         context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -47,8 +47,8 @@ class GroupMemberListAdapter(context: Context) : BaseAdapter() {
         view.findViewById<TextView>(R.id.user_id).text = item.userId
         view.findViewById<TextView>(R.id.user_name).text = item.userName
 
-        if(!item.userIcon.isNullOrEmpty()){
-//            Picasso.get().load(item.userIcon).into(view.findViewById<ImageView>(R.id.user_icon))
+        if (!item.userIcon.isNullOrEmpty()) {
+            Picasso.get().load(item.userIcon).into(view.findViewById<ImageView>(R.id.user_icon))
         }
 
         return view

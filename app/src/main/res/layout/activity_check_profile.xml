@@ -83,7 +83,7 @@
         <TextView
             android:id="@+id/introduction"
             android:layout_width="match_parent"
-            android:layout_height="38dp"
+            android:layout_height="match_parent"
             android:paddingLeft="10dp"
             android:paddingEnd="5dp"
             android:paddingRight="10dp"
@@ -132,7 +132,7 @@
         <TextView
             android:id="@+id/line_id"
             android:layout_width="match_parent"
-            android:layout_height="29dp"
+            android:layout_height="match_parent"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:textColor="@android:color/black"

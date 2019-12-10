@@ -1,7 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,16 +12,21 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_check_profile.*
-import kotlinx.android.synthetic.main.child_list.*
 
-class CheckProfileActivity : AppCompatActivity(){
-    private lateinit var realm:Realm
-    private lateinit var userToken:String
-    private lateinit var targetUserId:String
+class CheckProfileActivity : AppCompatActivity() {
+    private lateinit var realm: Realm
+    private lateinit var userToken: String
+    private lateinit var targetUserId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check_profile)
+
+        supportActionBar?.let {
+            title = "プロフィール情報"
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
+        }
 
         val intent = intent
         if (intent.getStringExtra("USER_ID") == null) {
@@ -30,11 +34,6 @@ class CheckProfileActivity : AppCompatActivity(){
         } else {
             targetUserId = intent.getStringExtra("USER_ID")!!
         }
-//        targetUserId =
-//        Log.d("TEST", targetUserId!!)
-//        if (targetUserId == null) {
-//            finish()
-//        }
 
         realm = Realm.getDefaultInstance()
 
@@ -46,18 +45,17 @@ class CheckProfileActivity : AppCompatActivity(){
         getUserInfo()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun getUserInfo() {
-        ApiGetTask{
-//            Log.d("TEST", it.toString())
-            if(it == null){
-
-            }
-            else{
-                when(it.getString("status")){
+        ApiGetTask {
+            if (it == null) {
+                ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (it.getString("status")) {
                     "200" -> {
                         // ユーザー情報取得
                         val userInfo = it.getJSONObject("data").getJSONObject("user_info")
@@ -69,8 +67,7 @@ class CheckProfileActivity : AppCompatActivity(){
                         findViewById<TextView>(R.id.birthday).text = birthDay
                         // 性別情報取得・表示
                         var userSex = "null"
-                        val userSexValue = userInfo.getString("gender")
-                        when (userSexValue) {
+                        when (userInfo.getString("gender")) {
                             "1" -> {
                                 userSex = "男性"
                             }
@@ -93,7 +90,7 @@ class CheckProfileActivity : AppCompatActivity(){
                         val list = ArrayList<SampleChildItem>()
                         // 子供情報取得・表示
                         val userChild = it.getJSONObject("data").getJSONArray("child_info")
-                        for (i in 0 until userChild.length()){
+                        for (i in 0 until userChild.length()) {
                             val childInfo = userChild.getJSONObject(i)
                             val childId = childInfo.getString("user_id")
                             val childName = childInfo.getString("user_name")
@@ -113,21 +110,19 @@ class CheckProfileActivity : AppCompatActivity(){
                         adapter.notifyDataSetChanged()
                         listView.adapter = adapter
 
-//                        findViewById<TextView>(R.id.userchild).text = userChild
-
                         // LINE ID取得・表示
-                        val user_Lineid = if(userInfo.isNull("line_id")){
+                        val lineId = if (userInfo.isNull("line_id")) {
                             null
-                        }else{
+                        } else {
                             userInfo.getString("line_id")
                         }
-                        findViewById<TextView>(R.id.line_id).text = user_Lineid
+                        findViewById<TextView>(R.id.line_id).text = lineId
 
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")
-                        for(i in 0 until errorArray.length()){
-                            when(errorArray.getString(i)){
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
                                 "REQUIRED_PARAM" -> {
                                     ApiError.showToast(
                                         this,

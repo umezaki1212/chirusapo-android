@@ -14,8 +14,8 @@
     <string name="mail_text">登録したメールアドレスを入力してください</string>
     <string name="send_text">送信</string>
     <string name="userid_mail_text">ユーザーID or メールアドレス</string>
-    <!--    <string name="group_name">グループ名</string>-->
-    <!--    <string name="group_id">グループID</string>-->
+<!--    <string name="group_name">グループ名</string>-->
+<!--    <string name="group_id">グループID</string>-->
     <string name="new_Accout">アカウントを作成する</string>
     <string name="userId_mail_text">ユーザーID or メールアドレス</string>
     <string name="title_activity_main">MainActivity</string>
@@ -61,10 +61,29 @@
     <string name="bottom_navigation_var_title_album">アルバム</string>
     <string name="bottom_navigation_var_title_dress">試着</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="group_id">グループID</string>
     <string name="group_name">グループ名</string>
+    <string name="time_line_message">グループを作成するか参加してください</string>
+    <string name="title_activity_settings">設定</string>
+    <string name="no_Coment">まだ何も投稿されていません。最初に投稿してみましょう！</string>
+    <!-- プロフィール変更画面 -->
+    <string name="change_profile_user_id">ユーザー名</string>
+    <string name="change_profile_line_id">LINE ID</string>
+    <string name="change_profile_introduction">自己紹介</string>
+    <string name="change_profile_user_icon">ユーザーアイコン</string>
+    <string name="change_profile_button">変更</string>
+    <!-- きせかえ画面 -->
+    <string name="dress_model_child_add">子どもモデル登録</string>
+    <string name="dress_model_clothes_add">洋服モデル登録</string>
+    <string name="dress_model_generate">背景透過モデル画像生成</string>
+    <string name="dress_model_list">モデル一覧</string>
+    <string name="dress_try_on">試着"</string>
+    <string name="dress_try_on_photo">試着後写真一覧</string>
+    <string name="dress_model_dialog_camera">カメラで撮影して生成</string>
+    <string name="dress_model_dialog_file">ファイルを選択して生成</string>
+    <string name="title_activity_group_setting">グループ設定</string>
+    <string name="pin_code">PINコード</string>
     <string name="user_name" />
     <string name="user_birthday" />
     <string name="user_sex" />
