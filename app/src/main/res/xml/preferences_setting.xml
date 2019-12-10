@@ -1,0 +1,60 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="アカウント情報">
+
+        <PreferenceScreen
+            android:key="profile_edit"
+            android:title="プロフィール変更"
+            android:summary="プロフィール情報を変更します" />
+
+        <PreferenceScreen
+            android:key="password_change"
+            android:title="パスワード変更"
+            android:summary="パスワードを変更します">
+
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="jp.ac.asojuku.st.chirusapo.ResetPasswordActivity"
+                android:targetPackage="jp.ac.asojuku.st.chirusapo" />
+
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="line_cooperation"
+            android:title="LINE連携"
+            android:summary="LINEアカウントと連携します" />
+
+        <PreferenceScreen
+            android:key="account_resign"
+            android:title="アカウント削除"
+            android:summary="ちるサポから退会します" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Remove.bg">
+
+        <PreferenceScreen
+            android:key="api_key_add"
+            android:title="APIキー保存"
+            android:summary="APIキーを保存します" />
+
+        <PreferenceScreen
+            android:key="api_key_edit"
+            android:title="APIキー変更"
+            android:summary="APIキーを変更します" />
+
+        <PreferenceScreen
+            android:key="api_key_delete"
+            android:title="APIキー削除"
+            android:summary="APIキーを削除します" />
+
+        <!--
+        <EditTextPreference
+            android:key="remove_bg_api_key_edit"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:summary="Remove.bgのAPI Keyを変更します"
+            android:title="Remove.bg API Key" />
+        -->
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -33,4 +33,9 @@
         <item name="android:textColorSecondary">@color/menu_font_Sab</item>
     </style>
 
+<!--    <style name="AppTheme.DialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">-->
+<!--        <item name="android:windowMinWidthMajor">50%</item>-->
+<!--        <item name="android:windowMinWidthMinor">50%</item>-->
+<!--    </style>-->
+
 </resources>
