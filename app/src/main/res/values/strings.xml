@@ -92,4 +92,7 @@
     <string name="userChild" />
     <string name="child_name" />
     <string name="child_age" />
+    <!-- アルバム画面 -->
+    <string name="fragment_album_not_found_image">アップロードされた写真が見つかりません\n写真をアップロードしませんか？</string>
+    <string name="fragment_album_upload">アップロード</string>
 </resources>
