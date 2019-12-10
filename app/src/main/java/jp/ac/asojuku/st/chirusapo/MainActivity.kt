@@ -179,6 +179,8 @@ class MainActivity : AppCompatActivity(),
                 true
             }
             R.id.action_MenberList -> {
+                val intent = Intent(this, ListOfMembersActivity::class.java)
+                startActivity(intent)
                 true
             }
             R.id.action_Group_invitation -> {
