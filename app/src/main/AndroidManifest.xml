@@ -4,6 +4,9 @@
     package="jp.ac.asojuku.st.chirusapo">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".InitRealm"
@@ -14,18 +17,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".RegistrationChildActivity"></activity>
+        <activity android:name=".ChildGraffActivity"></activity>
+        <activity android:name=".ListofFriendActivity" />
+        <activity android:name=".CheckGrowthActivity" />
+        <activity android:name=".DressModelViewer" />
+        <activity android:name=".ChangeProfileActivity" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" /> <!-- <activity -->
-        <!-- android:name=".MainPostAddActivity" -->
-        <!-- android:theme="@style/AppTheme.NoActionBar"/> -->
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
+        <activity
+            android:name=".GroupSettingsActivity"
+            android:label="@string/title_activity_group_setting" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MainPostAddActivity" /> <!-- ログイン画面 -->
         <activity

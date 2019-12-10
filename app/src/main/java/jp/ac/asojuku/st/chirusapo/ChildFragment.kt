@@ -3,7 +3,6 @@ package jp.ac.asojuku.st.chirusapo
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,9 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.leinardi.android.speeddial.SpeedDialView
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
@@ -20,6 +21,7 @@ import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.layout_child_item.*
@@ -33,7 +35,38 @@ class ChildFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_child, container, false)
+        val view = inflater.inflate(R.layout.fragment_child, container, false)
+
+        val speedDialView = view.findViewById<SpeedDialView>(R.id.speedDialChild)
+        speedDialView.inflate(R.menu.menu_speed_dial)
+
+        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                R.id.action_add_body -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_add_image -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_update_body -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_add_user -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+            }
+            false
+        })
+
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -187,26 +220,30 @@ class ChildFragment : Fragment() {
 
                             setListViewHeightBasedOnChildren(child_main_data_list)
 
-                            val listSub = ArrayList<ChildDataListSub>()
+                            val listSub = ArrayList<ChildDataListItem>()
                             arrayListOf<String>().apply {
                                 (0 until item.getJSONArray("vaccination").length()).forEach {i ->
-                                    val childDataListSub = ChildDataListSub()
+                                    val childDataListSub = ChildDataListItem()
                                     val vaccinationItem = item.getJSONArray("vaccination").getJSONObject(i)
                                     childDataListSub.id = i.toLong()
                                     childDataListSub.dataTitle = vaccinationItem.getString("vaccine_name")
-                                        // vaccinationItem.getString("vaccine_name")
+                                    val visitData = vaccinationItem.getString("visit_date")
+                                    val visitNen = visitData.substring(0,4)
+                                    val visitMan = visitData.substring(5,7)
+                                    val visitDay = visitData.substring(8,10)
+                                    childDataListSub.dataMain = visitNen +"年" + visitMan + "月" + visitDay + "日"
                                     listSub.add(childDataListSub)
                                 }
                                 if (item.getJSONArray("vaccination").length() == 0){
-                                    val childDataListSub = ChildDataListSub()
+                                    val childDataListSub = ChildDataListItem()
                                     childDataListSub.id = i.toLong()
                                     childDataListSub.dataTitle = "登録なし"
                                     listSub.add(childDataListSub)
                                 }
                             }
                             val listSubViewAllergy = child_vaccination_list
-                            val childDataAllergyAdapter = ChildDataSubAdapter(activity!!)
-                            childDataAllergyAdapter.setChildDataSubAdapter(listSub)
+                            val childDataAllergyAdapter = ChildDataAdapter(activity!!)
+                            childDataAllergyAdapter.setChildDataAdapter(listSub)
                             listSubViewAllergy.adapter = childDataAllergyAdapter
 
                             setListViewHeightBasedOnChildren(child_vaccination_list)
@@ -235,6 +272,29 @@ class ChildFragment : Fragment() {
 
                             setListViewHeightBasedOnChildren(child_list_allergy)
 
+                            val listViewRecord = activity!!.findViewById<ListView>(R.id.child_list_record)
+                            val dataArray = arrayOf("今までの成長","グラフの表示","友達リスト")
+                            val adapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, dataArray)
+                            listViewRecord.adapter = adapter
+
+                            listViewRecord.setOnItemClickListener { adapterView, _, position, _ ->
+                                when (adapterView.getItemAtPosition(position) as String) {
+                                    "今までの成長" ->{
+                                        val intent = Intent(activity!!, CheckGrowthActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                    "グラフの表示" ->{
+                                        val intent = Intent(activity!!, ChildGraffActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                    "友達リスト" ->{
+                                        val intent = Intent(activity!!, ListofFriendActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                }
+                            }
+
+                            setListViewHeightBasedOnChildren(child_list_record)
 
                         }
                         "400" -> {
@@ -244,7 +304,7 @@ class ChildFragment : Fragment() {
                                 when (errorArray.getString(i)) {
                                     //グループ情報なし
                                     ApiError.UNKNOWN_GROUP -> {
-                                        ApiError.showToast(
+                                        showToast(
                                             activity!!,
                                             errorArray.getString(i),
                                             Toast.LENGTH_LONG
@@ -252,7 +312,7 @@ class ChildFragment : Fragment() {
                                     }
                                     //値が不足している場合
                                     ApiError.REQUIRED_PARAM -> {
-                                        ApiError.showToast(
+                                        showToast(
                                             activity!!,
                                             errorArray.getString(i),
                                             Toast.LENGTH_LONG
@@ -260,7 +320,7 @@ class ChildFragment : Fragment() {
                                     }
                                     //トークンの検証失敗
                                     ApiError.UNKNOWN_TOKEN -> {
-                                        ApiError.showToast(
+                                        showToast(
                                             activity!!,
                                             errorArray.getString(i),
                                             Toast.LENGTH_LONG
@@ -268,7 +328,7 @@ class ChildFragment : Fragment() {
                                     }
                                     //所属グループなし
                                     ApiError.UNREADY_BELONG_GROUP -> {
-                                        ApiError.showToast(
+                                        showToast(
                                             activity!!,
                                             errorArray.getString(i),
                                             Toast.LENGTH_LONG

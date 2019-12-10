@@ -1,0 +1,46 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="グループ情報">
+
+        <PreferenceScreen
+            android:key="view_group_id"
+            android:title="グループID"
+            android:summary="" />
+
+        <PreferenceScreen
+            android:key="view_group_name"
+            android:title="グループ名"
+            android:summary="" />
+
+        <PreferenceScreen
+            android:key="view_pin_code"
+            android:title="PINコード"
+            android:summary="" />
+
+        <PreferenceScreen
+            android:key="edit_group_info"
+            android:title="グループ情報変更"
+            android:summary="グループ名・PINコードを変更します" />
+
+        <PreferenceScreen
+            android:key="group_delete"
+            android:title="グループ削除"
+            android:summary="グループを削除します" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="ユーザー情報">
+
+        <PreferenceScreen
+            android:key="group_withdrawal_force"
+            android:title="他のユーザーを脱退"
+            android:summary="他のユーザーを脱退させます" />
+
+        <PreferenceScreen
+            android:key="group_withdrawal"
+            android:title="脱退"
+            android:summary="自分のユーザーを脱退させます" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
