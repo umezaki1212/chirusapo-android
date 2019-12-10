@@ -2,13 +2,13 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,8 +17,6 @@ import androidx.preference.PreferenceScreen
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
-import jp.ac.asojuku.st.chirusapo.adapters.GroupWithdrawalListAdapter
-import jp.ac.asojuku.st.chirusapo.adapters.GroupWithdrawalListItem
 import jp.ac.asojuku.st.chirusapo.apis.*
 import java.util.regex.Pattern
 
@@ -345,38 +343,50 @@ class GroupSettingsActivity : AppCompatActivity() {
                             "200" -> {
                                 val belongMember =
                                     jsonObject.getJSONObject("data").getJSONArray("belong_member")
-                                val list = ArrayList<GroupWithdrawalListItem>()
+
+                                val dialogUserId = arrayListOf<String>()
+                                val dialogUserName = arrayListOf<String>()
+                                val dialogSelectFlg = arrayListOf<Boolean>()
+                                val dialogDisplayUserName = arrayListOf<String>()
+
                                 for (i in 0 until belongMember.length()) {
                                     val member = belongMember.getJSONObject(i)
                                     if (member.getString("user_id") != account.Ruser_id) {
-                                        val item = GroupWithdrawalListItem().apply {
-                                            id = i.toLong()
-                                            userId = member.getString("user_id")
-                                            userName = member.getString("user_name")
-                                        }
-                                        list.add(item)
+                                        dialogUserId.add(member.getString("user_id"))
+                                        dialogUserName.add(member.getString("user_name"))
+                                        dialogSelectFlg.add(false)
+                                        dialogDisplayUserName.add(member.getString("user_id") + " [" + member.getString("user_name") + "]")
                                     }
                                 }
-                                if (list.size == 0) {
+                                if (dialogDisplayUserName.size == 0) {
                                     Snackbar.make(
                                         activity!!.findViewById<LinearLayout>(R.id.root_view),
                                         "退会させることができるユーザーが見つかりませんでした",
                                         Snackbar.LENGTH_SHORT
                                     ).show()
                                 } else {
-//                                    val listView = ListView(activity)
-//                                    val adapter = GroupWithdrawalListAdapter(activity!!).apply {
-//                                        setItem(list)
-//                                        notifyDataSetChanged()
-//                                    }
-//                                    listView.adapter = adapter
-//
-//                                    AlertDialog.Builder(activity!!).apply {
-//                                        setTitle("ユーザー退会")
-//                                        setView(listView)
-//                                        create()
-//                                        show()
-//                                    }
+                                    AlertDialog.Builder(activity!!).apply {
+                                        setTitle("ユーザーを選択")
+                                        setMultiChoiceItems(dialogDisplayUserName.toTypedArray(), dialogSelectFlg.toBooleanArray()) { dialogInterface: DialogInterface?, i: Int, isChecked: Boolean ->
+                                            dialogSelectFlg[i] = isChecked
+                                        }
+                                        setPositiveButton("退会") {_, _ ->
+                                            if (dialogSelectFlg.find { it } == null) {
+                                                Snackbar.make(activity!!.findViewById<LinearLayout>(R.id.root_view), "選択されていないためキャンセルしました", Snackbar.LENGTH_SHORT).show()
+                                            } else {
+                                                val withdrawalUserId = arrayListOf<String>()
+                                                for (i in 0 until dialogSelectFlg.size) {
+                                                    if (dialogSelectFlg[i]) {
+                                                        withdrawalUserId.add(dialogUserId[i])
+                                                    }
+                                                }
+                                                onGroupWithdrawalForce(withdrawalUserId)
+                                            }
+                                        }
+                                        setNegativeButton("キャンセル", null)
+                                        create()
+                                        show()
+                                    }
                                 }
                             }
                             "400" -> {
@@ -506,6 +516,50 @@ class GroupSettingsActivity : AppCompatActivity() {
                 }
                 return@setOnPreferenceClickListener true
             }
+        }
+
+        private fun onGroupWithdrawalForce(withdrawalUserId: ArrayList<String>) {
+            val param = hashMapOf("token" to userToken, "group_id" to groupId)
+            withdrawalUserId.forEachIndexed { index, userId ->
+                param["target_user_id[$index]"] = userId
+            }
+            ApiPostTask {jsonObject ->
+                if (jsonObject == null) {
+                    ApiError.showSnackBar(activity!!.findViewById(R.id.root_view), ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+                } else {
+                    when (jsonObject.getString("status")) {
+                        "200" -> {
+                            Snackbar.make(activity!!.findViewById<LinearLayout>(R.id.root_view), "ユーザーを退会させました", Snackbar.LENGTH_SHORT).show()
+                        }
+                        "400" -> {
+                            val errorArray = jsonObject.getJSONArray("message")
+                            for (i in 0 until errorArray.length()) {
+                                when (errorArray.getString(i)) {
+                                    ApiError.REQUIRED_PARAM,
+                                    ApiError.UNKNOWN_GROUP,
+                                    ApiError.UNREADY_BELONG_GROUP,
+                                    ApiError.UNKNOWN_USER -> {
+                                        ApiError.showToast(
+                                            activity!!,
+                                            errorArray.getString(i),
+                                            Toast.LENGTH_SHORT
+                                        )
+                                    }
+                                    ApiError.UNKNOWN_TOKEN -> {
+                                        val intent = Intent(
+                                            activity,
+                                            SignInActivity::class.java
+                                        ).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        startActivity(intent)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }.execute(ApiParam(Api.SLIM + "group/withdrawal-force", param))
         }
 
         private fun judgeGroupName(layoutGroupName: TextInputLayout): Boolean {
