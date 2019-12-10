@@ -355,7 +355,13 @@ class GroupSettingsActivity : AppCompatActivity() {
                                         dialogUserId.add(member.getString("user_id"))
                                         dialogUserName.add(member.getString("user_name"))
                                         dialogSelectFlg.add(false)
-                                        dialogDisplayUserName.add(member.getString("user_id") + " [" + member.getString("user_name") + "]")
+                                        dialogDisplayUserName
+                                            .add(
+                                                "%s [%s]".format(
+                                                    member.getString("user_id"),
+                                                    member.getString("user_name")
+                                                )
+                                            )
                                     }
                                 }
                                 if (dialogDisplayUserName.size == 0) {
@@ -367,12 +373,19 @@ class GroupSettingsActivity : AppCompatActivity() {
                                 } else {
                                     AlertDialog.Builder(activity!!).apply {
                                         setTitle("ユーザーを選択")
-                                        setMultiChoiceItems(dialogDisplayUserName.toTypedArray(), dialogSelectFlg.toBooleanArray()) { dialogInterface: DialogInterface?, i: Int, isChecked: Boolean ->
+                                        setMultiChoiceItems(
+                                            dialogDisplayUserName.toTypedArray(),
+                                            dialogSelectFlg.toBooleanArray()
+                                        ) { _: DialogInterface?, i: Int, isChecked: Boolean ->
                                             dialogSelectFlg[i] = isChecked
                                         }
-                                        setPositiveButton("退会") {_, _ ->
+                                        setPositiveButton("退会") { _, _ ->
                                             if (dialogSelectFlg.find { it } == null) {
-                                                Snackbar.make(activity!!.findViewById<LinearLayout>(R.id.root_view), "選択されていないためキャンセルしました", Snackbar.LENGTH_SHORT).show()
+                                                Snackbar.make(
+                                                    activity!!.findViewById<LinearLayout>(
+                                                        R.id.root_view
+                                                    ), "選択されていないためキャンセルしました", Snackbar.LENGTH_SHORT
+                                                ).show()
                                             } else {
                                                 val withdrawalUserId = arrayListOf<String>()
                                                 for (i in 0 until dialogSelectFlg.size) {
@@ -523,13 +536,21 @@ class GroupSettingsActivity : AppCompatActivity() {
             withdrawalUserId.forEachIndexed { index, userId ->
                 param["target_user_id[$index]"] = userId
             }
-            ApiPostTask {jsonObject ->
+            ApiPostTask { jsonObject ->
                 if (jsonObject == null) {
-                    ApiError.showSnackBar(activity!!.findViewById(R.id.root_view), ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+                    ApiError.showSnackBar(
+                        activity!!.findViewById(R.id.root_view),
+                        ApiError.CONNECTION_ERROR,
+                        Snackbar.LENGTH_SHORT
+                    )
                 } else {
                     when (jsonObject.getString("status")) {
                         "200" -> {
-                            Snackbar.make(activity!!.findViewById<LinearLayout>(R.id.root_view), "ユーザーを退会させました", Snackbar.LENGTH_SHORT).show()
+                            Snackbar.make(
+                                activity!!.findViewById<LinearLayout>(R.id.root_view),
+                                "ユーザーを退会させました",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
                         }
                         "400" -> {
                             val errorArray = jsonObject.getJSONArray("message")
