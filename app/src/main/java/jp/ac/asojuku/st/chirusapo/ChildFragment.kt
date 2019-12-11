@@ -2,29 +2,25 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialView
 import io.realm.Realm
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListItem
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import kotlinx.android.synthetic.main.layout_child_item.*
+import kotlinx.android.synthetic.main.fragment_child.*
 
 class ChildFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -43,12 +39,14 @@ class ChildFragment : Fragment() {
         speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
             when (actionItem.id) {
                 R.id.action_add_body -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
+                    startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
                 R.id.action_add_image -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    val intent = Intent(activity!!, CheckGrowthActivity::class.java)
+                    startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
@@ -83,30 +81,9 @@ class ChildFragment : Fragment() {
         listener = null
     }
 
-    interface OnFragmentInteractionListener
-
-    private fun setListViewHeightBasedOnChildren(listView: ListView) {
-        val listAdapter = listView.adapter ?: return
-        var totalHeight = listView.paddingTop + listView.paddingBottom
-        for (i in 0 until listAdapter.count) {
-            val listItem = listAdapter.getView(i, null, listView)
-            if (listItem is ViewGroup) {
-                listItem.setLayoutParams(
-                    LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                )
-            }
-            listItem.measure(0, 0)
-            totalHeight += listItem.measuredHeight
-        }
-
-        val params = listView.layoutParams
-        params.height = totalHeight + listView.dividerHeight * (listAdapter.count - 1)
-        listView.layoutParams = params
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction(uri: Uri)
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -129,219 +106,135 @@ class ChildFragment : Fragment() {
             //存在しなかった(グループに参加を促すようにする
             if(group == null){
                 Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
-            }else{
+            }
+            else{
                 val groupId = group.Rgroup_id
                 ApiGetTask {
+                    Log.d("TEST", it.toString())
                     if (it == null) {
                         Snackbar.make(view!!, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
-                    } else when (it.getString("status")) {
-                        "200" -> {
-                            val childData =
-                                it.getJSONObject("data").getJSONArray("child_list")
-                            val list = ArrayList<ChildDataListItem>()
-                            var customListView = ChildDataListItem()
-                            //書き換え
-                            val i = 4
-                            var item = childData.getJSONObject(i)
+                    } else {
+                        when (it.getString("status")) {
+                            "200" -> {
 
-                            customListView.dataTitle = "名前"
-                            customListView.dataMain = item.getString("user_name")
-                            list.add(customListView)
+                                val childData = it.getJSONObject("data")
+//                                val array = arrayListOf<String>()
+//
+//                                for (i in 0 until childData.getJSONArray("child_list").length()) {
+//                                    array.add(
+//                                        childData.getJSONArray("child_list").getJSONObject(i).getString(
+//                                            "user_id"
+//                                        )
+//                                    )
+//                                }
 
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "誕生日"
-                            val nen = item.getString("birthday").substring(0,4)
-                            val man = item.getString("birthday").substring(5,7)
-                            val day = item.getString("birthday").substring(8,10)
-                            customListView.dataMain = nen + "年" + man + "月" + day + "日"
-                            list.add(customListView)
+//                                Log.d("TEST", array.toString())
 
-                            customListView = ChildDataListItem()
-                            customListView.dataTitle = "年齢"
-                            customListView.dataMain = item.getString("age")  +"歳"
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "性別"
-                            val sex :String
-                            sex = when(item.getString("gender")) {
-                                "1" -> "男の子"
-                                "2" -> "女の子"
-                                else -> "未記入"
-                            }
-                            customListView.dataMain = sex
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "血液型"
-                            val blood :String
-                            blood = when(item.getString("blood_type")){
-                                "1" -> "A型"
-                                "2" -> "B型"
-                                "3" -> "O型"
-                                "4" -> "AB型"
-                                else -> "未記入"
-                            }
-                            customListView.dataMain = blood
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "身長"
-                            customListView.dataMain = item.getString("body_height") + "cm"
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "体重"
-                            customListView.dataMain = item.getString("body_weight") + "kg"
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "服のサイズ"
-                            customListView.dataMain = item.getString("clothes_size") + "cm"
-                            list.add(customListView)
-
-                            customListView = ChildDataListItem()
-                            item = childData.getJSONObject(i)
-                            customListView.dataTitle = "靴のサイズ"
-                            customListView.dataMain = item.getString("shoes_size") + "cm"
-                            list.add(customListView)
-
-                            val listView = child_main_data_list
-                            val childDataAdapter = ChildDataAdapter(activity!!)
-                            childDataAdapter.setChildDataAdapter(list)
-                            childDataAdapter.notifyDataSetChanged()
-                            listView.adapter = childDataAdapter
-
-                            setListViewHeightBasedOnChildren(child_main_data_list)
-
-                            val listSub = ArrayList<ChildDataListItem>()
-                            arrayListOf<String>().apply {
-                                (0 until item.getJSONArray("vaccination").length()).forEach {i ->
-                                    val childDataListSub = ChildDataListItem()
-                                    val vaccinationItem = item.getJSONArray("vaccination").getJSONObject(i)
-                                    childDataListSub.id = i.toLong()
-                                    childDataListSub.dataTitle = vaccinationItem.getString("vaccine_name")
-                                    val visitData = vaccinationItem.getString("visit_date")
-                                    val visitNen = visitData.substring(0,4)
-                                    val visitMan = visitData.substring(5,7)
-                                    val visitDay = visitData.substring(8,10)
-                                    childDataListSub.dataMain = visitNen +"年" + visitMan + "月" + visitDay + "日"
-                                    listSub.add(childDataListSub)
-                                }
-                                if (item.getJSONArray("vaccination").length() == 0){
-                                    val childDataListSub = ChildDataListItem()
-                                    childDataListSub.id = i.toLong()
-                                    childDataListSub.dataTitle = "登録なし"
-                                    listSub.add(childDataListSub)
-                                }
-                            }
-                            val listSubViewAllergy = child_vaccination_list
-                            val childDataAllergyAdapter = ChildDataAdapter(activity!!)
-                            childDataAllergyAdapter.setChildDataAdapter(listSub)
-                            listSubViewAllergy.adapter = childDataAllergyAdapter
-
-                            setListViewHeightBasedOnChildren(child_vaccination_list)
-
-                            val listAllergy = ArrayList<ChildDataListSub>()
-                            arrayListOf<String>().apply {
-                                (0 until item.getJSONArray("allergy").length()).forEach {i ->
-                                    val childDataListAllergy = ChildDataListSub()
-                                    val vaccinationItem = item.getJSONArray("allergy").getJSONObject(i)
-                                    childDataListAllergy.id = i.toLong()
-                                    childDataListAllergy.dataTitle = vaccinationItem.getString("allergy_name")
-                                    // vaccinationItem.getString("vaccine_name")
-                                    listAllergy.add(childDataListAllergy)
-                                }
-                                if (item.getJSONArray("allergy").length() == 0){
-                                    val childDataListAllergy = ChildDataListSub()
-                                    childDataListAllergy.id = i.toLong()
-                                    childDataListAllergy.dataTitle = "登録なし"
-                                    listAllergy.add(childDataListAllergy)
-                                }
-                            }
-                            val listSubView = child_list_allergy
-                            val childDataSubAdapter = ChildDataSubAdapter(activity!!)
-                            childDataSubAdapter.setChildDataSubAdapter(listAllergy)
-                            listSubView.adapter = childDataSubAdapter
-
-                            setListViewHeightBasedOnChildren(child_list_allergy)
-
-                            val listViewRecord = activity!!.findViewById<ListView>(R.id.child_list_record)
-                            val dataArray = arrayOf("今までの成長","グラフの表示","友達リスト")
-                            val adapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, dataArray)
-                            listViewRecord.adapter = adapter
-
-                            listViewRecord.setOnItemClickListener { adapterView, _, position, _ ->
-                                when (adapterView.getItemAtPosition(position) as String) {
-                                    "今までの成長" ->{
-                                        val intent = Intent(activity!!, CheckGrowthActivity::class.java)
-                                        startActivity(intent)
+                                view_pager_child.adapter = object :
+                                    FragmentPagerAdapter(
+                                        activity!!.supportFragmentManager,
+                                        BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+                                    ) {
+                                    override fun getItem(position: Int): Fragment {
+                                        return fragmentList[position]
                                     }
-                                    "グラフの表示" ->{
-                                        val intent = Intent(activity!!, ChildGraffActivity::class.java)
-                                        startActivity(intent)
+
+                                    override fun getCount(): Int {
+                                        return fragmentList.size
                                     }
-                                    "友達リスト" ->{
-                                        val intent = Intent(activity!!, ListofFriendActivity::class.java)
-                                        startActivity(intent)
+
+                                    override fun getPageTitle(position: Int): CharSequence? {
+                                        return fragmentTitle[position]
+                                        // array[position]
+                                    }
+
+
+//                                    val fragmentTitle = arrayListOf<String>("test", "test", "test", "test", "test")
+//                                    val fragmentList = arrayListOf<Fragment>(
+//                                        ChildDataSetFragment.newInstance("test"),
+//                                        ChildDataSetFragment.newInstance("test"),
+//                                        ChildDataSetFragment.newInstance("test"),
+//                                        ChildDataSetFragment.newInstance("test"),
+//                                        ChildDataSetFragment.newInstance("test")
+//                                    )
+
+//                                        arrayListOf<Fragment>().apply {
+//                                        (0 until childData.length()).forEach { index ->
+//                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
+//                                        }
+//                                    }
+
+
+                                    val fragmentTitle = arrayListOf<String>().apply {
+                                        (0 until childData.getJSONArray("child_list").length()).forEach {index ->
+                                            this.add(childData.getJSONArray("child_list").getJSONObject(index).getString("user_name"))
+                                        }
+                                    }
+
+//                                    private fun test(){
+//                                        for (i in 0 until array.size){
+//                                            fragmentList.add(ChildDataSetFragment.newInstance(""))
+//                                        }
+//                                    }
+
+                                    val fragmentList = arrayListOf<Fragment>().apply {
+                                        (0 until childData.getJSONArray("child_list").length()).forEach { index ->
+                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
+                                        }
+                                    }
+//                                    (
+//                                        ChildDataSetFragment.newInstance("")
+//                                    )
+                                }
+
+                                tab_layout_child.setupWithViewPager(view_pager_child)
+                            }
+                            "400" -> {
+                                //messageからエラー文を配列で取得し格納する
+                                val errorArray = it.getJSONArray("message")
+                                for (i in 0 until errorArray.length()) {
+                                    when (errorArray.getString(i)) {
+                                        //グループ情報なし
+                                        ApiError.UNKNOWN_GROUP -> {
+                                            showToast(
+                                                activity!!,
+                                                errorArray.getString(i),
+                                                Toast.LENGTH_LONG
+                                            )
+                                        }
+                                        //値が不足している場合
+                                        ApiError.REQUIRED_PARAM -> {
+                                            showToast(
+                                                activity!!,
+                                                errorArray.getString(i),
+                                                Toast.LENGTH_LONG
+                                            )
+                                        }
+                                        //トークンの検証失敗
+                                        ApiError.UNKNOWN_TOKEN -> {
+                                            showToast(
+                                                activity!!,
+                                                errorArray.getString(i),
+                                                Toast.LENGTH_LONG
+                                            )
+                                        }
+                                        //所属グループなし
+                                        ApiError.UNREADY_BELONG_GROUP -> {
+                                            showToast(
+                                                activity!!,
+                                                errorArray.getString(i),
+                                                Toast.LENGTH_LONG
+                                            )
+                                        }
                                     }
                                 }
                             }
-
-                            setListViewHeightBasedOnChildren(child_list_record)
-
+                            else -> Snackbar.make(
+                                view!!,
+                                "不明なエラーが発生しました",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
                         }
-                        "400" -> {
-                            //messageからエラー文を配列で取得し格納する
-                            val errorArray = it.getJSONArray("message")
-                            for (i in 0 until errorArray.length()) {
-                                when (errorArray.getString(i)) {
-                                    //グループ情報なし
-                                    ApiError.UNKNOWN_GROUP -> {
-                                        showToast(
-                                            activity!!,
-                                            errorArray.getString(i),
-                                            Toast.LENGTH_LONG
-                                        )
-                                    }
-                                    //値が不足している場合
-                                    ApiError.REQUIRED_PARAM -> {
-                                        showToast(
-                                            activity!!,
-                                            errorArray.getString(i),
-                                            Toast.LENGTH_LONG
-                                        )
-                                    }
-                                    //トークンの検証失敗
-                                    ApiError.UNKNOWN_TOKEN -> {
-                                        showToast(
-                                            activity!!,
-                                            errorArray.getString(i),
-                                            Toast.LENGTH_LONG
-                                        )
-                                    }
-                                    //所属グループなし
-                                    ApiError.UNREADY_BELONG_GROUP -> {
-                                        showToast(
-                                            activity!!,
-                                            errorArray.getString(i),
-                                            Toast.LENGTH_LONG
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        else -> Snackbar.make(
-                            view!!,
-                            "不明なエラーが発生しました",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
                     }
                 }.execute(
                     ApiParam(
@@ -352,4 +245,6 @@ class ChildFragment : Fragment() {
             }
         }
     }
+
+
 }

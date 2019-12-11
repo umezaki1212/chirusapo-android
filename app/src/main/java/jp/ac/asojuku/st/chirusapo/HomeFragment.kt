@@ -67,17 +67,6 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
             userToken = account.Rtoken
         }
 
-        val mainActivity = activity
-        if (mainActivity is MainActivity) {
-            time_line_group_create.setOnClickListener {
-                mainActivity.groupCreate()
-            }
-
-            time_line_group_participation.setOnClickListener {
-                mainActivity.groupJoin()
-            }
-        }
-
         setHomeList(root_view)
 
         button_post_add.setOnClickListener {

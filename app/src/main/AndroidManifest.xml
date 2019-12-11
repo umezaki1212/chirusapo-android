@@ -17,7 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".ChildGraffActivity"></activity>
+        <activity android:name=".RegistrationWeightHeightActivity"></activity>
+        <activity android:name=".ChildTimaLinePostAdd" />
+        <activity android:name=".ChildGraffActivity" />
         <activity android:name=".ListofFriendActivity" />
         <activity android:name=".CheckGrowthActivity" />
         <activity android:name=".DressModelViewer" />
@@ -25,6 +27,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+        <activity android:name=".ListOfMembersActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -46,6 +49,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CheckProfileActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
