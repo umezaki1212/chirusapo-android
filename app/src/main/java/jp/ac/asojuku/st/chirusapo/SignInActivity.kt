@@ -126,7 +126,7 @@ class SignInActivity : AppCompatActivity() {
         if (!validationUserPassword()) check = false
 
         if (!check) {
-            // クリックを有効にするm
+            // クリックを有効にする
             button_sign_in.isEnabled = true
             return
         }
