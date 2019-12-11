@@ -80,7 +80,8 @@ class DressFragment : Fragment() {
                     startActivity(intent)
                 }
                 resources.getString(R.string.dress_try_on) -> {
-
+                    val intent = Intent(activity, TryonActivity::class.java)
+                    startActivity(intent)
                 }
                 resources.getString(R.string.dress_try_on_photo) -> {
 
