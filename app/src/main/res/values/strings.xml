@@ -14,8 +14,8 @@
     <string name="mail_text">登録したメールアドレスを入力してください</string>
     <string name="send_text">送信</string>
     <string name="userid_mail_text">ユーザーID or メールアドレス</string>
-    <!--    <string name="group_name">グループ名</string>-->
-    <!--    <string name="group_id">グループID</string>-->
+<!--    <string name="group_name">グループ名</string>-->
+<!--    <string name="group_id">グループID</string>-->
     <string name="new_Accout">アカウントを作成する</string>
     <string name="userId_mail_text">ユーザーID or メールアドレス</string>
     <string name="title_activity_main">MainActivity</string>
@@ -84,4 +84,14 @@
     <string name="dress_model_dialog_file">ファイルを選択して生成</string>
     <string name="title_activity_group_setting">グループ設定</string>
     <string name="pin_code">PINコード</string>
+    <string name="user_name" />
+    <string name="user_birthday" />
+    <string name="user_sex" />
+    <string name="profile" />
+    <string name="userChild" />
+    <string name="child_name" />
+    <string name="child_age" />
+    <!-- アルバム画面 -->
+    <string name="fragment_album_not_found_image">アップロードされた写真が見つかりません\n写真をアップロードしませんか？</string>
+    <string name="fragment_album_upload">アップロード</string>
 </resources>

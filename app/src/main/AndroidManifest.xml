@@ -27,6 +27,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+        <activity android:name=".ListOfMembersActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -49,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TryonActivity" />
-
+        <activity android:name="CheckProfileActivity" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
