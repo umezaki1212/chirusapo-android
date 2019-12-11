@@ -37,6 +37,8 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+//    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.8.0" // original
+    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
@@ -60,8 +62,8 @@ dependencies {
     implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
     // AR Core
     // https://developers.google.com/ar/develop/java/quickstart
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.12.0'
-    implementation 'com.google.ar.sceneform:core:1.12.0'
+    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
+    implementation 'com.google.ar.sceneform:core:1.13.0'
     // LINE
     // https://developers.line.biz/ja/docs/android-sdk/integrate-line-login/
     implementation 'com.linecorp:linesdk:5.0.1'

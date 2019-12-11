@@ -72,6 +72,8 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         button_upload_fab.setOnClickListener {
             onUploadPhotoPicker()
         }
+
+        getAlbum()
     }
 
 
@@ -280,7 +282,7 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun getView(i: Int, view: View?, viewGroup: ViewGroup?): View {
                 val imageView = ImageView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(500, 500)
+                    layoutParams = LinearLayout.LayoutParams(500, 500)
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     setPadding(10, 10, 10, 10)
                 }
