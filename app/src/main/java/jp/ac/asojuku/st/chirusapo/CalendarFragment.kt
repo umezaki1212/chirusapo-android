@@ -99,6 +99,8 @@ class CalendarFragment : Fragment() {
                     calendar.get(Calendar.MONTH) + 1,
                     calendar.get(Calendar.DATE)
                 )
+                val eventList = arrayListOf<String>()
+                schedule_list.adapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, eventList)
             }
         })
 
