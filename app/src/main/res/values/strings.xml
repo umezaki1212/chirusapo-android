@@ -73,4 +73,15 @@
     <string name="change_profile_introduction">自己紹介</string>
     <string name="change_profile_user_icon">ユーザーアイコン</string>
     <string name="change_profile_button">変更</string>
+    <!-- きせかえ画面 -->
+    <string name="dress_model_child_add">子どもモデル登録</string>
+    <string name="dress_model_clothes_add">洋服モデル登録</string>
+    <string name="dress_model_generate">背景透過モデル画像生成</string>
+    <string name="dress_model_list">モデル一覧</string>
+    <string name="dress_try_on">試着"</string>
+    <string name="dress_try_on_photo">試着後写真一覧</string>
+    <string name="dress_model_dialog_camera">カメラで撮影して生成</string>
+    <string name="dress_model_dialog_file">ファイルを選択して生成</string>
+    <string name="title_activity_group_setting">グループ設定</string>
+    <string name="pin_code">PINコード</string>
 </resources>

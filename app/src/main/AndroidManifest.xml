@@ -5,6 +5,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="true" />
 
     <application
         android:name=".InitRealm"
@@ -15,6 +21,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".TryonSelectChildActivity"></activity>
+        <activity android:name=".DressModelViewer" />
         <activity android:name=".ChangeProfileActivity" />
         <activity
             android:name=".SettingsActivity"
@@ -25,10 +33,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ResetPasswordMailActivity" />
         <activity android:name=".ResetPasswordActivity" />
+        <activity
+            android:name=".GroupSettingsActivity"
+            android:label="@string/title_activity_group_setting" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".MainPostAddActivity" />
-
-        <!--ログイン画面-->
+        <activity android:name=".MainPostAddActivity" /> <!-- ログイン画面 -->
         <activity
             android:name=".SignInActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -39,10 +48,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".TryonActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
     </application>
 
 </manifest>
