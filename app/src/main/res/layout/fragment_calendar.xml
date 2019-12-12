@@ -7,39 +7,45 @@
     android:layout_height="match_parent"
     tools:context=".CalendarFragment">
 
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/calendar_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textSize="18sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <com.github.sundeepk.compactcalendarview.CompactCalendarView
-            android:id="@+id/calendar_view"
-            android:layout_width="fill_parent"
-            android:layout_height="250dp"
-            android:layout_marginTop="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            app:compactCalendarBackgroundColor="@android:color/transparent"
-            app:compactCalendarMultiEventIndicatorColor="#000"
-            app:compactCalendarTargetHeight="250dp"
-            app:compactCalendarTextColor="#000"
-            app:compactCalendarTextSize="12sp" />
+            <TextView
+                android:id="@+id/calendar_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="18sp" />
 
-        <ListView
-            android:id="@+id/schedule_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <com.github.sundeepk.compactcalendarview.CompactCalendarView
+                android:id="@+id/calendar_view"
+                android:layout_width="fill_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                app:compactCalendarBackgroundColor="@android:color/transparent"
+                app:compactCalendarMultiEventIndicatorColor="#000"
+                app:compactCalendarTargetHeight="250dp"
+                app:compactCalendarTextColor="#000"
+                app:compactCalendarTextSize="12sp" />
 
-    </LinearLayout>
+            <ListView
+                android:id="@+id/schedule_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_schedule_add"
@@ -51,19 +57,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_add" />
-
-    <!--    <com.github.sundeepk.compactcalendarview.CompactCalendarView-->
-    <!--        android:id="@+id/calendar_view"-->
-    <!--        android:layout_width="fill_parent"-->
-    <!--        android:layout_height="250dp"-->
-    <!--        android:paddingLeft="10dp"-->
-    <!--        android:paddingRight="10dp"-->
-    <!--        app:compactCalendarBackgroundColor="#ffe95451"-->
-    <!--        app:compactCalendarCurrentDayBackgroundColor="#B71C1C"-->
-    <!--        app:compactCalendarCurrentSelectedDayBackgroundColor="#E57373"-->
-    <!--        app:compactCalendarMultiEventIndicatorColor="#fff"-->
-    <!--        app:compactCalendarTargetHeight="250dp"-->
-    <!--        app:compactCalendarTextColor="#fff"-->
-    <!--        app:compactCalendarTextSize="12sp" />-->
 
 </FrameLayout>

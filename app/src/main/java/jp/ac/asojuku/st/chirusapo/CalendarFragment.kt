@@ -9,8 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.SimpleAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.sundeepk.compactcalendarview.CompactCalendarView
 import com.github.sundeepk.compactcalendarview.domain.Event
 import com.google.android.material.snackbar.Snackbar
@@ -22,24 +24,29 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import org.json.JSONArray
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CalendarFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var calendarObject: JSONArray
     private lateinit var realm: Realm
     private lateinit var userToken: String
+    private lateinit var userId: String
     private lateinit var groupId: String
     private lateinit var calendarView: CompactCalendarView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+        val view = inflater.inflate(R.layout.fragment_calendar, container, false)
+
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
+        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener)
+        mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
+
+        return view
     }
 
     override fun onResume() {
@@ -52,6 +59,7 @@ class CalendarFragment : Fragment() {
 
         if (account != null && group != null) {
             userToken = account.Rtoken
+            userId = account.Ruser_id
             groupId = group.Rgroup_id
         }
 
@@ -83,11 +91,38 @@ class CalendarFragment : Fragment() {
                     calendar.get(Calendar.DATE)
                 )
 
-                val eventList = arrayListOf<String>()
+                val eventList = ArrayList<HashMap<String, String>>()
                 for (event in events) {
-                    eventList.add(event.data.toString())
+                    val map = hashMapOf<String, String>()
+                    val ec = try {
+                        event.data as EventContent
+                    } catch (e: Exception) {
+                        return
+                    }
+                    map["id"] = ec.id.toString()
+                    map["user_id"] = ec.userId
+                    map["title"] = ec.title
+                    map["content"] = ec.content
+                    eventList.add(map)
                 }
-                schedule_list.adapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, eventList)
+                schedule_list.adapter = SimpleAdapter(
+                    activity!!,
+                    eventList,
+                    android.R.layout.simple_list_item_2,
+                    arrayOf("title", "content"),
+                    intArrayOf(android.R.id.text1, android.R.id.text2)
+                )
+                schedule_list.setOnItemClickListener { _, _, i, _ ->
+                    Toast.makeText(activity, eventList[i]["id"].toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                schedule_list.setOnItemLongClickListener { _, _, i, _ ->
+                    if (Objects.equals(eventList[i]["user_id"], userId)) {
+                        Toast.makeText(activity, "OnItemLongClickListener", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    return@setOnItemLongClickListener true
+                }
             }
 
             override fun onMonthScroll(date: Date) {
@@ -100,7 +135,8 @@ class CalendarFragment : Fragment() {
                     calendar.get(Calendar.DATE)
                 )
                 val eventList = arrayListOf<String>()
-                schedule_list.adapter = ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, eventList)
+                schedule_list.adapter =
+                    ArrayAdapter(activity!!, android.R.layout.simple_list_item_1, eventList)
             }
         })
 
@@ -126,8 +162,12 @@ class CalendarFragment : Fragment() {
         fun onFragmentInteraction(uri: Uri)
     }
 
+    private val mOnRefreshListener = SwipeRefreshLayout.OnRefreshListener {
+        getCalendarSchedule()
+    }
+
     private fun getCalendarSchedule() {
-        Snackbar.make(root_view, "スケジュールデータを取得しています…", Snackbar.LENGTH_LONG).show()
+        // Snackbar.make(root_view, "スケジュールデータを取得しています…", Snackbar.LENGTH_LONG).show()
         ApiGetTask { jsonObject ->
             if (jsonObject == null) {
                 ApiError.showSnackBar(root_view, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
@@ -165,6 +205,8 @@ class CalendarFragment : Fragment() {
                     }
                 }
             }
+
+            mSwipeRefreshLayout.isRefreshing = false
         }.execute(
             ApiParam(
                 Api.SLIM + "calendar/get",
@@ -174,29 +216,28 @@ class CalendarFragment : Fragment() {
     }
 
     private fun setEvent() {
-        if (calendarObject.length() == 1) {
-            val data = calendarObject.getJSONObject(0)
+        try {
+            calendarView.removeAllEvents()
+            val data = calendarObject
 
-            try {
-                val year = data.keys().next()
-                val yearObject = data.getJSONObject(year)
-                val month = yearObject.keys().next()
-                val monthObject = yearObject.getJSONObject(month)
-                val day = monthObject.keys().next()
-                val dayObject = monthObject.getJSONArray(day)
-
-                (0 until dayObject.length()).forEach { index ->
-                    val obj = dayObject.getJSONObject(index)
-                    val time = Calendar.getInstance().apply {
-                        val splitDate = obj.getString("date").split("-")
-                        set(splitDate[0].toInt(), splitDate[1].toInt() - 1, splitDate[2].toInt())
-                    }.timeInMillis
-                    val event = Event(Color.GREEN, time, obj.getString("title"))
-                    calendarView.addEvent(event)
-                }
-            } catch (e: Exception) {
-                Snackbar.make(root_view, "スケジュールデータを処理できませんでした", Snackbar.LENGTH_SHORT).show()
+            (0 until data.length()).forEach { index ->
+                val obj = data.getJSONObject(index)
+                val time = Calendar.getInstance().apply {
+                    set(obj.getInt("year"), obj.getInt("month") - 1, obj.getInt("day"))
+                }.timeInMillis
+                val content = EventContent(
+                    obj.getInt("id"),
+                    obj.getString("user_id"),
+                    obj.getString("title"),
+                    obj.getString("content")
+                )
+                val event = Event(Color.GREEN, time, content)
+                calendarView.addEvent(event)
             }
+        } catch (e: Exception) {
+            Snackbar.make(root_view, "スケジュールデータを処理できませんでした", Snackbar.LENGTH_SHORT).show()
         }
     }
+
+    data class EventContent(val id: Int, val userId: String, val title: String, val content: String)
 }
