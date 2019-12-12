@@ -21,8 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".CalendarScheduleAddActivity"/>
-        <activity android:name=".TryonSelectChildActivity"/>
+        <activity android:name=".CalendarViewActivity"></activity>
+        <activity android:name=".CalendarScheduleAddActivity" />
+        <activity android:name=".TryonSelectChildActivity" />
         <activity android:name=".DressModelViewer" />
         <activity android:name=".ChangeProfileActivity" />
         <activity
