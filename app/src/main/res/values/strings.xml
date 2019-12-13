@@ -106,4 +106,5 @@
     <string name="fragment_album_upload">アップロード</string>
     <string name="child_weigth">体重</string>
     <string name="child_heigth">身長</string>
+    <string name="post_time">投稿時間</string>
 </resources>

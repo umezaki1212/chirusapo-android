@@ -191,7 +191,16 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                                 item.getString("movie01_content")
                                         }
                                     }
-                                    postTimelineListItem.postTime = item.getString("post_time")
+                                    val nen = item.getString("post_time").substring(0, 4)
+                                    val man = item.getString("post_time").substring(5, 7)
+                                    val day = item.getString("post_time").substring(8, 10)
+                                    val hourEg = item.getString("post_time").substring(11, 13).toInt() + 7
+                                    var hourJp = hourEg.toString()
+                                    if (hourEg <10){
+                                        hourJp = "0$hourJp"
+                                    }
+                                    val second = item.getString("post_time").substring(14, 16)
+                                    postTimelineListItem.postTime = "$nen/$man/$day/ $hourJp:$second"
 
                                     list.add(postTimelineListItem)
                                 }
