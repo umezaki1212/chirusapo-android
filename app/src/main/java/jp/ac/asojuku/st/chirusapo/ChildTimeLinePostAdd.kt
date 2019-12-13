@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_main_post_add.*
 import kotlinx.android.synthetic.main.content_main_post_add.*
 import java.io.IOException
 
-class ChildTimaLinePostAdd : AppCompatActivity() {
+class ChildTimeLinePostAdd : AppCompatActivity() {
 
     private lateinit var userToken: String
     private lateinit var group_id: String

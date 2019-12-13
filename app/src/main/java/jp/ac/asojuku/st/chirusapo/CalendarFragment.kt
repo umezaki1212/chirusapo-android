@@ -39,8 +39,7 @@ class CalendarFragment : Fragment() {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             listener = context
-        }
-//        } else throw RuntimeException("$context must implement OnFragmentInteractionListener")
+        } else throw RuntimeException("$context must implement OnFragmentInteractionListener")
     }
 
     override fun onDetach() {
