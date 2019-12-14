@@ -48,6 +48,7 @@ class PostTimelineListAdapter(context: Context) : BaseAdapter() {
 
         view.findViewById<TextView>(R.id.user_id).text = item.userId
         view.findViewById<TextView>(R.id.user_name).text = item.userName
+        view.findViewById<TextView>(R.id.post_time).text = item.postTime
 
         //コメント機能後回し
 //        view.findViewById<LinearLayout>(R.id.timeline_layout).setOnClickListener {

@@ -21,7 +21,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".TryonSelectChildActivity"></activity>
+        <activity android:name=".RegistrationWeightHeightActivity" />
+        <activity android:name=".ChildTimeLinePostAdd" />
+        <activity android:name=".ChildGraffActivity" />
+        <activity android:name=".ListofFriendActivity" />
+        <activity android:name=".CheckGrowthActivity" />
+        <activity android:name=".TryonSelectChildActivity" />
         <activity android:name=".DressModelViewer" />
         <activity android:name=".ChangeProfileActivity" />
         <activity
@@ -49,8 +54,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CheckProfileActivity" />
         <activity android:name=".TryonActivity" />
-        <activity android:name="CheckProfileActivity" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
