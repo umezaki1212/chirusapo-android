@@ -23,6 +23,9 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity android:name=".ChildGrowthPostActivity"></activity>
         <activity android:name=".RegistrationWeightHeightActivity" />
+        <activity android:name=".CalendarAddActivity" />
+        <activity android:name=".CalendarEditActivity" />
+        <activity android:name=".CalendarViewActivity" />
         <activity android:name=".ChildTimeLinePostAdd" />
         <activity android:name=".ChildGraffActivity" />
         <activity android:name=".ListofFriendActivity" />
