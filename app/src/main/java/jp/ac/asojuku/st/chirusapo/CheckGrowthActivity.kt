@@ -2,10 +2,11 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
@@ -17,13 +18,6 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_check_growth.*
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.button_post_add
-import kotlinx.android.synthetic.main.fragment_home.no_coment
-import kotlinx.android.synthetic.main.fragment_home.root_view
-import kotlinx.android.synthetic.main.fragment_home.time_line_start
-import kotlinx.android.synthetic.main.fragment_home.timeline
-import jp.ac.asojuku.st.chirusapo.MainActivity as MainActivity1
 
 class CheckGrowthActivity : AppCompatActivity() {
     private lateinit var userToken: String
@@ -43,8 +37,6 @@ class CheckGrowthActivity : AppCompatActivity() {
         super.onResume()
 
         realm = Realm.getDefaultInstance()
-        val childId = intent.getStringExtra("list")
-
 
         val account = realm.where<Account>().findFirst()
         if (account == null) {
@@ -56,10 +48,6 @@ class CheckGrowthActivity : AppCompatActivity() {
         setHomeList(root_view_child)
     }
 
-    fun onRefresh() {
-        setHomeList(root_view_child)
-    }
-
     private val mOnRefreshListener = SwipeRefreshLayout.OnRefreshListener {
         setHomeList(root_view_child)
     }
@@ -67,6 +55,8 @@ class CheckGrowthActivity : AppCompatActivity() {
 
     private fun setHomeList(view: View) {
         //Tokenの取得
+        val childId = intent.getStringExtra("user_id")
+        Log.d("TEST", childId)
         val account: Account? = realm.where<Account>().findFirst()
         //Tokenが存在するか？
         if (account == null) {
@@ -84,7 +74,6 @@ class CheckGrowthActivity : AppCompatActivity() {
                 Toast.makeText(this, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
             } else {
                 no_coment_child.visibility = View.INVISIBLE
-                val groupId = group.Rgroup_id
                 ApiGetTask {
                     if (it == null) {
                         Snackbar.make(view, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
@@ -92,7 +81,7 @@ class CheckGrowthActivity : AppCompatActivity() {
                         when (it.getString("status")) {
                             "200" -> {
                                 val timelineData =
-                                    it.getJSONObject("data").getJSONArray("timeline_data")
+                                    it.getJSONObject("data").getJSONArray("post_data")
                                 val list = ArrayList<PostTimelineListItem>()
                                 if (timelineData.length() == 0){
                                     no_coment_child.visibility = View.VISIBLE
@@ -223,8 +212,8 @@ class CheckGrowthActivity : AppCompatActivity() {
                     mSwipeRefreshLayout.isRefreshing = false
                 }.execute(
                     ApiParam(
-                        Api.SLIM + "timeline/get",
-                        hashMapOf("token" to token, "group_id" to groupId)
+                        Api.SLIM + "/child/growth/diary/get",
+                        hashMapOf("token" to token, "child_id" to childId)
                     )
                 )
             }

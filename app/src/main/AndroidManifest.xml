@@ -21,6 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".ChildGrowthPostActivity"></activity>
         <activity android:name=".RegistrationWeightHeightActivity" />
         <activity android:name=".ChildTimeLinePostAdd" />
         <activity android:name=".ChildGraffActivity" />
@@ -56,6 +57,7 @@
         </activity>
         <activity android:name=".CheckProfileActivity" />
         <activity android:name=".TryonActivity" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

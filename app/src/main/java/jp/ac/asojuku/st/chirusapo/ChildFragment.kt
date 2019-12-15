@@ -33,36 +33,36 @@ class ChildFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_child, container, false)
 
-        val speedDialView = view.findViewById<SpeedDialView>(R.id.speedDialChild)
-        speedDialView.inflate(R.menu.menu_speed_dial)
-
-        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
-            when (actionItem.id) {
-                R.id.action_add_body -> {
-                    val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
-                    startActivity(intent)
-                    speedDialView.close() // To close the Speed Dial with animation
-                    return@OnActionSelectedListener true // false will close it without animation
-                }
-                R.id.action_add_image -> {
-                    val intent = Intent(activity!!, CheckGrowthActivity::class.java)
-                    startActivity(intent)
-                    speedDialView.close() // To close the Speed Dial with animation
-                    return@OnActionSelectedListener true // false will close it without animation
-                }
-                R.id.action_update_body -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
-                    speedDialView.close() // To close the Speed Dial with animation
-                    return@OnActionSelectedListener true // false will close it without animation
-                }
-                R.id.action_add_user -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
-                    speedDialView.close() // To close the Speed Dial with animation
-                    return@OnActionSelectedListener true // false will close it without animation
-                }
-            }
-            false
-        })
+//        val speedDialView = view.findViewById<SpeedDialView>(R.id.speedDialChild)
+//        speedDialView.inflate(R.menu.menu_speed_dial)
+//
+//        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
+//            when (actionItem.id) {
+//                R.id.action_add_body -> {
+//                    val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
+//                    startActivity(intent)
+//                    speedDialView.close() // To close the Speed Dial with animation
+//                    return@OnActionSelectedListener true // false will close it without animation
+//                }
+//                R.id.action_add_image -> {
+//                    val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
+//                    startActivity(intent)
+//                    speedDialView.close() // To close the Speed Dial with animation
+//                    return@OnActionSelectedListener true // false will close it without animation
+//                }
+//                R.id.action_update_body -> {
+//                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+//                    speedDialView.close() // To close the Speed Dial with animation
+//                    return@OnActionSelectedListener true // false will close it without animation
+//                }
+//                R.id.action_add_user -> {
+//                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+//                    speedDialView.close() // To close the Speed Dial with animation
+//                    return@OnActionSelectedListener true // false will close it without animation
+//                }
+//            }
+//            false
+//        })
 
         return view
     }
@@ -148,7 +148,6 @@ class ChildFragment : Fragment() {
                                         // array[position]
                                     }
 
-
 //                                    val fragmentTitle = arrayListOf<String>("test", "test", "test", "test", "test")
 //                                    val fragmentList = arrayListOf<Fragment>(
 //                                        ChildDataSetFragment.newInstance("test"),
@@ -186,7 +185,6 @@ class ChildFragment : Fragment() {
 //                                        ChildDataSetFragment.newInstance("")
 //                                    )
                                 }
-
                                 tab_layout_child.setupWithViewPager(view_pager_child)
                             }
                             "400" -> {

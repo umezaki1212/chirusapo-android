@@ -107,4 +107,7 @@
     <string name="child_weigth">体重</string>
     <string name="child_heigth">身長</string>
     <string name="post_time">投稿時間</string>
+    <string name="clothes_size">服のサイズ　</string>
+    <string name="shoes_size">靴のサイズ</string>
+    <string name="decision">決定</string>
 </resources>

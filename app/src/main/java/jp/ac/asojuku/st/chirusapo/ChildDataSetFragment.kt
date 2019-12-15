@@ -2,8 +2,8 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +13,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.leinardi.android.speeddial.SpeedDialView
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
@@ -21,6 +22,7 @@ import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.fragment_child_data_set.*
@@ -44,6 +46,40 @@ class ChildDataSetFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        val view = inflater.inflate(R.layout.fragment_child_data_set, container, false)
+
+        val speedDialView = view!!.findViewById<SpeedDialView>(R.id.speedDialChild)
+        speedDialView.inflate(R.menu.menu_speed_dial)
+
+        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                R.id.action_add_body -> {
+                    val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
+                    startActivity(intent)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_add_image -> {
+                    val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
+                    intent.putExtra("user_id",childId)
+                    startActivity(intent)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_update_body -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+                R.id.action_add_user -> {
+                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
+            }
+            false
+        })
 
         realm = Realm.getDefaultInstance()
 
@@ -216,6 +252,7 @@ class ChildDataSetFragment : Fragment() {
                                         listAllergy.add(childDataListAllergy)
                                     }
                                 }
+
                                 val listSubView = child_list_allergy
                                 val childDataSubAdapter = ChildDataSubAdapter(activity!!)
                                 childDataSubAdapter.setChildDataSubAdapter(listAllergy)
@@ -223,40 +260,63 @@ class ChildDataSetFragment : Fragment() {
 
                                 setListViewHeightBasedOnChildren(child_list_allergy)
 
-//                                val listViewRecord =
-//                                    activity!!.findViewById<ListView>(R.id.child_list_record)
-//                                val dataArray = arrayOf("今までの成長", "グラフの表示", "友達リスト")
-//                                val adapter = ArrayAdapter(
-//                                    activity!!,
-//                                    android.R.layout.simple_list_item_1,
-//                                    dataArray
-//                                )
-//                                listViewRecord.adapter = adapter
+                                val listViewRecord =
+                                    activity!!.findViewById<ListView>(R.id.child_list_record)
+                                val dataArray = arrayOf("今までの成長", "グラフの表示", "友達リスト")
+                                val adapter = ArrayAdapter(
+                                    activity!!,
+                                    android.R.layout.simple_list_item_1,
+                                    dataArray
+                                )
+                                listViewRecord.adapter = adapter
+
+//                                val listViewRecord = ArrayList<ChildDataListSub>()
 //
-//                                listViewRecord.setOnItemClickListener { adapterView, _, position, _ ->
-//                                    when (adapterView.getItemAtPosition(position) as String) {
-//                                        "今までの成長" -> {
-//                                            val intent =
-//                                                Intent(activity!!, CheckGrowthActivity::class.java)
-//                                            intent.putExtra("user_id",childId)
-//                                            startActivity(intent)
-//                                        }
-//                                        "グラフの表示" -> {
-//                                            val intent =
-//                                                Intent(activity!!, ChildGraffActivity::class.java)
-//                                            intent.putExtra("user_id",childId)
-//                                            startActivity(intent)
-//                                        }
-//                                        "友達リスト" -> {
-//                                            val intent =
-//                                                Intent(activity!!, ListofFriendActivity::class.java)
-//                                            intent.putExtra("user_id",childId)
-//                                            startActivity(intent)
-//                                        }
-//                                    }
-//                                }
+//                                var childDataListRecord = ChildDataListSub()
+//                                childDataListRecord.id = 0.toLong()
+//                                childDataListRecord.dataTitle = "今までの成長"
+//                                listViewRecord.add(childDataListRecord)
 //
-//                                setListViewHeightBasedOnChildren(child_list_record)
+//                                childDataListRecord = ChildDataListSub()
+//                                childDataListRecord.id = 1.toLong()
+//                                childDataListRecord.dataTitle = "グラフの表示"
+//                                listViewRecord.add(childDataListRecord)
+//
+//                                childDataListRecord = ChildDataListSub()
+//                                childDataListRecord.id = 2.toLong()
+//                                childDataListRecord.dataTitle = "友達リスト"
+//                                listViewRecord.add(childDataListRecord)
+//
+//                                val listRecordView = child_list_record
+//                                val childDataRecordAdapter = ChildDataSubAdapter(activity!!)
+//                                childDataRecordAdapter.setChildDataSubAdapter(listViewRecord)
+//                                listRecordView.adapter = childDataRecordAdapter
+
+                                listViewRecord.setOnItemClickListener { adapterView, _, position, _ ->
+                                    when (adapterView.getItemAtPosition(position) as String) {
+                                        "今までの成長" -> {
+                                            val intent =
+                                                Intent(activity!!, CheckGrowthActivity::class.java)
+                                            intent.putExtra("user_id",childId)
+                                            Log.d("TEST", childId)
+                                            startActivity(intent)
+                                        }
+                                        "グラフの表示" -> {
+                                            val intent =
+                                                Intent(activity!!, ChildGraffActivity::class.java)
+                                            intent.putExtra("user_id",childId)
+                                            startActivity(intent)
+                                        }
+                                        "友達リスト" -> {
+                                            val intent =
+                                                Intent(activity!!, ListofFriendActivity::class.java)
+                                            intent.putExtra("user_id",childId)
+                                            startActivity(intent)
+                                        }
+                                    }
+                                }
+
+                                setListViewHeightBasedOnChildren(child_list_record)
                             }
                             "400" -> {
                                 //messageからエラー文を配列で取得し格納する
@@ -314,7 +374,7 @@ class ChildDataSetFragment : Fragment() {
             }
         }
 
-        return inflater.inflate(R.layout.fragment_child_data_set, container, false)
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -329,10 +389,7 @@ class ChildDataSetFragment : Fragment() {
         listener = null
     }
 
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
-    }
-
+    interface OnFragmentInteractionListener
 
         private fun setListViewHeightBasedOnChildren(listView: ListView) {
         val listAdapter = listView.adapter ?: return
