@@ -1,14 +1,17 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.ar.sceneform.ux.ArFragment
 import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2core.Func
 import io.realm.Realm
@@ -17,17 +20,30 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_tryon.*
-import java.io.BufferedInputStream
-import java.io.FileInputStream
+import android.provider.MediaStore.Images
+import java.io.*
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.annotation.SuppressLint
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.view.MotionEvent
+import com.google.ar.sceneform.ux.ArFragment
 
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class TryonActivity : AppCompatActivity() {
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
+class TryonActivity : AppCompatActivity(){
 
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var groupId: String
     private var fragment: ArFragment? = null
     private var childPhotoArray:ArrayList<String> = arrayListOf()
+    private val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
+    private var targetLocalX: Int = 0
+    private var targetLocalY: Int = 0
+
+    private var screenX: Int = 0
+    private var screenY: Int = 0
 
     companion object {
         const val READ_REQUEST_CODE = 1
@@ -52,14 +68,18 @@ class TryonActivity : AppCompatActivity() {
 
 
         button_child_model.setOnClickListener {
+            //モデル画像選択処理
             selectPhoto()
         }
 
         button_camera.setOnClickListener {
             //スクリーンショット処理
+            permisson()
         }
 
+
     }
+
 
     private fun onClothesBottomList() {
         val gallery: LinearLayout = findViewById(R.id.gallery_layout)
@@ -74,7 +94,7 @@ class TryonActivity : AppCompatActivity() {
                 val bitmap = BitmapFactory.decodeStream(BufferedInputStream(stream))
                 imageView.setImageBitmap(bitmap)
                 gallery.addView(imageView)
-//                imageView.setOnClickListener { view -> addPhoto(clothesFiles[i].toString())}
+                imageView.setOnClickListener { view -> onAddPhoto(clothesFiles[i].toString())}
             }
         }
     }
@@ -192,4 +212,120 @@ class TryonActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun onAddPhoto(fileName: String){
+        val imageView = ImageView(this)
+        imageView.translationX = 300F
+        imageView.translationY = 600F
+
+        val stream = FileInputStream(fileName)
+        val bitmap = BitmapFactory.decodeStream(BufferedInputStream(stream))
+        imageView.setImageBitmap(bitmap)
+        screen_shot_area.addView(imageView)
+        imageView.setOnTouchListener { v, event ->
+            Log.d("onTouch","onTouchの関数を実行!!")
+            val x = event.rawX.toInt()
+            val y = event.rawY.toInt()
+
+            if (detector != null) {
+                if (detector.onTouchEvent(event)){
+                    true
+                }
+            }
+
+            when (event.action) {
+
+                MotionEvent.ACTION_DOWN -> {
+
+                    targetLocalX = v.left
+                    targetLocalY = v.top
+
+                    screenX = x
+                    screenY = y
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+
+                    val diffX = screenX - x
+                    val diffY = screenY - y
+
+                    targetLocalX -= diffX
+                    targetLocalY -= diffY
+
+                    v.layout(
+                        targetLocalX,
+                        targetLocalY,
+                        targetLocalX + v.width,
+                        targetLocalY + v.height
+                    )
+
+                    screenX = x
+                    screenY = y
+                }
+
+                MotionEvent.ACTION_UP -> {
+
+                    val trashLeft = button_trash.left + button_trash.width / 2
+                    val trashTop = button_trash.top + button_trash.height / 2
+                    val targetRight = v.left + v.width
+                    val targetBottom = v.top + v.height
+
+                    if (targetRight < trashLeft && targetBottom < trashTop) {
+                        screen_shot_area.removeView(v)
+                    }
+                }
+            }
+            true
+        }
+
+    }
+
+    private fun generateScreenShot(){
+
+        val path = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES)
+        val filename =System.currentTimeMillis().toString() + ".jpg"
+        val file = File("$path/$filename")
+        try {
+
+            val output = FileOutputStream(file)
+            screen_shot_area.isDrawingCacheEnabled = true
+            val saveBitmap = Bitmap.createBitmap(screen_shot_area.drawingCache)  // Bitmap生成
+            saveBitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.flush()
+            output.close()
+
+            screen_shot_area.isDrawingCacheEnabled = false
+
+        }catch (e: IOException){
+            Log.d("スクリーンショットでエラーが起きました",e.toString())
+        }
+
+        val values = ContentValues()
+        val contentResolver = contentResolver
+        values.put(Images.Media.MIME_TYPE, "image/jpeg")
+        values.put(Images.Media.TITLE, filename)
+        values.put("_data", "$path/$filename")
+        contentResolver.insert(Images.Media.EXTERNAL_CONTENT_URI, values)
+
+        Toast.makeText(this, "写真を保存しました", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun permisson() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(WRITE_EXTERNAL_STORAGE),
+                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+            )
+        } else {
+            generateScreenShot()
+        }
+    }
+
 }
+
