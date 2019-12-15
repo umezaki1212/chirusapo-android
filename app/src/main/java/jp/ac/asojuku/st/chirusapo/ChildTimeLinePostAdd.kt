@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -18,7 +19,6 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiMediaPostTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiParamImage
 import kotlinx.android.synthetic.main.activity_child_tima_line_post_add.*
-import kotlinx.android.synthetic.main.activity_main_post_add.*
 import kotlinx.android.synthetic.main.content_main_post_add.*
 import java.io.IOException
 
@@ -39,7 +39,7 @@ class ChildTimeLinePostAdd : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_post_add)
+        setContentView(R.layout.activity_child_tima_line_post_add)
         realm = Realm.getDefaultInstance()
 
         val pref = getSharedPreferences("data", MODE_PRIVATE)
@@ -114,6 +114,9 @@ class ChildTimeLinePostAdd : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        val childId = intent.getStringExtra("user_id")
+        Log.d("TEST", childId)
+
         button_image_select_1.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -155,17 +158,17 @@ class ChildTimeLinePostAdd : AppCompatActivity() {
             return@setOnLongClickListener true
         }
 
-        button_post_add.setOnClickListener { view ->
+        button_post_add_children.setOnClickListener { view ->
             if (text_input_post_content.text.isNullOrEmpty() || userToken.isNotEmpty()) {
                 loading_background.visibility = View.VISIBLE
                 text_input_post_content.visibility = View.INVISIBLE
                 image_area.visibility = View.INVISIBLE
-                button_post_add_child.visibility= View.INVISIBLE
+                button_post_add_children.visibility= View.INVISIBLE
 
                 val param = hashMapOf(
                     "token" to userToken,
                     "text" to text_input_post_content.text.toString(),
-                    "group_id" to group_id
+                    "child_id" to childId
                 )
                 val image = arrayListOf<ApiParamImage>()
 
@@ -264,11 +267,11 @@ class ChildTimeLinePostAdd : AppCompatActivity() {
                     loading_background.visibility = View.GONE
                     text_input_post_content.visibility = View.VISIBLE
                     image_area.visibility = View.VISIBLE
-                    button_post_add_child.visibility = View.VISIBLE
+                    button_post_add_children.visibility = View.VISIBLE
                 }.execute(
                     ApiParam(
                         //書き換え
-                        Api.SLIM + "timeline/post",
+                        Api.SLIM + "/child/growth/diary/post",
                         param,
                         image
                     )

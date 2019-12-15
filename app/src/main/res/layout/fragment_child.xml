@@ -29,14 +29,14 @@
 
     </ScrollView>
 
-    <com.leinardi.android.speeddial.SpeedDialView
-        android:id="@+id/speedDialChild"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        app:sdMainFabClosedBackgroundColor="@color/colorPrimary"
-        app:sdMainFabClosedSrc="@drawable/ic_bars_solid"
-        app:sdMainFabOpenedSrc="@drawable/ic_close"
-        app:sdMainFabOpenedBackgroundColor="#FFC107" />
+<!--    <com.leinardi.android.speeddial.SpeedDialView-->
+<!--        android:id="@+id/speedDialChild"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        app:sdMainFabClosedBackgroundColor="@color/colorPrimary"-->
+<!--        app:sdMainFabClosedSrc="@drawable/ic_bars_solid"-->
+<!--        app:sdMainFabOpenedSrc="@drawable/ic_close"-->
+<!--        app:sdMainFabOpenedBackgroundColor="#FFC107" />-->
 
 </FrameLayout>
