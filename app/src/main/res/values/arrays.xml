@@ -10,4 +10,8 @@
         <item>@string/dress_model_dialog_camera</item>
         <item>@string/dress_model_dialog_file</item>
     </string-array>
+    <string-array name="calendar_fragment_menu_dialog">
+        <item>@string/fragment_calendar_menu_edit</item>
+        <item>@string/fragment_calendar_menu_delete</item>
+    </string-array>
 </resources>
