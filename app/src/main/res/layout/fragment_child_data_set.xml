@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/child_title_main_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/child_title_main"
+        android:textSize="18sp" />
+
+    <ListView
+        android:id="@+id/child_main_data_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/list_view_border" />
+
+    <TextView
+        android:id="@+id/child_title_vaccination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/child_vaccination"
+        android:textSize="18sp"/>
+
+    <ListView
+        android:id="@+id/child_vaccination_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/list_view_border">
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/child_title_allergy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/child_allergies"
+        android:textSize="18sp"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/child_list_allergy"
+        android:background="@drawable/list_view_border">
+    </ListView>
+
+    <TextView
+        android:id="@+id/child_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/child_record"
+        android:textSize="18sp"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/child_list_record"
+        android:background="@drawable/list_view_border">
+    </ListView>
+
+
+</LinearLayout>

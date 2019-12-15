@@ -182,7 +182,7 @@ class CalendarFragment : Fragment() {
         })
 
         button_schedule_add.setOnClickListener {
-            val intent = Intent(activity, CalendarScheduleAddActivity::class.java)
+            val intent = Intent(activity, CalendarAddActivity::class.java)
             startActivity(intent)
         }
     }

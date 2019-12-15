@@ -14,7 +14,7 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
 import kotlinx.android.synthetic.main.activity_calendar_schedule_add.*
 import java.util.*
 
-class CalendarScheduleAddActivity : AppCompatActivity() {
+class CalendarAddActivity : AppCompatActivity() {
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var groupId: String
