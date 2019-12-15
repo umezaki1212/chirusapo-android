@@ -2,35 +2,32 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_calendar_schedule_add.*
+import kotlinx.android.synthetic.main.activity_calendar_edit.*
 import java.util.*
 
-class CalendarScheduleAddActivity : AppCompatActivity() {
+class CalendarEditActivity : AppCompatActivity() {
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var groupId: String
+    private lateinit var calendarId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_calendar_schedule_add)
+        setContentView(R.layout.activity_calendar_edit)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
-            title = "スケジュール追加"
+            title = "スケジュール編集"
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
 
         realm = Realm.getDefaultInstance()
 
@@ -41,6 +38,16 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
             userToken = account.Rtoken
             groupId = group.Rgroup_id
         }
+
+        val title = intent.getStringExtra("title")
+        val content = intent.getStringExtra("content")
+        val date = intent.getStringExtra("date")
+        calendarId = intent.getStringExtra("calendar_id") as String
+        check_box_remind_flg.isChecked = intent.getStringExtra("remind_flg") == "1"
+
+        schedule_title.editText?.setText(title)
+        schedule_detail.editText?.setText(content)
+        schedule_date.editText?.setText(date)
 
         schedule_date.editText?.setOnClickListener {
             val calendar = Calendar.getInstance()
@@ -64,9 +71,14 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
             ).show()
         }
 
-        button_schedule_add.setOnClickListener {
-            onScheduleAdd()
+        button_schedule_edit.setOnClickListener {
+            onScheduleEdit()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onDestroy() {
@@ -75,10 +87,7 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
         realm.close()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
+
 
     private fun validationTitle(): Boolean {
         val title = schedule_title.editText?.text.toString()
@@ -133,7 +142,7 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
         }
     }
 
-    private fun onScheduleAdd() {
+    private fun onScheduleEdit() {
         var check = true
         if (!validationTitle()) check = false
         if (!validationDetail()) check = false
@@ -156,8 +165,7 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
             } else {
                 when (jsonObject.getString("status")) {
                     "200" -> {
-                        Toast.makeText(this, "スケジュールを追加しました", Toast.LENGTH_SHORT).show()
-                        finish()
+                        Snackbar.make(root_view, "スケジュールを変更しました", Snackbar.LENGTH_SHORT).show()
                     }
                     "400" -> {
                         val errorArray = jsonObject.getJSONArray("message")
@@ -165,7 +173,7 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
                             when (errorArray.getString(i)) {
                                 ApiError.REQUIRED_PARAM,
                                 ApiError.UNKNOWN_GROUP,
-                                ApiError.UNREADY_BELONG_GROUP,
+                                ApiError.UNAUTHORIZED_OPERATION,
                                 "VALIDATION_TITLE",
                                 "VALIDATION_CONTENT",
                                 "VALIDATION_DATE",
@@ -190,10 +198,11 @@ class CalendarScheduleAddActivity : AppCompatActivity() {
             }
         }.execute(
             ApiParam(
-                Api.SLIM + "calendar/add",
+                Api.SLIM + "calendar/edit",
                 hashMapOf(
                     "token" to userToken,
                     "group_id" to groupId,
+                    "calendar_id" to calendarId,
                     "title" to title,
                     "content" to content,
                     "date" to date,

@@ -39,6 +39,15 @@
                 app:compactCalendarTextColor="#000"
                 app:compactCalendarTextSize="12sp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="10dp"
+                android:text="@string/fragment_calendar_schedule_list" />
+
             <ListView
                 android:id="@+id/schedule_list"
                 android:layout_width="match_parent"

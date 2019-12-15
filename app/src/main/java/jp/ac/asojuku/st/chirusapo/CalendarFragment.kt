@@ -19,18 +19,17 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView
 import com.github.sundeepk.compactcalendarview.domain.Event
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class CalendarFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var calendarObject: JSONArray
+    private lateinit var eventList: ArrayList<HashMap<String, String>>
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var userId: String
@@ -48,12 +47,6 @@ class CalendarFragment : Fragment() {
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener)
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
 
-        return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         realm = Realm.getDefaultInstance()
 
         val account = realm.where(Account::class.java).findFirst()
@@ -66,6 +59,12 @@ class CalendarFragment : Fragment() {
         }
 
         getCalendarSchedule()
+
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val calendarTitle = Calendar.getInstance()
         calendar_title.text = "%s年 %s月 %s日".format(
@@ -93,7 +92,7 @@ class CalendarFragment : Fragment() {
                     calendar.get(Calendar.DATE)
                 )
 
-                val eventList = ArrayList<HashMap<String, String>>()
+                eventList = ArrayList()
                 for (event in events) {
                     val map = hashMapOf<String, String>()
                     val ec = try {
@@ -107,6 +106,7 @@ class CalendarFragment : Fragment() {
                     map["title"] = ec.title
                     map["content"] = ec.content
                     map["date"] = ec.date
+                    map["remind_flg"] = if(ec.remindFlg) "1" else "0"
                     eventList.add(map)
                 }
                 schedule_list.adapter = SimpleAdapter(
@@ -131,13 +131,30 @@ class CalendarFragment : Fragment() {
                         AlertDialog.Builder(activity!!).apply {
                             val menuItems =
                                 resources.getStringArray(R.array.calendar_fragment_menu_dialog)
-                            setItems(menuItems) { _: DialogInterface?, i: Int ->
-                                when (menuItems[i]) {
+                            setItems(menuItems) { _: DialogInterface?, index: Int ->
+                                when (menuItems[index]) {
                                     resources.getString(R.string.fragment_calendar_menu_edit) -> {
-                                        Toast.makeText(activity, "編集", Toast.LENGTH_SHORT).show()
+                                        val editEvent = eventList[i]
+                                        val intent = Intent(activity, CalendarEditActivity::class.java).apply {
+                                            putExtra("title", editEvent["title"])
+                                            putExtra("content", editEvent["content"])
+                                            putExtra("date", editEvent["date"])
+                                            putExtra("calendar_id", editEvent["id"])
+                                            putExtra("remind_flg", editEvent["remind_flg"])
+                                        }
+                                        startActivity(intent)
                                     }
                                     resources.getString(R.string.fragment_calendar_menu_delete) -> {
-                                        Toast.makeText(activity, "削除", Toast.LENGTH_SHORT).show()
+                                        AlertDialog.Builder(activity!!).apply {
+                                            setTitle("スケジュール削除")
+                                            setMessage("スケジュールを削除しますか？")
+                                            setPositiveButton("削除") { _, _ ->
+                                                deleteCalendarSchedule(eventList[i]["id"]!!)
+                                            }
+                                            setNegativeButton("キャンセル", null)
+                                            create()
+                                            show()
+                                        }
                                     }
                                 }
                             }
@@ -238,6 +255,42 @@ class CalendarFragment : Fragment() {
         )
     }
 
+    private fun deleteCalendarSchedule(scheduleId: String) {
+        ApiPostTask {jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showSnackBar(root_view, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        getCalendarSchedule()
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM,
+                                ApiError.UNAUTHORIZED_OPERATION -> {
+                                    ApiError.showSnackBar(
+                                        root_view,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    val intent =
+                                        Intent(activity, SignInActivity::class.java).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                    startActivity(intent)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(ApiParam(Api.SLIM + "calendar/delete", hashMapOf("token" to userToken, "calendar_id" to scheduleId)))
+    }
+
     private fun setEvent() {
         try {
             calendarView.removeAllEvents()
@@ -254,11 +307,20 @@ class CalendarFragment : Fragment() {
                     obj.getString("user_name"),
                     obj.getString("title"),
                     obj.getString("content"),
-                    obj.getString("date")
+                    obj.getString("date"),
+                    obj.getBoolean("remind_flg")
                 )
                 val event = Event(Color.GREEN, time, content)
                 calendarView.addEvent(event)
             }
+
+            schedule_list.adapter = SimpleAdapter(
+                activity!!,
+                arrayListOf(),
+                android.R.layout.simple_list_item_2,
+                arrayOf("title", "content"),
+                intArrayOf(android.R.id.text1, android.R.id.text2)
+            )
         } catch (e: Exception) {
             Snackbar.make(root_view, "スケジュールデータを処理できませんでした", Snackbar.LENGTH_SHORT).show()
         }
@@ -270,6 +332,7 @@ class CalendarFragment : Fragment() {
         val userName: String,
         val title: String,
         val content: String,
-        val date: String
+        val date: String,
+        val remindFlg: Boolean
     )
 }

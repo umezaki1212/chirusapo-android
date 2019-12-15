@@ -95,6 +95,14 @@
     <string name="fragment_album_not_found_image">アップロードされた写真が見つかりません\n写真をアップロードしませんか？</string>
     <string name="fragment_album_upload">アップロード</string>
     <!-- カレンダー画面 -->
-    <string name="fragment_calendar_menu_edit">編集</string>
-    <string name="fragment_calendar_menu_delete">削除</string>
+    <string name="fragment_calendar_menu_edit">スケジュール編集</string>
+    <string name="fragment_calendar_menu_delete">スケジュール削除</string>
+    <string name="fragment_calendar_user_name">ユーザー名</string>
+    <string name="fragment_calendar_title">タイトル</string>
+    <string name="fragment_calendar_detail">内容</string>
+    <string name="fragment_calendar_date">日付</string>
+    <string name="fragment_calendar_edit">変更</string>
+    <string name="fragment_calendar_line_remind">LINEでリマインド</string>
+    <string name="fragment_calendar_add">登録</string>
+    <string name="fragment_calendar_schedule_list">スケジュール一覧</string>
 </resources>
