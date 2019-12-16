@@ -12,7 +12,6 @@ import io.realm.exceptions.RealmPrimaryKeyConstraintException
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.activity_sign_in.*
-import kotlinx.android.synthetic.main.activity_tryon.*
 import java.io.File
 import java.util.regex.Pattern
 

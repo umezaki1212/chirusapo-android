@@ -22,8 +22,8 @@ import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.view.MotionEvent
-import com.google.ar.sceneform.ux.ArFragment
 import androidx.core.view.children
+import com.google.ar.sceneform.ux.ArFragment
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
 class TryonActivity : AppCompatActivity(){
