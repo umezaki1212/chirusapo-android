@@ -10,6 +10,7 @@ import android.widget.GridView
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.squareup.picasso.Picasso
+import com.stfalcon.imageviewer.StfalconImageViewer
 
 class DressModelViewerFragment : Fragment() {
     private var list: java.util.ArrayList<String>? = arrayListOf()
@@ -38,6 +39,14 @@ class DressModelViewerFragment : Fragment() {
                     layoutParams = ViewGroup.LayoutParams(500, 500)
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     setPadding(10, 10, 10, 10)
+                }
+                imageView.setOnClickListener {
+                    StfalconImageViewer.Builder<String>(
+                        activity!!,
+                        mutableListOf(list!![i])
+                    ) { view, image ->
+                        Picasso.get().load(image).into(view)
+                    }.show()
                 }
 
                 Picasso.get().load(list!![i]).into(imageView)
