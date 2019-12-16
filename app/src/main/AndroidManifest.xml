@@ -11,6 +11,7 @@
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
+
     <application
         android:name=".InitRealm"
         android:allowBackup="true"
