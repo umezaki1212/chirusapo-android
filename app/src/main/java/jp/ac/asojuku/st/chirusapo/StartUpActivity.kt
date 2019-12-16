@@ -2,11 +2,16 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.tonyodev.fetch2.*
+import com.tonyodev.fetch2core.Func
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
+import kotlinx.android.synthetic.main.activity_start_up.*
+import java.io.File
 
 class StartUpActivity : AppCompatActivity() {
 
@@ -64,7 +69,8 @@ class StartUpActivity : AppCompatActivity() {
                                     val groupInfoId = groupInfo.getString("group_id")
                                     val groupInfoName = groupInfo.getString("group_name")
                                     val groupInfoPinCode = groupInfo.getString("pin_code")
-
+                                    //グループごとに子供モデル画像と洋服モデル画像を登録
+                                    onModelGet(token,groupInfoId)
                                     realm.executeTransaction {
                                         if (realm.where<JoinGroup>().equalTo(
                                                 "Rgroup_name",
@@ -163,6 +169,85 @@ class StartUpActivity : AppCompatActivity() {
             ApiParam(
                 Api.SLIM + "start/master-download"
             )
+        )
+    }
+
+    private fun onModelGet(userToken:String,groupId:String) {
+        ApiGetTask { jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showToast(this, ApiError.UNKNOWN_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        val jsonData = jsonObject.getJSONObject("data")
+                        val jsonModelChild = jsonData.getJSONArray("model_child")
+                        val jsonModelClothes = jsonData.getJSONArray("model_clothes")
+                        val path =
+                            getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                        for(i in 0 until jsonModelChild.length()){
+                            val fileName = jsonModelChild.getString(i).split("/").last()
+                            var existsChildFile =File("$path/child/$groupId/$fileName")
+                            if(existsChildFile.exists()){
+                            }else{
+                                onModelDownload(jsonModelChild.getString(i), "$path/child/$groupId/$fileName")
+                            }
+                        }
+                        for(j in 0 until jsonModelClothes.length()){
+                            val fileName= jsonModelClothes.getString(j).split("/").last()
+                            var existsClothesFile =File("$path/clothes/$groupId/$fileName")
+                            if(existsClothesFile.exists()){
+                            }else{
+                                onModelDownload(jsonModelClothes.getString(j), "$path/clothes/$groupId/$fileName")
+                            }
+                        }
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM,
+                                ApiError.UNKNOWN_TOKEN,
+                                ApiError.UNKNOWN_GROUP,
+                                ApiError.UNREADY_BELONG_GROUP -> {
+                                    ApiError.showSnackBar(
+                                        root_view,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                else -> {
+                                    ApiError.showSnackBar(
+                                        root_view,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "model/get",
+                hashMapOf("token" to userToken, "group_id" to groupId)
+            )
+        )
+    }
+
+    private fun onModelDownload(url: String, fileName: String) {
+        val fetchConfiguration = FetchConfiguration.Builder(this).apply {
+            setDownloadConcurrentLimit(1)
+        }.build()
+        val fetch = Fetch.Impl.getInstance(fetchConfiguration)
+        val request = Request(url, fileName).apply {
+            priority = Priority.HIGH
+            networkType = NetworkType.ALL
+        }
+
+        fetch.enqueue(request,
+            Func { Toast.makeText(this, "ダウンロードしました", Toast.LENGTH_SHORT).show() },
+            Func { Toast.makeText(this, "ダウンロードに失敗しました", Toast.LENGTH_SHORT).show() }
         )
     }
 }

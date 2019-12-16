@@ -17,6 +17,7 @@
         app:layout_constraintVertical_weight="9"
 
         >
+        
             <fragment
                 android:id="@+id/sceneform_fragment"
                 android:name="com.google.ar.sceneform.ux.ArFragment"
@@ -43,7 +44,8 @@
             app:layout_constraintVertical_chainStyle="spread"
             app:layout_constraintVertical_weight="9"
             tools:ignore="NotSibling"
-            tools:layout_editor_absoluteX="16dp"></ImageView>
+            tools:layout_editor_absoluteX="16dp"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
