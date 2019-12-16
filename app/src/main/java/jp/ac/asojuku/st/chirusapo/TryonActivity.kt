@@ -227,11 +227,11 @@ class TryonActivity : AppCompatActivity(){
             val x = event.rawX.toInt()
             val y = event.rawY.toInt()
 
-            if (detector != null) {
-                if (detector.onTouchEvent(event)){
-                    true
-                }
-            }
+//            if (detector != null) {
+//                if (detector.onTouchEvent(event)){
+//                    true
+//                }
+//            }
 
             when (event.action) {
 
