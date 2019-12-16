@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
+import com.stfalcon.imageviewer.StfalconImageViewer
 import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.fragment_album.*
@@ -285,6 +286,14 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                     layoutParams = LinearLayout.LayoutParams(500, 500)
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     setPadding(10, 10, 10, 10)
+                }
+                imageView.setOnClickListener {
+                    StfalconImageViewer.Builder<String>(
+                        activity!!,
+                        mutableListOf(list[i])
+                    ) { view, image ->
+                        Picasso.get().load(image).into(view)
+                    }.show()
                 }
 
                 Picasso.get().load(list[i]).into(imageView)

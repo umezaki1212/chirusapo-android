@@ -70,4 +70,7 @@ dependencies {
     // Fetch
     // https://github.com/tonyofrancis/Fetch
     implementation "com.tonyodev.fetch2:fetch2:3.0.10"
+    // StfalconImageViewer
+    // https://github.com/stfalcon-studio/StfalconImageViewer
+     implementation 'com.github.stfalcon:stfalcon-imageviewer:0.1.0'
 }
