@@ -11,7 +11,6 @@
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
-
     <application
         android:name=".InitRealm"
         android:allowBackup="true"
@@ -21,12 +20,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".TryonSelectChildActivity"></activity>
+        <!-- <activity android:name=".ChildGrowthPostActivity" /> -->
+        <activity android:name=".RegistrationWeightHeightActivity" />
+        <activity android:name=".CalendarAddActivity" />
+        <activity android:name=".CalendarEditActivity" />
+        <activity android:name=".CalendarViewActivity" />
+        <activity android:name=".ChildTimeLinePostAdd" />
+        <activity android:name=".ChildGraffActivity" />
+        <activity android:name=".ListofFriendActivity" />
+        <activity android:name=".CheckGrowthActivity" />
+        <activity android:name=".TryonSelectChildActivity" />
         <activity android:name=".DressModelViewer" />
         <activity android:name=".ChangeProfileActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+        <activity android:name=".ListOfMembersActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -48,7 +57,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CheckProfileActivity" />
         <activity android:name=".TryonActivity" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

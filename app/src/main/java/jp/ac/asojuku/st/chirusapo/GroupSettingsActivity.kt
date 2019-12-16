@@ -2,11 +2,13 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,10 +17,7 @@ import androidx.preference.PreferenceScreen
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
-import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import jp.ac.asojuku.st.chirusapo.apis.*
 import java.util.regex.Pattern
 
 class GroupSettingsActivity : AppCompatActivity() {
@@ -137,7 +136,7 @@ class GroupSettingsActivity : AppCompatActivity() {
                         val groupName = layoutGroupName.editText?.text.toString()
                         val pinCode = layoutPinCode.editText?.text.toString()
 
-                        ApiPostTask {jsonObject ->
+                        ApiPostTask { jsonObject ->
                             if (jsonObject == null) {
                                 ApiError.showToast(
                                     activity!!,
@@ -147,7 +146,8 @@ class GroupSettingsActivity : AppCompatActivity() {
                             } else {
                                 when (jsonObject.getString("status")) {
                                     "200" -> {
-                                        val groupInfo = jsonObject.getJSONObject("data").getJSONObject("group_info")
+                                        val groupInfo = jsonObject.getJSONObject("data")
+                                            .getJSONObject("group_info")
 
                                         val newGroupName = groupInfo.getString("group_name")
                                         val newPinCode = groupInfo.getString("pin_code")
@@ -156,7 +156,8 @@ class GroupSettingsActivity : AppCompatActivity() {
                                         viewPinCode?.summary = newPinCode
 
                                         realm.executeTransaction {
-                                            val targetGroup = realm.where(JoinGroup::class.java).equalTo("Rgroup_id", groupId).findFirst()
+                                            val targetGroup = realm.where(JoinGroup::class.java)
+                                                .equalTo("Rgroup_id", groupId).findFirst()
 
                                             if (targetGroup != null) {
                                                 targetGroup.Rgroup_name = newGroupName
@@ -164,7 +165,11 @@ class GroupSettingsActivity : AppCompatActivity() {
                                             }
                                         }
 
-                                        Snackbar.make(activity!!.findViewById(R.id.root_view), "グループ情報を更新しました", Snackbar.LENGTH_SHORT).show()
+                                        Snackbar.make(
+                                            activity!!.findViewById(R.id.root_view),
+                                            "グループ情報を更新しました",
+                                            Snackbar.LENGTH_SHORT
+                                        ).show()
                                     }
                                     "400" -> {
                                         val errorArray = jsonObject.getJSONArray("message")
@@ -238,7 +243,7 @@ class GroupSettingsActivity : AppCompatActivity() {
                 AlertDialog.Builder(activity!!).apply {
                     setTitle("グループ削除")
                     setMessage("グループを削除しますか？")
-                    setPositiveButton("削除"){_,_->
+                    setPositiveButton("削除") { _, _ ->
                         ApiPostTask { jsonObject ->
                             if (jsonObject == null) {
                                 ApiError.showToast(
@@ -250,10 +255,12 @@ class GroupSettingsActivity : AppCompatActivity() {
                                 when (jsonObject.getString("status")) {
                                     "200" -> {
                                         realm.executeTransaction { realm ->
-                                            realm.where(JoinGroup::class.java).equalTo("Rgroup_id", groupId)
+                                            realm.where(JoinGroup::class.java)
+                                                .equalTo("Rgroup_id", groupId)
                                                 .findAll().deleteAllFromRealm()
 
-                                            val groupArray = realm.where(JoinGroup::class.java).findAll()
+                                            val groupArray =
+                                                realm.where(JoinGroup::class.java).findAll()
                                             if (groupArray != null) {
                                                 for (i in 0 until groupArray.size) {
                                                     if (groupArray[i] != null) {
@@ -262,17 +269,23 @@ class GroupSettingsActivity : AppCompatActivity() {
                                                 }
                                             }
 
-                                            val groupFirst = realm.where(JoinGroup::class.java).findFirst()
+                                            val groupFirst =
+                                                realm.where(JoinGroup::class.java).findFirst()
                                             if (groupFirst != null) {
                                                 groupFirst.Rgroup_flag = 1
                                             }
 
-                                            val intent = Intent(activity, MainActivity::class.java).apply {
-                                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            }
+                                            val intent =
+                                                Intent(activity, MainActivity::class.java).apply {
+                                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                }
                                             startActivity(intent)
 
-                                            Toast.makeText(activity, "グループ情報を削除しました", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                activity,
+                                                "グループ情報を削除しました",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                     "400" -> {
@@ -318,6 +331,111 @@ class GroupSettingsActivity : AppCompatActivity() {
 
             val groupWithdrawalForce = findPreference<PreferenceScreen>("group_withdrawal_force")
             groupWithdrawalForce?.setOnPreferenceClickListener {
+                ApiGetTask { jsonObject ->
+                    if (jsonObject == null) {
+                        ApiError.showToast(
+                            activity!!,
+                            ApiError.CONNECTION_ERROR,
+                            Toast.LENGTH_SHORT
+                        )
+                    } else {
+                        when (jsonObject.getString("status")) {
+                            "200" -> {
+                                val belongMember =
+                                    jsonObject.getJSONObject("data").getJSONArray("belong_member")
+
+                                val dialogUserId = arrayListOf<String>()
+                                val dialogUserName = arrayListOf<String>()
+                                val dialogSelectFlg = arrayListOf<Boolean>()
+                                val dialogDisplayUserName = arrayListOf<String>()
+
+                                for (i in 0 until belongMember.length()) {
+                                    val member = belongMember.getJSONObject(i)
+                                    if (member.getString("user_id") != account.Ruser_id) {
+                                        dialogUserId.add(member.getString("user_id"))
+                                        dialogUserName.add(member.getString("user_name"))
+                                        dialogSelectFlg.add(false)
+                                        dialogDisplayUserName
+                                            .add(
+                                                "%s [%s]".format(
+                                                    member.getString("user_id"),
+                                                    member.getString("user_name")
+                                                )
+                                            )
+                                    }
+                                }
+                                if (dialogDisplayUserName.size == 0) {
+                                    Snackbar.make(
+                                        activity!!.findViewById<LinearLayout>(R.id.root_view),
+                                        "退会させることができるユーザーが見つかりませんでした",
+                                        Snackbar.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    AlertDialog.Builder(activity!!).apply {
+                                        setTitle("ユーザーを選択")
+                                        setMultiChoiceItems(
+                                            dialogDisplayUserName.toTypedArray(),
+                                            dialogSelectFlg.toBooleanArray()
+                                        ) { _: DialogInterface?, i: Int, isChecked: Boolean ->
+                                            dialogSelectFlg[i] = isChecked
+                                        }
+                                        setPositiveButton("退会") { _, _ ->
+                                            if (dialogSelectFlg.find { it } == null) {
+                                                Snackbar.make(
+                                                    activity!!.findViewById<LinearLayout>(
+                                                        R.id.root_view
+                                                    ), "選択されていないためキャンセルしました", Snackbar.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                val withdrawalUserId = arrayListOf<String>()
+                                                for (i in 0 until dialogSelectFlg.size) {
+                                                    if (dialogSelectFlg[i]) {
+                                                        withdrawalUserId.add(dialogUserId[i])
+                                                    }
+                                                }
+                                                onGroupWithdrawalForce(withdrawalUserId)
+                                            }
+                                        }
+                                        setNegativeButton("キャンセル", null)
+                                        create()
+                                        show()
+                                    }
+                                }
+                            }
+                            "400" -> {
+                                val errorArray = jsonObject.getJSONArray("message")
+                                for (i in 0 until errorArray.length()) {
+                                    when (errorArray.getString(i)) {
+                                        ApiError.REQUIRED_PARAM,
+                                        ApiError.UNKNOWN_GROUP,
+                                        ApiError.UNREADY_BELONG_GROUP -> {
+                                            ApiError.showToast(
+                                                activity!!,
+                                                errorArray.getString(i),
+                                                Toast.LENGTH_SHORT
+                                            )
+                                        }
+                                        ApiError.UNKNOWN_TOKEN -> {
+                                            val intent = Intent(
+                                                activity,
+                                                SignInActivity::class.java
+                                            ).apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                            startActivity(intent)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.execute(
+                    ApiParam(
+                        Api.SLIM + "group/belong-member",
+                        hashMapOf("token" to userToken, "group_id" to groupId)
+                    )
+                )
+
                 return@setOnPreferenceClickListener true
             }
 
@@ -326,7 +444,7 @@ class GroupSettingsActivity : AppCompatActivity() {
                 AlertDialog.Builder(activity!!).apply {
                     setTitle("グループ脱退")
                     setMessage("グループを脱退しますか？")
-                    setPositiveButton("削除"){_,_->
+                    setPositiveButton("削除") { _, _ ->
                         ApiPostTask { jsonObject ->
                             if (jsonObject == null) {
                                 ApiError.showToast(
@@ -338,9 +456,12 @@ class GroupSettingsActivity : AppCompatActivity() {
                                 when (jsonObject.getString("status")) {
                                     "200" -> {
                                         realm.executeTransaction { realm ->
-                                            realm.where(JoinGroup::class.java).equalTo("Rgroup_id", groupId).findAll().deleteAllFromRealm()
+                                            realm.where(JoinGroup::class.java)
+                                                .equalTo("Rgroup_id", groupId).findAll()
+                                                .deleteAllFromRealm()
 
-                                            val groupArray = realm.where(JoinGroup::class.java).findAll()
+                                            val groupArray =
+                                                realm.where(JoinGroup::class.java).findAll()
                                             if (groupArray != null) {
                                                 for (i in 0 until groupArray.size) {
                                                     if (groupArray[i] != null) {
@@ -349,17 +470,23 @@ class GroupSettingsActivity : AppCompatActivity() {
                                                 }
                                             }
 
-                                            val groupFirst = realm.where(JoinGroup::class.java).findFirst()
+                                            val groupFirst =
+                                                realm.where(JoinGroup::class.java).findFirst()
                                             if (groupFirst != null) {
                                                 groupFirst.Rgroup_flag = 1
                                             }
 
-                                            val intent = Intent(activity, MainActivity::class.java).apply {
-                                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                            }
+                                            val intent =
+                                                Intent(activity, MainActivity::class.java).apply {
+                                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                }
                                             startActivity(intent)
 
-                                            Toast.makeText(activity, "グループから脱退しました", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                activity,
+                                                "グループから脱退しました",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                     "400" -> {
@@ -402,6 +529,58 @@ class GroupSettingsActivity : AppCompatActivity() {
                 }
                 return@setOnPreferenceClickListener true
             }
+        }
+
+        private fun onGroupWithdrawalForce(withdrawalUserId: ArrayList<String>) {
+            val param = hashMapOf("token" to userToken, "group_id" to groupId)
+            withdrawalUserId.forEachIndexed { index, userId ->
+                param["target_user_id[$index]"] = userId
+            }
+            ApiPostTask { jsonObject ->
+                if (jsonObject == null) {
+                    ApiError.showSnackBar(
+                        activity!!.findViewById(R.id.root_view),
+                        ApiError.CONNECTION_ERROR,
+                        Snackbar.LENGTH_SHORT
+                    )
+                } else {
+                    when (jsonObject.getString("status")) {
+                        "200" -> {
+                            Snackbar.make(
+                                activity!!.findViewById<LinearLayout>(R.id.root_view),
+                                "ユーザーを退会させました",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                        "400" -> {
+                            val errorArray = jsonObject.getJSONArray("message")
+                            for (i in 0 until errorArray.length()) {
+                                when (errorArray.getString(i)) {
+                                    ApiError.REQUIRED_PARAM,
+                                    ApiError.UNKNOWN_GROUP,
+                                    ApiError.UNREADY_BELONG_GROUP,
+                                    ApiError.UNKNOWN_USER -> {
+                                        ApiError.showToast(
+                                            activity!!,
+                                            errorArray.getString(i),
+                                            Toast.LENGTH_SHORT
+                                        )
+                                    }
+                                    ApiError.UNKNOWN_TOKEN -> {
+                                        val intent = Intent(
+                                            activity,
+                                            SignInActivity::class.java
+                                        ).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        startActivity(intent)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }.execute(ApiParam(Api.SLIM + "group/withdrawal-force", param))
         }
 
         private fun judgeGroupName(layoutGroupName: TextInputLayout): Boolean {

@@ -1,108 +1,67 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.PostTimelineListItem
-import jp.ac.asojuku.st.chirusapo.apis.*
-import kotlinx.android.synthetic.main.fragment_home.*
+import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import kotlinx.android.synthetic.main.activity_check_growth.*
 
-class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
-    private var listener: OnFragmentInteractionListener? = null
+class CheckGrowthActivity : AppCompatActivity() {
     private lateinit var userToken: String
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     lateinit var realm: Realm
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_check_growth)
 
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-
-        mSwipeRefreshLayout = view!!.findViewById(R.id.swipe_refresh_layout)
+        mSwipeRefreshLayout = this.findViewById(R.id.swipe_refresh_layout_child)
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener)
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
-
-        return view
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    interface OnFragmentInteractionListener
 
     override fun onResume() {
         super.onResume()
 
         realm = Realm.getDefaultInstance()
 
-
         val account = realm.where<Account>().findFirst()
         if (account == null) {
-            Toast.makeText(activity, "アカウント情報が取得できません", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "アカウント情報が取得できません", Toast.LENGTH_SHORT).show()
         } else {
             userToken = account.Rtoken
         }
 
-        val mainActivity = activity
-        if (mainActivity is MainActivity) {
-            time_line_group_create.setOnClickListener {
-                mainActivity.groupCreate()
-            }
-
-            time_line_group_participation.setOnClickListener {
-                mainActivity.groupJoin()
-            }
-        }
-
-        setHomeList(root_view)
-
-        button_post_add.setOnClickListener {
-            val intent = Intent(activity,MainPostAddActivity::class.java)
-            startActivity(intent)
-        }
-
-    }
-
-    override fun onRefresh() {
-        setHomeList(root_view)
+        setHomeList(root_view_child)
     }
 
     private val mOnRefreshListener = SwipeRefreshLayout.OnRefreshListener {
-        setHomeList(root_view)
+        setHomeList(root_view_child)
     }
 
 
     private fun setHomeList(view: View) {
         //Tokenの取得
+        val childId = intent.getStringExtra("user_id")
+        Log.d("TEST", childId)
         val account: Account? = realm.where<Account>().findFirst()
         //Tokenが存在するか？
         if (account == null) {
             // 新規登録orログインが行われていないのでSignInActivityに遷移
-            val intent = Intent(activity!!,SignInActivity::class.java)
+            val intent = Intent(this,SignInActivity::class.java)
             startActivity(intent)
         }else {
             val token = account.Rtoken
@@ -112,14 +71,9 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                 realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
             //存在しなかった(グループに参加を促すようにする
             if (group == null) {
-                Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
-                root_view.visibility = View.INVISIBLE
-                button_post_add.visibility = View.INVISIBLE
-                no_coment.visibility = View.INVISIBLE
+                Toast.makeText(this, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
             } else {
-                time_line_start.visibility = View.INVISIBLE
-                no_coment.visibility = View.INVISIBLE
-                val groupId = group.Rgroup_id
+                no_coment_child.visibility = View.INVISIBLE
                 ApiGetTask {
                     if (it == null) {
                         Snackbar.make(view, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
@@ -127,10 +81,10 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                         when (it.getString("status")) {
                             "200" -> {
                                 val timelineData =
-                                    it.getJSONObject("data").getJSONArray("timeline_data")
+                                    it.getJSONObject("data").getJSONArray("post_data")
                                 val list = ArrayList<PostTimelineListItem>()
                                 if (timelineData.length() == 0){
-                                    no_coment.visibility = View.VISIBLE
+                                    no_coment_child.visibility = View.VISIBLE
                                 }
                                 for (i in 0 until timelineData.length()) {
                                     val postTimelineListItem = PostTimelineListItem()
@@ -191,21 +145,12 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                                 item.getString("movie01_content")
                                         }
                                     }
-                                    val nen = item.getString("post_time").substring(0, 4)
-                                    val man = item.getString("post_time").substring(5, 7)
-                                    val day = item.getString("post_time").substring(8, 10)
-                                    val hourEg = item.getString("post_time").substring(11, 13).toInt() + 7
-                                    var hourJp = hourEg.toString()
-                                    if (hourEg <10){
-                                        hourJp = "0$hourJp"
-                                    }
-                                    val second = item.getString("post_time").substring(14, 16)
-                                    postTimelineListItem.postTime = "$nen/$man/$day/ $hourJp:$second"
+                                    postTimelineListItem.postTime = item.getString("post_time")
 
                                     list.add(postTimelineListItem)
                                 }
-                                val listView = timeline
-                                val postTimelineListAdapter = PostTimelineListAdapter(activity!!)
+                                val listView = timeline_child
+                                val postTimelineListAdapter = PostTimelineListAdapter(this)
                                 postTimelineListAdapter.setPostTimelineList(list)
                                 postTimelineListAdapter.notifyDataSetChanged()
                                 listView.adapter = postTimelineListAdapter
@@ -225,7 +170,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                         //グループ情報なし
                                         ApiError.UNKNOWN_GROUP -> {
                                             ApiError.showToast(
-                                                activity!!,
+                                                this,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
                                             )
@@ -233,7 +178,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                         //値が不足している場合
                                         ApiError.REQUIRED_PARAM -> {
                                             ApiError.showToast(
-                                                activity!!,
+                                                this,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
                                             )
@@ -241,7 +186,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                         //トークンの検証失敗
                                         ApiError.UNKNOWN_TOKEN -> {
                                             ApiError.showToast(
-                                                activity!!,
+                                                this,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
                                             )
@@ -249,7 +194,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                                         //所属グループなし
                                         ApiError.UNREADY_BELONG_GROUP -> {
                                             ApiError.showToast(
-                                                activity!!,
+                                                this,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
                                             )
@@ -267,8 +212,8 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                     mSwipeRefreshLayout.isRefreshing = false
                 }.execute(
                     ApiParam(
-                        Api.SLIM + "timeline/get",
-                        hashMapOf("token" to token, "group_id" to groupId)
+                        Api.SLIM + "/child/growth/diary/get",
+                        hashMapOf("token" to token, "child_id" to childId)
                     )
                 )
             }
