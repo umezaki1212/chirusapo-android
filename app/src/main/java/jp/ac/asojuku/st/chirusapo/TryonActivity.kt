@@ -138,7 +138,7 @@ class TryonActivity : AppCompatActivity(){
 
     @SuppressLint("ClickableViewAccessibility")
     private fun onAddPhoto(fileName: String){
-        val image = CustomImageView(this)
+        val image = ImageView(this)
 
         image.id = ++idCounter;
         image.translationX = 400F
