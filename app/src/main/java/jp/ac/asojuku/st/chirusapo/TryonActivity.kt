@@ -36,7 +36,7 @@ class TryonActivity : AppCompatActivity(){
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var groupId: String
-    private var fragment: ArFragment? = null
+//    private var fragment: ArFragment? = null
     private var childPhotoArray:ArrayList<String> = arrayListOf()
     private val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     private var targetLocalX: Int = 0
@@ -64,7 +64,7 @@ class TryonActivity : AppCompatActivity(){
 
         onModelGet()
         onClothesBottomList()
-        fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment?
+//        fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment?
 
 
         button_child_model.setOnClickListener {
@@ -227,11 +227,6 @@ class TryonActivity : AppCompatActivity(){
             val x = event.rawX.toInt()
             val y = event.rawY.toInt()
 
-            if (detector != null) {
-                if (detector.onTouchEvent(event)){
-                    true
-                }
-            }
 
             when (event.action) {
 
