@@ -12,13 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.tonyodev.fetch2.*
-import com.tonyodev.fetch2core.Func
 import io.realm.Realm
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.activity_tryon.*
 import android.provider.MediaStore.Images
 import java.io.*
@@ -29,6 +23,7 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.view.MotionEvent
 import com.google.ar.sceneform.ux.ArFragment
+import androidx.core.view.children
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
 class TryonActivity : AppCompatActivity(){
@@ -37,13 +32,14 @@ class TryonActivity : AppCompatActivity(){
     private lateinit var userToken: String
     private lateinit var groupId: String
     private var fragment: ArFragment? = null
-    private var childPhotoArray:ArrayList<String> = arrayListOf()
     private val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     private var targetLocalX: Int = 0
     private var targetLocalY: Int = 0
 
     private var screenX: Int = 0
     private var screenY: Int = 0
+
+    private var idCounter:Int = 100;
 
     companion object {
         const val READ_REQUEST_CODE = 1
@@ -62,14 +58,13 @@ class TryonActivity : AppCompatActivity(){
             groupId = group.Rgroup_id
         }
 
-        onModelGet()
         onClothesBottomList()
         fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment?
 
 
         button_child_model.setOnClickListener {
             //モデル画像選択処理
-            selectPhoto()
+            selectPhoto(onChildGetPicture())
         }
 
         button_camera.setOnClickListener {
@@ -84,106 +79,35 @@ class TryonActivity : AppCompatActivity(){
     private fun onClothesBottomList() {
         val gallery: LinearLayout = findViewById(R.id.gallery_layout)
         val path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val files = path?.resolve("clothes")?.listFiles()
+        val files = path!!.resolve("clothes/$groupId")?.listFiles()
         if(files != null){
-            val clothesFiles = path!!.resolve("clothes").listFiles()
-            for(i in clothesFiles.indices) {
+            for(i in files.indices) {
                 val imageView = ImageView(this)
                 imageView.id = i
-                val stream = FileInputStream(clothesFiles[i].toString())
+                val stream = FileInputStream(files[i].toString())
                 val bitmap = BitmapFactory.decodeStream(BufferedInputStream(stream))
                 imageView.setImageBitmap(bitmap)
                 gallery.addView(imageView)
-                imageView.setOnClickListener { view -> onAddPhoto(clothesFiles[i].toString())}
+                imageView.setOnClickListener { view -> onAddPhoto(files[i].toString())}
             }
         }
     }
 
-    private fun onModelDownload(url: String, fileName: String) {
-        val fetchConfiguration = FetchConfiguration.Builder(this).apply {
-            setDownloadConcurrentLimit(1)
-        }.build()
-        val fetch = Fetch.Impl.getInstance(fetchConfiguration)
-        val request = Request(url, fileName).apply {
-            priority = Priority.HIGH
-            networkType = NetworkType.ALL
-        }
-
-        fetch.enqueue(request,
-            Func { Toast.makeText(this, "ダウンロードしました", Toast.LENGTH_SHORT).show() },
-            Func { Toast.makeText(this, "ダウンロードに失敗しました", Toast.LENGTH_SHORT).show() }
-        )
-    }
-
-    private fun onModelGet() {
-        ApiGetTask { jsonObject ->
-            if (jsonObject == null) {
-                ApiError.showToast(this, ApiError.UNKNOWN_ERROR, Toast.LENGTH_SHORT)
-            } else {
-                when (jsonObject.getString("status")) {
-                    "200" -> {
-                        val jsonData = jsonObject.getJSONObject("data")
-                        val jsonModelChild = jsonData.getJSONArray("model_child")
-                        val jsonModelClothes = jsonData.getJSONArray("model_clothes")
-                        val path =
-                            getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-                        val childFiles = path!!.resolve("child")
-                            .listFiles()
-                        val clothesFiles = path.resolve("clothes")
-                            .listFiles()
-                        val childString = childFiles?.toString()
-                        val clothesString = clothesFiles?.toString()
-                        for(i in 0 until jsonModelChild.length()){
-                            val fileName = jsonModelChild.getString(i).split("/").last()
-                            if(listOf(childString).contains("$path/child/$fileName")){
-                            }else{
-                                childPhotoArray.add("file://$path/child/$fileName")
-                                onModelDownload(jsonModelChild.getString(i), "$path/child/$fileName")
-                            }
-                        }
-                        for(j in 0 until jsonModelClothes.length()){
-                            val fileName= jsonModelClothes.getString(j).split("/").last()
-                            if(listOf(clothesString).contains("$path/clothes/$fileName")){
-                            }else{
-                                onModelDownload(jsonModelClothes.getString(j), "$path/clothes/$fileName")
-                            }
-                        }
-                    }
-                    "400" -> {
-                        val errorArray = jsonObject.getJSONArray("message")
-                        for (i in 0 until errorArray.length()) {
-                            when (errorArray.getString(i)) {
-                                ApiError.REQUIRED_PARAM,
-                                ApiError.UNKNOWN_TOKEN,
-                                ApiError.UNKNOWN_GROUP,
-                                ApiError.UNREADY_BELONG_GROUP -> {
-                                    ApiError.showSnackBar(
-                                        root_view,
-                                        errorArray.getString(i),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                }
-                                else -> {
-                                    ApiError.showSnackBar(
-                                        root_view,
-                                        errorArray.getString(i),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+    private fun onChildGetPicture(): ArrayList<String> {
+        val path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        val filesDirectory = path!!.resolve("child/$groupId")?.listFiles()
+        var files:File
+        val childPhotoArray = arrayListOf<String>()
+        if(filesDirectory != null){
+            for(i in filesDirectory.indices) {
+                files = filesDirectory[i]
+                childPhotoArray.add("file://$files")
             }
-        }.execute(
-            ApiParam(
-                Api.SLIM + "model/get",
-                hashMapOf("token" to userToken, "group_id" to groupId)
-            )
-        )
+        }
+        return childPhotoArray
     }
 
-    private fun selectPhoto(){
+    private fun selectPhoto(childPhotoArray:ArrayList<String>){
         val intent = Intent(this,TryonSelectChildActivity::class.java)
         intent.putStringArrayListExtra("MODEL_LIST",childPhotoArray)
         startActivityForResult(intent, READ_REQUEST_CODE)
@@ -214,24 +138,33 @@ class TryonActivity : AppCompatActivity(){
 
     @SuppressLint("ClickableViewAccessibility")
     private fun onAddPhoto(fileName: String){
-        val imageView = ImageView(this)
-        imageView.translationX = 300F
-        imageView.translationY = 600F
+        val image = CustomImageView(this)
+
+        image.id = ++idCounter;
+        image.translationX = 400F
+        image.translationY = 400F
+
+        Log.d("Debug", image.id.toString())
+        Log.d("Debug", image.x.toString())
+        Log.d("Debug", image.y.toString())
+        Log.d("Debug", fileName);
 
         val stream = FileInputStream(fileName)
         val bitmap = BitmapFactory.decodeStream(BufferedInputStream(stream))
-        imageView.setImageBitmap(bitmap)
-        screen_shot_area.addView(imageView)
-        imageView.setOnTouchListener { v, event ->
-            Log.d("onTouch","onTouchの関数を実行!!")
+        image.setImageBitmap(bitmap)
+        screen_shot_area.addView(image)
+
+        for( childView in screen_shot_area.children ){
+
+            childView.translationX= childView.x
+            childView.translationY = childView.y
+        }
+
+        image.setOnTouchListener { v, event ->
+
             val x = event.rawX.toInt()
             val y = event.rawY.toInt()
 
-//            if (detector != null) {
-//                if (detector.onTouchEvent(event)){
-//                    true
-//                }
-//            }
 
             when (event.action) {
 
@@ -265,15 +198,20 @@ class TryonActivity : AppCompatActivity(){
 
                 MotionEvent.ACTION_UP -> {
 
-                    val trashLeft = button_trash.left + button_trash.width / 2
-                    val trashTop = button_trash.top + button_trash.height / 2
-                    val targetRight = v.left + v.width
-                    val targetBottom = v.top + v.height
+                    Log.d("Debug", v.id.toString())
+                    Log.d("Debug", v.x.toString())
+                    Log.d("Debug", v.y.toString())
 
-                    if (targetRight < trashLeft && targetBottom < trashTop) {
+                    if (v.x < 0 && v.y< 0) {
                         screen_shot_area.removeView(v)
+                        for( childView in screen_shot_area.children ){
+
+                            childView.translationX= childView.x
+                            childView.translationY = childView.y
+                        }
                     }
                 }
+
             }
             true
         }

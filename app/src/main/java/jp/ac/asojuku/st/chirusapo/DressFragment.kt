@@ -77,9 +77,6 @@ class DressFragment : Fragment() {
                     val intent = Intent(activity, TryonActivity::class.java)
                     startActivity(intent)
                 }
-                resources.getString(R.string.dress_try_on_photo) -> {
-
-                }
             }
         }
     }
@@ -215,7 +212,7 @@ class DressFragment : Fragment() {
                         val imagePath = jsonObject.getJSONObject("data").getString("model_path")
                         val path = activity!!.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
                         val fileName = imagePath.split("/").last()
-                        onModelDownload(imagePath, "$path/$fileName")
+                        onModelDownload(imagePath, "$path/child/$groupId/$fileName")
                     }
                     "400" -> {
                         val errorArray = jsonObject.getJSONArray("message")
@@ -266,7 +263,7 @@ class DressFragment : Fragment() {
                         val imagePath = jsonObject.getJSONObject("data").getString("model_path")
                         val path = activity!!.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
                         val fileName = imagePath.split("/").last()
-                        onModelDownload(imagePath, "$path/$fileName")
+                        onModelDownload(imagePath, "$path/clothes/$groupId/$fileName")
                     }
                     "400" -> {
                         val errorArray = jsonObject.getJSONArray("message")
