@@ -10,7 +10,7 @@ import com.tonyodev.fetch2core.Func
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
-import kotlinx.android.synthetic.main.activity_tryon.*
+import kotlinx.android.synthetic.main.activity_start_up.*
 import java.io.File
 
 class StartUpActivity : AppCompatActivity() {
