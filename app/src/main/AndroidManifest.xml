@@ -24,6 +24,9 @@
         <activity android:name=".TestChildRegistration"></activity>
         <activity android:name=".RegistrationChildActivity" />
         <activity android:name=".RegistrationWeightHeightActivity" />
+        <activity android:name=".CalendarAddActivity" />
+        <activity android:name=".CalendarEditActivity" />
+        <activity android:name=".CalendarViewActivity" />
         <activity android:name=".ChildTimeLinePostAdd" />
         <activity android:name=".ChildGraphActivity" />
         <activity android:name=".ListofFriendActivity" />

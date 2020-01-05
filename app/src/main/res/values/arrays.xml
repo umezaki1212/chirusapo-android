@@ -2,14 +2,16 @@
     <string-array name="dress_fragment_menu">
         <item>@string/dress_model_child_add</item>
         <item>@string/dress_model_clothes_add</item>
-        <item>@string/dress_model_generate</item>
         <item>@string/dress_model_list</item>
         <item>@string/dress_try_on</item>
-        <item>@string/dress_try_on_photo</item>
     </string-array>
     <string-array name="dress_fragment_model_dialog">
         <item>@string/dress_model_dialog_camera</item>
         <item>@string/dress_model_dialog_file</item>
+    </string-array>
+    <string-array name="calendar_fragment_menu_dialog">
+        <item>@string/fragment_calendar_menu_edit</item>
+        <item>@string/fragment_calendar_menu_delete</item>
     </string-array>
     <string-array name="child_bloodType">
         <item>未回答</item>

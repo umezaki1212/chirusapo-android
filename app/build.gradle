@@ -37,12 +37,13 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
-//    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.8.0" // original
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
+    // implementation "com.google.ar.sceneform.ux:sceneform-ux:1.8.0" // original
+    // implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.13.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     // OkHttp3
     // https://github.com/square/okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.14.2'
@@ -70,4 +71,7 @@ dependencies {
     // Fetch
     // https://github.com/tonyofrancis/Fetch
     implementation "com.tonyodev.fetch2:fetch2:3.0.10"
+    // StfalconImageViewer
+    // https://github.com/stfalcon-studio/StfalconImageViewer
+     implementation 'com.github.stfalcon:stfalcon-imageviewer:0.1.0'
 }
