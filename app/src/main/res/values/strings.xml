@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ちるサポ</string>
     <string-array name="user_genderItems">
-        <item>性別</item>
+        <item>未回答</item>
         <item>男性</item>
         <item>女性</item>
     </string-array>
@@ -110,4 +110,25 @@
     <string name="clothes_size">服のサイズ　</string>
     <string name="shoes_size">靴のサイズ</string>
     <string name="decision">決定</string>
+    <string name="child_blood">血液型</string>
+    <string name="child_gender">性別</string>
+    <string name="child_birthday">誕生日</string>
+    <string name="plus">+</string>
+    <string name="vaccination">予防接種</string>
+
+    <string-array name="clothesSize">
+        <item>50cm</item>
+        <item>60cm</item>
+        <item>70cm</item>
+        <item>80cm</item>
+        <item>90cm</item>
+        <item>100cm</item>
+        <item>110cm</item>
+        <item>120cm</item>
+        <item>130cm</item>
+        <item>140cm</item>
+        <item>150cm</item>
+        <item>160cm</item>
+    </string-array>
+
 </resources>

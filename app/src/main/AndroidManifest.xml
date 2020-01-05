@@ -21,10 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".ChildGrowthPostActivity"></activity>
+        <activity android:name=".TestChildRegistration"></activity>
+        <activity android:name=".RegistrationChildActivity" />
         <activity android:name=".RegistrationWeightHeightActivity" />
         <activity android:name=".ChildTimeLinePostAdd" />
-        <activity android:name=".ChildGraffActivity" />
+        <activity android:name=".ChildGraphActivity" />
         <activity android:name=".ListofFriendActivity" />
         <activity android:name=".CheckGrowthActivity" />
         <activity android:name=".TryonSelectChildActivity" />

@@ -178,7 +178,8 @@ class ChildFragment : Fragment() {
 
                                     val fragmentList = arrayListOf<Fragment>().apply {
                                         (0 until childData.getJSONArray("child_list").length()).forEach { index ->
-                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
+                                            // this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
+                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index)))
                                         }
                                     }
 //                                    (

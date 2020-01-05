@@ -11,4 +11,14 @@
         <item>@string/dress_model_dialog_camera</item>
         <item>@string/dress_model_dialog_file</item>
     </string-array>
+    <string-array name="child_bloodType">
+        <item>未回答</item>
+        <item>A型</item>
+        <item>B型</item>
+        <item>AB型</item>
+        <item>O型</item>
+    </string-array>
+    <string-array name="clothes_size">
+        <item>40</item>
+    </string-array>
 </resources>
