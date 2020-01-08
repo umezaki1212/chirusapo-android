@@ -26,6 +26,7 @@ import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.fragment_child_data_set.*
+import org.json.JSONObject
 
 class ChildDataSetFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -33,12 +34,16 @@ class ChildDataSetFragment : Fragment() {
     private lateinit var userToken: String
     private  lateinit var childId : String
     private var counter : Int = 0
+    private lateinit var childData: JSONObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             childId= it.getString("childData")!!
         }
+
+        Log.d("TEST", childData.toString())
+        childId = childData.getString("user_id")
     }
 
     override fun onCreateView(
@@ -56,13 +61,14 @@ class ChildDataSetFragment : Fragment() {
             when (actionItem.id) {
                 R.id.action_add_body -> {
                     val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
+                    intent.putExtra("user_id", childId)
                     startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
                 R.id.action_add_image -> {
                     val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
-                    intent.putExtra("user_id",childId)
+                    intent.putExtra("user_id", childId)
                     startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
@@ -73,7 +79,9 @@ class ChildDataSetFragment : Fragment() {
                     return@OnActionSelectedListener true // false will close it without animation
                 }
                 R.id.action_add_user -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+//                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    val intent = Intent(activity!!, RegistrationChildActivity::class.java)
+                    startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
@@ -303,7 +311,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         "グラフの表示" -> {
                                             val intent =
-                                                Intent(activity!!, ChildGraffActivity::class.java)
+                                                Intent(activity!!, ChildGraphActivity::class.java)
                                             intent.putExtra("user_id",childId)
                                             startActivity(intent)
                                         }
@@ -325,7 +333,7 @@ class ChildDataSetFragment : Fragment() {
                                     when (errorArray.getString(i)) {
                                         //グループ情報なし
                                         ApiError.UNKNOWN_GROUP -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -333,7 +341,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //値が不足している場合
                                         ApiError.REQUIRED_PARAM -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -341,7 +349,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //トークンの検証失敗
                                         ApiError.UNKNOWN_TOKEN -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -349,7 +357,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //所属グループなし
                                         ApiError.UNREADY_BELONG_GROUP -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -359,7 +367,7 @@ class ChildDataSetFragment : Fragment() {
                                 }
                             }
                             else -> Snackbar.make(
-                                view!!,
+                                view,
                                 "不明なエラーが発生しました",
                                 Snackbar.LENGTH_SHORT
                             ).show()
@@ -415,12 +423,19 @@ class ChildDataSetFragment : Fragment() {
 
     companion object {
         @JvmStatic
+        fun newInstance(obj: JSONObject) =
+            ChildDataSetFragment().apply {
+                childData = obj
+            }
+        /*
         fun newInstance(list: String) =
             ChildDataSetFragment().apply {
                 arguments = Bundle().apply {
                     putString("childData", list)
                 }
             }
+
+         */
     }
 
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ちるサポ</string>
     <string-array name="user_genderItems">
-        <item>性別</item>
+        <item>未回答</item>
         <item>男性</item>
         <item>女性</item>
     </string-array>
@@ -76,8 +76,10 @@
     <!-- きせかえ画面 -->
     <string name="dress_model_child_add">子どもモデル登録</string>
     <string name="dress_model_clothes_add">洋服モデル登録</string>
+    <string name="dress_model_generate">背景透過モデル画像生成</string>
     <string name="dress_model_list">モデル一覧</string>
     <string name="dress_try_on">試着"</string>
+    <string name="dress_try_on_photo">試着後写真一覧</string>
     <string name="dress_model_dialog_camera">カメラで撮影して生成</string>
     <string name="dress_model_dialog_file">ファイルを選択して生成</string>
     <string name="title_activity_group_setting">グループ設定</string>
@@ -109,6 +111,27 @@
     <string name="clothes_size">服のサイズ　</string>
     <string name="shoes_size">靴のサイズ</string>
     <string name="decision">決定</string>
+    <string name="child_blood">血液型</string>
+    <string name="child_gender">性別</string>
+    <string name="child_birthday">誕生日</string>
+    <string name="plus">+</string>
+    <string name="vaccination">予防接種</string>
+
+    <string-array name="clothesSize">
+        <item>50cm</item>
+        <item>60cm</item>
+        <item>70cm</item>
+        <item>80cm</item>
+        <item>90cm</item>
+        <item>100cm</item>
+        <item>110cm</item>
+        <item>120cm</item>
+        <item>130cm</item>
+        <item>140cm</item>
+        <item>150cm</item>
+        <item>160cm</item>
+    </string-array>
+
     <!-- カレンダー画面 -->
     <string name="fragment_calendar_menu_edit">スケジュール編集</string>
     <string name="fragment_calendar_menu_delete">スケジュール削除</string>
@@ -120,4 +143,6 @@
     <string name="fragment_calendar_line_remind">LINEでリマインド</string>
     <string name="fragment_calendar_add">登録</string>
     <string name="fragment_calendar_schedule_list">スケジュール一覧</string>
+    <string name="child_add">追加する</string>
+    <string name="child_id">子供ID</string>
 </resources>

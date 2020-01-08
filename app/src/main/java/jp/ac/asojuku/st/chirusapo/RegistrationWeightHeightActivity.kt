@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
@@ -257,6 +258,8 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
         val Token = account!!.Rtoken
         val childId = intent.getStringExtra("user_id")
 
+        Log.d("TEST", childId)
+
         ApiPostTask {
             //データが取得できなかった場合
             if (it == null) {
@@ -270,10 +273,10 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                     "200" -> {
                         button_set.isEnabled = true
 
-                        val intent = Intent(this, ChildFragment::class.java).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                        startActivity(intent)
+//                        val intent = Intent(this, ChildFragment::class.java).apply {
+//                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                        }
+//                        startActivity(intent)
                         finish()
                     }
                     "400" -> {
@@ -293,6 +296,13 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                                 }
                                 //値が不足している
                                 ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
+                                }
+                                else -> {
                                     ApiError.showToast(
                                         this,
                                         errorArray.getString(i),
