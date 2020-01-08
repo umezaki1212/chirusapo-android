@@ -333,7 +333,7 @@ class ChildDataSetFragment : Fragment() {
                                     when (errorArray.getString(i)) {
                                         //グループ情報なし
                                         ApiError.UNKNOWN_GROUP -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -341,7 +341,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //値が不足している場合
                                         ApiError.REQUIRED_PARAM -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -349,7 +349,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //トークンの検証失敗
                                         ApiError.UNKNOWN_TOKEN -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -357,7 +357,7 @@ class ChildDataSetFragment : Fragment() {
                                         }
                                         //所属グループなし
                                         ApiError.UNREADY_BELONG_GROUP -> {
-                                            ApiError.showToast(
+                                            showToast(
                                                 activity!!,
                                                 errorArray.getString(i),
                                                 Toast.LENGTH_LONG
@@ -367,7 +367,7 @@ class ChildDataSetFragment : Fragment() {
                                 }
                             }
                             else -> Snackbar.make(
-                                view!!,
+                                view,
                                 "不明なエラーが発生しました",
                                 Snackbar.LENGTH_SHORT
                             ).show()

@@ -2,10 +2,12 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -15,7 +17,7 @@ import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
-import kotlinx.android.synthetic.main.activity_registration_child.*
+//import kotlinx.android.synthetic.main.activity_registration_child.*
 import kotlinx.android.synthetic.main.activity_test_child_registration.*
 import java.io.IOException
 import java.util.*
@@ -124,7 +126,7 @@ class TestChildRegistration : AppCompatActivity() {
         //服のサイズ選択
         child_clothes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                val spinner = findViewById<Spinner>(R.id.child_gender)
+                val spinner = findViewById<Spinner>(R.id.child_clothes)
                 when (spinner.selectedItem.toString()) {
                     "50cm" -> clothes = 50
                     "60cm" -> clothes = 60
@@ -165,6 +167,29 @@ class TestChildRegistration : AppCompatActivity() {
             }
             else -> {
                 child_name.error = null
+                true
+            }
+        }
+    }
+
+    private fun userIdCheck():Boolean{
+        val childId= child_id.editText?.text.toString().trim()
+
+        return when {
+            childId.isEmpty() -> {
+                child_id.error = "ユーザーIDが入力されていません"
+                false
+            }
+            childId.count() < 4 -> {
+                child_id.error = "ユーザーIDの文字数が不正です"
+                false
+            }
+            childId.count() > 30 -> {
+                child_id.error = "ユーザーIDの文字数が不正です"
+                false
+            }
+            else -> {
+                child_id.error = null
                 true
             }
         }
@@ -364,31 +389,18 @@ class TestChildRegistration : AppCompatActivity() {
         // dialogBalderを返す
         return dialogBuilder.create()
     }
-    @Throws(IOException::class)
-    private fun getBitmapFromUri(uri: Uri): Bitmap {
-        val parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")
-        val fileDescriptor = parcelFileDescriptor!!.fileDescriptor
-        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-        parcelFileDescriptor.close()
-        return image
-    }
 
     private fun addChild(){
 
         var check = true
         if(!userNameCheck())check = false
+        if(!userIdCheck())check = false
         if(!childBirthdayCheck())check = false
         if(!onChildHeightCheck())check = false
         if(!onChildWeightCheck())check = false
         if(!onChildShoesSizeCheck())check = false
 
         if(!check)return
-
-//        val paramImage = arrayListOf<ApiParamImage>()
-//        if(userIcon != null){
-//            val paramItem = ApiParamImage("image/jpg","Child01.jpg","user_icon",userIcon!!)
-//            paramImage.add(paramItem)
-//        }
 
         val nen = child_birthday.text.toString().substring(0, 4).toInt()
         val mon = child_birthday.text.toString().substring(5, 7).toInt()
@@ -401,6 +413,7 @@ class TestChildRegistration : AppCompatActivity() {
                 age--
             }
         }
+        Log.d("test", age.toString())
 
         val account: Account? = realm.where<Account>().findFirst()
         val joinGroup: JoinGroup? = realm.where<JoinGroup>().findFirst()
@@ -411,15 +424,31 @@ class TestChildRegistration : AppCompatActivity() {
             "token" to token,
             "group_id" to groupId,
             "user_name" to child_name.editText?.text.toString(),
-            "birthday" to Child_Birthday.text.toString().trim(),
-            "age" to age,
+            "user_id" to child_id.editText?.text.toString(),
+            "birthday" to child_birthday.text.toString().trim(),
+            "age" to age.toString(),
             "gender" to gender.toString(),
             "blood_type" to bloodType.toString(),
             "body_height" to child_height.editText?.text.toString(),
             "body_weight" to child_weight.editText?.text.toString(),
-            "clothes_size" to child_clothes.toString(),
+            "clothes_size" to clothes.toString(),
             "shoes_size" to child_shoes.editText?.text.toString()
         )
+
+        Log.d("test",clothes.toString())
+
+        for (i in 0 until vaccineNameTexts.size){
+            params["vaccination[$i][vaccine_name]"] = vaccineNameTexts[i]
+        }
+
+        for (i in 0 until vaccineDateTexts.size){
+            params["vaccination[$i][visit_date]"] = vaccineDateTexts[i]
+        }
+
+        for (i in 0 until allergyNameTexts.size){
+            params["allergy[$i]"] = allergyNameTexts[i]
+        }
+
 
         ApiPostTask{
             if(it == null){
@@ -429,10 +458,7 @@ class TestChildRegistration : AppCompatActivity() {
                 when(it.getString("status")){
                     "200" -> {
                         Toast.makeText(applicationContext, "登録しました", Toast.LENGTH_SHORT).show()
-//                        val intent = Intent(this, CheckGrowthActivity::class.java).apply {
-//                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-//                        }
-//                        startActivity(intent)
+                        finish()
                     }
                     "400" -> {
                         val errorArray = it.getJSONArray("message")
@@ -454,7 +480,7 @@ class TestChildRegistration : AppCompatActivity() {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
                                 }
                                 ApiError.VALIDATION_USER_NAME -> {
-                                    ApiError.showEditTextError(Child_Name,errorArray.getString(i))
+                                    ApiError.showEditTextError(child_name,errorArray.getString(i))
                                 }
                                 ApiError.VALIDATION_BIRTHDAY -> {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
@@ -469,16 +495,16 @@ class TestChildRegistration : AppCompatActivity() {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
                                 }
                                 ApiError.VALIDATION_BODY_HEIGHT -> {
-                                    ApiError.showEditTextError(Child_Height,errorArray.getString(i))
+                                    ApiError.showEditTextError(child_height,errorArray.getString(i))
                                 }
                                 ApiError.VALIDATION_BODY_WEIGHT -> {
-                                    ApiError.showEditTextError(Child_Weight,errorArray.getString(i))
+                                    ApiError.showEditTextError(child_weight,errorArray.getString(i))
                                 }
                                 ApiError.VALIDATION_CLOTHES_SIZE -> {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
                                 }
                                 ApiError.VALIDATION_SHOES_SIZE -> {
-                                    ApiError.showEditTextError(child_shoesSize,errorArray.getString(i))
+                                    ApiError.showEditTextError(child_shoes,errorArray.getString(i))
                                 }
                                 ApiError.VALIDATION_VACCINATION -> {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
@@ -494,9 +520,6 @@ class TestChildRegistration : AppCompatActivity() {
                                 ApiError.UPLOAD_FAILED -> {
                                     ApiError.showToast(this,errorArray.getString(i), Toast.LENGTH_LONG)
                                 }
-                                ApiError.ALREADY_USER_ID -> {
-                                    ApiError.showEditTextError(Child_Id,errorArray.getString(i))
-                                }
                             }
                         }
                     }
@@ -504,8 +527,7 @@ class TestChildRegistration : AppCompatActivity() {
             }
         }.execute(
             ApiParam(
-                Api.SLIM + "child/add"
-//                params,paramImage
+                Api.SLIM + "child/add"  ,params
             )
         )
 

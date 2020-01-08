@@ -15,6 +15,9 @@
 ////import com.xxmassdeveloper.mpchartexample.R
 //
 //class BarChartItem(cd: ChartData<*>, c: Context) : ChartItem(cd) {
+//    override fun getItemType(): Int {
+//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//    }
 //
 ////    override fun getItemType(): Int {
 ////        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

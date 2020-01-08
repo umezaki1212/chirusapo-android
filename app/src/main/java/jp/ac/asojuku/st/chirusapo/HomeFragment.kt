@@ -112,7 +112,7 @@ class HomeFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener {
                 realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
             //存在しなかった(グループに参加を促すようにする
             if (group == null) {
-                Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
                 root_view.visibility = View.INVISIBLE
                 button_post_add.visibility = View.INVISIBLE
                 no_coment.visibility = View.INVISIBLE
