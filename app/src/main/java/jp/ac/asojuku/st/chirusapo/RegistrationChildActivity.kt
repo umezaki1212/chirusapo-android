@@ -17,7 +17,7 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_test_child_registration.*
+import kotlinx.android.synthetic.main.activity_child_registration.*
 import java.util.*
 import java.util.regex.Pattern
 
@@ -51,7 +51,7 @@ class RegistrationChildActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_test_child_registration)
+        setContentView(R.layout.activity_child_registration)
         realm = Realm.getDefaultInstance()
         child_birthday.setOnClickListener { onBirthdaySetting() }
 
