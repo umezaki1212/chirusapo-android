@@ -80,7 +80,7 @@ class ChildDataSetFragment : Fragment() {
                 }
                 R.id.action_add_user -> {
 //                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
-                    val intent = Intent(activity!!, TestChildRegistration::class.java)
+                    val intent = Intent(activity!!, RegistrationChildActivity::class.java)
                     startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
