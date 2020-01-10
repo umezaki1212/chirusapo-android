@@ -226,7 +226,7 @@ class RegistrationChildActivity : AppCompatActivity() {
                 child_height.error = "身長は10～200までの間で入力してください"
                 false
             }
-            !Pattern.compile("^[0-9-.]*\$").matcher(childHeight).find()-> {
+            !Pattern.compile("^[0-9.]*\$").matcher(childHeight).find()-> {
                 child_height.error = "使用できない文字が含まれています"
                 false
             }
@@ -253,7 +253,7 @@ class RegistrationChildActivity : AppCompatActivity() {
                 child_weight.error = "体重は1～150までの間で入力してください"
                 false
             }
-            !Pattern.compile("^[0-9-.]*\$").matcher(childWeight).find()-> {
+            !Pattern.compile("^[0-9.]*\$").matcher(childWeight).find()-> {
                 child_weight.error = "使用できない文字が含まれています"
                 false
             }
@@ -280,7 +280,7 @@ class RegistrationChildActivity : AppCompatActivity() {
                 child_shoes.error = "靴のサイズは5～30までの間で入力してください"
                 false
             }
-            !Pattern.compile("^[0-9-.]*\$").matcher(childShoes).find()-> {
+            !Pattern.compile("^[0-9.]*\$").matcher(childShoes).find()-> {
                 child_weight.error = "使用できない文字が含まれています"
                 false
             }
@@ -404,14 +404,13 @@ class RegistrationChildActivity : AppCompatActivity() {
         val mon = child_birthday.text.toString().substring(5, 7).toInt()
         val bday = child_birthday.text.toString().substring(8, 10).toInt()
         var age = year - nen
-        if (mon > month){
+        if (mon < month){
             age--
         }else if (mon == month){
             if (bday > day){
                 age--
             }
         }
-        Log.d("test", age.toString())
 
         val account: Account? = realm.where<Account>().findFirst()
         val joinGroup: JoinGroup? = realm.where<JoinGroup>().findFirst()
