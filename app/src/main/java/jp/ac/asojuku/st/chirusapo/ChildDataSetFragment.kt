@@ -35,6 +35,9 @@ class ChildDataSetFragment : Fragment() {
     private  lateinit var childId : String
     private var counter : Int = 0
     private lateinit var childData: JSONObject
+    private lateinit var body_height:String
+    private lateinit var body_weight:String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
