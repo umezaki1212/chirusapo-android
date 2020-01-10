@@ -382,8 +382,10 @@ class ChildDataSetFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) listener = context else {
-//            throw RuntimeException("$context must implement OnFragmentInteractionListener")
+        if (context is OnFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
