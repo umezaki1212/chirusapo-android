@@ -1,5 +1,6 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -44,6 +45,7 @@ class ChildGraphActivity : AppCompatActivity() {
         return true
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onResume() {
         super.onResume()
 
