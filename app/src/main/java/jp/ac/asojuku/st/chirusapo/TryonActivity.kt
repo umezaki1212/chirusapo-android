@@ -20,10 +20,11 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
+import android.view.*
 import androidx.core.content.ContextCompat
-import android.view.MotionEvent
 import androidx.core.view.children
 import com.google.ar.sceneform.ux.ArFragment
+
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
 class TryonActivity : AppCompatActivity(){
@@ -39,11 +40,15 @@ class TryonActivity : AppCompatActivity(){
     private var screenX: Int = 0
     private var screenY: Int = 0
 
-    private var idCounter:Int = 100;
+    private var idCounter:Int = 100
 
     companion object {
         const val READ_REQUEST_CODE = 1
     }
+
+    private lateinit var mScaleGestureDetector: ScaleGestureDetector
+    private var mScaleFactor = mutableMapOf<ImageView,Float>()
+    private lateinit var scaleView:ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +63,7 @@ class TryonActivity : AppCompatActivity(){
             groupId = group.Rgroup_id
         }
 
+        mScaleGestureDetector = ScaleGestureDetector(this, ScaleListener())
         onClothesBottomList()
         fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment?
 
@@ -139,8 +145,7 @@ class TryonActivity : AppCompatActivity(){
     @SuppressLint("ClickableViewAccessibility")
     private fun onAddPhoto(fileName: String){
         val image = ImageView(this)
-
-        image.id = ++idCounter;
+        image.id = ++idCounter
         image.translationX = 400F
         image.translationY = 400F
 
@@ -160,11 +165,12 @@ class TryonActivity : AppCompatActivity(){
             childView.translationY = childView.y
         }
 
-        image.setOnTouchListener { v, event ->
+        mScaleFactor.put(image,1F)
 
+        image.setOnTouchListener { v, event ->
+            scaleView = image
             val x = event.rawX.toInt()
             val y = event.rawY.toInt()
-
 
             when (event.action) {
 
@@ -178,6 +184,8 @@ class TryonActivity : AppCompatActivity(){
                 }
 
                 MotionEvent.ACTION_MOVE -> {
+                    
+                    mScaleGestureDetector.onTouchEvent(event)
 
                     val diffX = screenX - x
                     val diffY = screenY - y
@@ -210,12 +218,11 @@ class TryonActivity : AppCompatActivity(){
                             childView.translationY = childView.y
                         }
                     }
-                }
 
+                }
             }
             true
         }
-
     }
 
     private fun generateScreenShot(){
@@ -263,7 +270,19 @@ class TryonActivity : AppCompatActivity(){
         } else {
             generateScreenShot()
         }
+
+
     }
 
+    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            mScaleFactor[scaleView] = mScaleFactor[scaleView]!! * mScaleGestureDetector.scaleFactor
+            mScaleFactor[scaleView] = Math.max(1.0f, Math.min(mScaleFactor[scaleView]!!, 8.0f))
+            scaleView.scaleX = mScaleFactor[scaleView]!!
+            scaleView.scaleY = mScaleFactor[scaleView]!!
+
+            return true
+        }
+    }
 }
 
