@@ -313,6 +313,7 @@ class ChildDataSetFragment : Fragment() {
                                             val intent =
                                                 Intent(activity!!, ListofFriendActivity::class.java)
                                             intent.putExtra("user_id",childId)
+                                            Log.d("TEST", childId)
                                             startActivity(intent)
                                         }
                                     }
