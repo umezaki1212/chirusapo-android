@@ -1,10 +1,10 @@
 package jp.ac.asojuku.st.chirusapo
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,22 +14,34 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.*
 import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
-import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import kotlinx.android.synthetic.main.fragment_child.*
 
 class ChildFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
-    lateinit var realm: Realm
+    private lateinit var realm: Realm
     private lateinit var userToken: String
+    private lateinit var groupId: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        realm = Realm.getDefaultInstance()
+
+        val account = realm.where<Account>().findFirst()
+        val group = realm.where(JoinGroup::class.java).equalTo("Rgroup_flag", 1.toInt()).findFirst()
+
+        if (account != null && group != null) {
+            userToken = account.Rtoken
+            groupId = group.Rgroup_id
+
+            getChild()
+        } else {
+            Toast.makeText(activity, "ユーザー情報を取得できませんでした", Toast.LENGTH_SHORT).show()
+        }
+
         return inflater.inflate(R.layout.fragment_child, container, false)
     }
 
@@ -51,165 +63,134 @@ class ChildFragment : Fragment() {
         fun onFragmentInteraction(uri: Uri)
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun getChild() {
+        ApiGetTask {
+            if (it == null) {
+                Snackbar.make(view!!, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
+            } else {
+                when (it.getString("status")) {
+                    "200" -> {
+                        val childData = it.getJSONObject("data")
+                        val childList = childData.getJSONArray("child_list")
 
-        realm = Realm.getDefaultInstance()
-
-        val account = realm.where<Account>().findFirst()
-
-        //Tokenが存在するか？
-        if (account == null) {
-            // 新規登録orログインが行われていないのでSignInActivityに遷移
-            val intent = Intent(activity!!, SignInActivity::class.java)
-            startActivity(intent)
-        }else {
-            userToken = account.Rtoken
-            //現在見ているグループIDの取得
-            val test = 1
-            val group:JoinGroup? =
-                realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
-            //存在しなかった(グループに参加を促すようにする
-            if(group == null){
-                Toast.makeText(activity, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                val groupId = group.Rgroup_id
-                ApiGetTask {
-                    Log.d("TEST", it.toString())
-                    if (it == null) {
-                        Snackbar.make(view!!, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
-                    } else {
-                        when (it.getString("status")) {
-                            "200" -> {
-
-                                val childData = it.getJSONObject("data")
-//                                val array = arrayListOf<String>()
-//
-//                                for (i in 0 until childData.getJSONArray("child_list").length()) {
-//                                    array.add(
-//                                        childData.getJSONArray("child_list").getJSONObject(i).getString(
-//                                            "user_id"
-//                                        )
-//                                    )
-//                                }
-
-//                                Log.d("TEST", array.toString())
-
-                                view_pager_child.adapter = object :
-                                    FragmentPagerAdapter(
-                                        activity!!.supportFragmentManager,
-                                        BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
-                                    ) {
-                                    override fun getItem(position: Int): Fragment {
-                                        return fragmentList[position]
-                                    }
-
-                                    override fun getCount(): Int {
-                                        return fragmentList.size
-                                    }
-
-                                    override fun getPageTitle(position: Int): CharSequence? {
-                                        return fragmentTitle[position]
-                                        // array[position]
-                                    }
-
-//                                    val fragmentTitle = arrayListOf<String>("test", "test", "test", "test", "test")
-//                                    val fragmentList = arrayListOf<Fragment>(
-//                                        ChildDataSetFragment.newInstance("test"),
-//                                        ChildDataSetFragment.newInstance("test"),
-//                                        ChildDataSetFragment.newInstance("test"),
-//                                        ChildDataSetFragment.newInstance("test"),
-//                                        ChildDataSetFragment.newInstance("test")
-//                                    )
-
-//                                        arrayListOf<Fragment>().apply {
-//                                        (0 until childData.length()).forEach { index ->
-//                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
-//                                        }
-//                                    }
-
-
-                                    val fragmentTitle = arrayListOf<String>().apply {
-                                        (0 until childData.getJSONArray("child_list").length()).forEach {index ->
-                                            this.add(childData.getJSONArray("child_list").getJSONObject(index).getString("user_name"))
-                                        }
-                                    }
-
-//                                    private fun test(){
-//                                        for (i in 0 until array.size){
-//                                            fragmentList.add(ChildDataSetFragment.newInstance(""))
-//                                        }
-//                                    }
-
-                                    val fragmentList = arrayListOf<Fragment>().apply {
-                                        (0 until childData.getJSONArray("child_list").length()).forEach { index ->
-                                            // this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index).getString("user_id")))
-                                            this.add(ChildDataSetFragment.newInstance(childData.getJSONArray("child_list").getJSONObject(index)))
-                                        }
-                                    }
-//                                    (
-//                                        ChildDataSetFragment.newInstance("")
-//                                    )
-                                }
-                                tab_layout_child.setupWithViewPager(view_pager_child)
+                        view_pager_child.adapter = object :
+                            FragmentPagerAdapter(
+                                activity!!.supportFragmentManager,
+                                BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+                            ) {
+                            override fun getItem(position: Int): Fragment {
+                                return fragmentList[position]
                             }
-                            "400" -> {
-                                //messageからエラー文を配列で取得し格納する
-                                val errorArray = it.getJSONArray("message")
-                                for (i in 0 until errorArray.length()) {
-                                    when (errorArray.getString(i)) {
-                                        //グループ情報なし
-                                        ApiError.UNKNOWN_GROUP -> {
-                                            showToast(
-                                                activity!!,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //値が不足している場合
-                                        ApiError.REQUIRED_PARAM -> {
-                                            showToast(
-                                                activity!!,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //トークンの検証失敗
-                                        ApiError.UNKNOWN_TOKEN -> {
-                                            showToast(
-                                                activity!!,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //所属グループなし
-                                        ApiError.UNREADY_BELONG_GROUP -> {
-                                            showToast(
-                                                activity!!,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                    }
+
+                            override fun getCount(): Int {
+                                return fragmentList.size
+                            }
+
+                            override fun getPageTitle(position: Int): CharSequence? {
+                                return fragmentTitle[position]
+                            }
+
+                            val fragmentTitle = arrayListOf<String>().apply {
+                                (0 until childList.length()).forEach { index ->
+                                    this.add(childList.getJSONObject(index).getString("user_name"))
                                 }
                             }
-                            else -> Snackbar.make(
-                                view!!,
-                                "不明なエラーが発生しました",
-                                Snackbar.LENGTH_SHORT
-                            ).show()
+
+                            val fragmentList = arrayListOf<Fragment>().apply {
+                                (0 until childList.length()).forEach { index ->
+                                    this.add(ChildDataSetFragment.newInstance(childList.getJSONObject(index)))
+                                }
+                            }
+                        }
+                        tab_layout_child.setupWithViewPager(view_pager_child)
+
+                        val tabs = tab_layout_child.getChildAt(0) as ViewGroup
+                        for (i in 0 until tabs.childCount) {
+                            val childInfo = childList.getJSONObject(i)
+
+                            tabs.getChildAt(i).setOnLongClickListener {
+                                val message =
+                                            "子ども情報を削除しますか？\n" +
+                                            childInfo.getString("user_name") + " [" + childInfo.getString("user_id") + "]\n" +
+                                            "の情報が削除されます"
+                                AlertDialog.Builder(activity).apply {
+                                    setTitle("子ども情報削除")
+                                    setMessage(message)
+                                    setPositiveButton("削除"){ _, _ ->
+                                        deleteChild(childInfo.getString("user_id"))
+                                    }
+                                    setNegativeButton("キャンセル", null)
+                                    create()
+                                    show()
+                                }
+                                return@setOnLongClickListener false
+                            }
                         }
                     }
-                }.execute(
-                    ApiParam(
-                        Api.SLIM + "/child/list",
-                        hashMapOf("token" to userToken, "group_id" to groupId)
-                    )
-                )
+                    "400" -> {
+                        // messageからエラー文を配列で取得し格納する
+                        val errorArray = it.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    val intent = Intent(activity, SignInActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    startActivity(intent)
+                                }
+                                else -> {
+                                    showToast(activity!!, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                    }
+                    else -> Snackbar.make(
+                        view!!,
+                        "不明なエラーが発生しました",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "/child/list",
+                hashMapOf("token" to userToken, "group_id" to groupId)
+            )
+        )
     }
 
-
+    private fun deleteChild(childId:String) {
+        val param = hashMapOf(
+            "token" to userToken,
+            "child_id" to childId
+        )
+        ApiPostTask{jsonObject ->
+            if (jsonObject == null) {
+                showToast(activity!!, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        Toast.makeText(activity, "子ども情報を削除しました", Toast.LENGTH_SHORT).show()
+                        getChild()
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    val intent = Intent(activity, SignInActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    startActivity(intent)
+                                }
+                                else -> {
+                                    showToast(activity!!, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(ApiParam(Api.SLIM + "/child/delete", param))
+    }
 }
