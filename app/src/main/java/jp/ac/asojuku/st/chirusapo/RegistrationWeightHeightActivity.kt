@@ -1,136 +1,47 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
-import io.realm.exceptions.RealmPrimaryKeyConstraintException
 import io.realm.kotlin.where
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListItem
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
-import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
-import jp.ac.asojuku.st.chirusapo.apis.*
+import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
+import kotlinx.android.synthetic.main.activity_child_registration.*
 import kotlinx.android.synthetic.main.activity_registration_weight_height.*
-import kotlinx.android.synthetic.main.fragment_child_data_set.*
+import kotlinx.android.synthetic.main.activity_registration_weight_height.child_height
+import kotlinx.android.synthetic.main.activity_registration_weight_height.child_weight
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
 class RegistrationWeightHeightActivity : AppCompatActivity() {
     lateinit var realm: Realm
-    private lateinit var userToken: String
-    private  lateinit var childId : String
+    private val calender = Calendar.getInstance()
+    private val year = calender.get(Calendar.YEAR).toString()
+    private val month = calender.get(Calendar.MONTH)+1
+    private val day = calender.get(Calendar.DAY_OF_MONTH).toString()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration_weight_height)
+
+        child_weight.setText(intent.getStringExtra("bodyWeight"))
+        child_height.setText(intent.getStringExtra("bodyHeight"))
+        clothes_size.setText(intent.getStringExtra("clothesSize"))
+        shoes_size.setText(intent.getStringExtra("shoesSize"))
+        val today:String = year + "年" + month + "月" + day + "日"
+        today_time.text = today
+
     }
 
     override fun onResume() {
         super.onResume()
 
-        realm = Realm.getDefaultInstance()
-
-        val account = realm.where<Account>().findFirst()
-
-        //Tokenが存在するか？
-        if (account == null) {
-            // 新規登録orログインが行われていないのでSignInActivityに遷移
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
-        }else {
-            userToken = account.Rtoken
-            //現在見ているグループIDの取得
-            val test = 1
-            val group:JoinGroup? =
-                realm.where<JoinGroup>().equalTo("Rgroup_flag", test).findFirst()
-            //存在しなかった(グループに参加を促すようにする
-            if(group == null){
-                Toast.makeText(this, "グループ情報が取得できません", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                val groupId = group.Rgroup_id
-                ApiGetTask {
-                    if (it == null) {
-                        Toast.makeText(this, "APIと通信できません", Toast.LENGTH_SHORT).show()
-                    } else {
-                        when (it.getString("status")) {
-                            "200" -> {
-
-                                val childData =
-                                    it.getJSONObject("data").getJSONArray("child_list")
-                                //書き換え
-                                val i = 4
-                                var item = childData.getJSONObject(i)
-
-                                child_weight.setText(item.getString("body_weight"))
-                                child_height.setText(item.getString("body_height"))
-                                clothes_size.setText(item.getString("clothes_size"))
-                                shoes_size.setText(item.getString("shoes_size"))
-
-                                button_set.setOnClickListener {
-                                    set()
-                                }
-
-                            }
-                            "400" -> {
-                                //messageからエラー文を配列で取得し格納する
-                                val errorArray = it.getJSONArray("message")
-                                for (i in 0 until errorArray.length()) {
-                                    when (errorArray.getString(i)) {
-                                        //グループ情報なし
-                                        ApiError.UNKNOWN_GROUP -> {
-                                            ApiError.showToast(
-                                                this,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //値が不足している場合
-                                        ApiError.REQUIRED_PARAM -> {
-                                            ApiError.showToast(
-                                                this,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //トークンの検証失敗
-                                        ApiError.UNKNOWN_TOKEN -> {
-                                            ApiError.showToast(
-                                                this,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                        //所属グループなし
-                                        ApiError.UNREADY_BELONG_GROUP -> {
-                                            ApiError.showToast(
-                                                this,
-                                                errorArray.getString(i),
-                                                Toast.LENGTH_LONG
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            else ->Toast.makeText(this, "不明なエラーが発生しました", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }.execute(
-                    ApiParam(
-                        Api.SLIM + "/child/list",
-                        hashMapOf("token" to userToken, "group_id" to groupId)
-                    )
-                )
-            }
-        }
+        button_set.setOnClickListener { update() }
     }
 
     private fun validationHeight(): Boolean {
@@ -144,8 +55,16 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_height_input.error = "身長が入力されていません"
                 false
             }
+            height.toDouble() < 10 -> {
+                child_height.error = "身長は10～200までの間で入力してください"
+                false
+            }
+            height.toDouble() > 200 -> {
+                child_height.error = "身長は10～200までの間で入力してください"
+                false
+            }
             //半角数字_で4文字から10文字以外なら
-            !Pattern.compile("^[0-9-.]*\$").matcher(height).find() -> {
+            !Pattern.compile("^[0-9.]*\$").matcher(height).find() -> {
                 child_height_input.error = "使用できない文字が含まれています"
                 false
             }
@@ -168,8 +87,16 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_weight_input.error = "体重が入力されていません"
                 false
             }
+            weight.toDouble() < 1 -> {
+                child_weight.error = "体重は1～150までの間で入力してください"
+                false
+            }
+            weight.toDouble() > 150 -> {
+                child_weight.error = "体重は1～150までの間で入力してください"
+                false
+            }
             //半角数字_で4文字から10文字以外なら
-            !Pattern.compile("^[0-9-.]*\$").matcher(weight).find() -> {
+            !Pattern.compile("^[0-9.]*\$").matcher(weight).find() -> {
                 child_weight_input.error = "使用できない文字が含まれています"
                 false
             }
@@ -192,9 +119,21 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_clothes_input.error = "服のサイズが入力されていません"
                 false
             }
+            clothes.toDouble() < 50 -> {
+                child_weight.error = "服のサイズは50～160までの間で入力してください"
+                false
+            }
+            clothes.toDouble() > 160 -> {
+                child_weight.error = "服のサイズは50～160までの間で入力してください"
+                false
+            }
             //半角数字_で4文字から10文字以外なら
             !Pattern.compile("^[0-9]*\$").matcher(clothes).find() -> {
                 child_clothes_input.error = "使用できない文字が含まれています"
+                false
+            }
+            !Pattern.compile("^[0-9]{2}0$").matcher(clothes).find() -> {
+                child_clothes_input.error = "10単位で入力してください"
                 false
             }
             //なにもエラーなし
@@ -205,19 +144,27 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
         }
     }
 
-    private fun validationShose(): Boolean {
+    private fun validationShoes(): Boolean {
         //これで入力されたuser_idをstring型に変換して代入する。
-        val shose =
+        val shoes =
             child_shose_input.editText?.text.toString().trim()
 
         return when {
-            shose.isEmpty() -> {
+            shoes.isEmpty() -> {
                 //何も入力されていないなら
                 child_shose_input.error = "靴のサイズが入力されていません"
                 false
             }
+            shoes.toDouble() < 5 -> {
+                child_shoes.error = "靴のサイズは5～30までの間で入力してください"
+                false
+            }
+            shoes.toDouble() > 30 -> {
+                child_shoes.error = "靴のサイズは5～30までの間で入力してください"
+                false
+            }
             //半角数字_で4文字から10文字以外なら
-            !Pattern.compile("^[0-9]*\$").matcher(shose).find() -> {
+            !Pattern.compile("^[0-9]*\$").matcher(shoes).find() -> {
                 child_shose_input.error = "使用できない文字が含まれています"
                 false
             }
@@ -230,13 +177,13 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun  set(){
+    private fun  update(){
         button_set.isEnabled = false
 
         val height = child_height_input.editText?.text.toString().trim()
         val weight = child_weight_input.editText?.text.toString().trim()
         val clothes = child_clothes_input.editText?.text.toString().trim()
-        val shose = child_shose_input.editText?.text.toString().trim()
+        val shoes = child_shose_input.editText?.text.toString().trim()
         val time = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
         //バリデートでfalseが返ってきたら処理を抜ける
@@ -244,7 +191,7 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
         if (!validationHeight()) check = false
         if (!validationWeight()) check = false
         if (!validationClothes()) check = false
-        if (!validationShose()) check = false
+        if (!validationShoes()) check = false
 
         if (!check) {
             // クリックを有効にする
@@ -255,10 +202,8 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
         realm = Realm.getDefaultInstance()
 
         val account = realm.where<Account>().findFirst()
-        val Token = account!!.Rtoken
+        val token = account!!.Rtoken
         val childId = intent.getStringExtra("user_id")
-
-        Log.d("TEST", childId)
 
         ApiPostTask {
             //データが取得できなかった場合
@@ -272,11 +217,6 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 when (it.getString("status")) {
                     "200" -> {
                         button_set.isEnabled = true
-
-//                        val intent = Intent(this, ChildFragment::class.java).apply {
-//                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-//                        }
-//                        startActivity(intent)
                         finish()
                     }
                     "400" -> {
@@ -287,7 +227,7 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                             when (errorArray.getString(i)) {
                                 //ユーザー情報が見つからない場合に返される
                                 //ユーザーIDに一致する項目があり、パスワードが誤っている場合でもUNKNOWN_USERとして返される
-                                ApiError.UNKNOWN_USER -> {
+                                ApiError.UNREADY_BELONG_GROUP -> {
                                     ApiError.showToast(
                                         this,
                                         errorArray.getString(i),
@@ -296,6 +236,13 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                                 }
                                 //値が不足している
                                 ApiError.REQUIRED_PARAM -> {
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
+                                }
+                                ApiError.ALREADY_RECORD -> {
                                     ApiError.showToast(
                                         this,
                                         errorArray.getString(i),
@@ -320,7 +267,7 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
             ApiParam(
                 Api.SLIM + "/child/growth/history/add",
                 //ここに送るデータを記入する
-                hashMapOf("token" to Token, "child_id" to childId,"body_height" to height,"body_weight" to weight,"clothes_size" to clothes,"shoes_size" to shose,"add_date" to time)
+                hashMapOf("token" to token, "child_id" to childId,"body_height" to height,"body_weight" to weight,"clothes_size" to clothes,"shoes_size" to shoes,"add_date" to time)
             )
         )
     }
