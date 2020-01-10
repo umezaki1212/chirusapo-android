@@ -1,107 +1,150 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.ArrayAdapter
+import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.utils.ColorTemplate
-//import jp.ac.asojuku.st.chirusapo.chart_data.BarChartItem
-import jp.ac.asojuku.st.chirusapo.chart_data.ChartItem
-import kotlinx.android.synthetic.main.activity_child_graff.*
-import java.util.*
+import com.google.android.material.snackbar.Snackbar
+import io.realm.Realm
+import jp.ac.asojuku.st.chirusapo.apis.Api
+import jp.ac.asojuku.st.chirusapo.apis.ApiError
+import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
+import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import kotlinx.android.synthetic.main.activity_child_graph.*
 
 class ChildGraphActivity : AppCompatActivity() {
+    private lateinit var realm: Realm
+    private lateinit var userToken: String
+    private lateinit var childId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        setContentView(R.layout.activity_child_graph)
+        supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
+            title = "成長グラフ"
+        }
+
+        realm = Realm.getDefaultInstance()
+
+        val account = realm.where(Account::class.java).findFirst()
+        val userId = intent.getStringExtra("user_id")
+
+        if (account != null && userId != null) {
+            userToken = account.Rtoken
+            childId = userId
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        ApiGetTask { jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showSnackBar(root_view, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        val historyData =
+                            jsonObject.getJSONObject("data").getJSONObject("history_data")
+                        val keys = historyData.keys()
+
+                        var paramDate = ""
+                        var paramBodyHeight = ""
+                        var paramBodyWeight = ""
+                        var paramClothesSize = ""
+                        var paramShoesSize = ""
+
+                        while (keys.hasNext()) {
+                            val key = keys.next()
+                            val obj = historyData.getJSONObject(key)
+
+                            if (keys.hasNext()) {
+                                paramDate += "$key,"
+                                paramBodyHeight += obj.getString("body_height") + ","
+                                paramBodyWeight += obj.getString("body_weight") + ","
+                                paramClothesSize += obj.getString("clothes_size") + ","
+                                paramShoesSize += obj.getString("shoes_size") + ","
+                            } else {
+                                paramDate += key
+                                paramBodyHeight += obj.getString("body_height")
+                                paramBodyWeight += obj.getString("body_weight")
+                                paramClothesSize += obj.getString("clothes_size")
+                                paramShoesSize += obj.getString("shoes_size")
+                            }
+                        }
+
+                        val graph01Url = Uri.parse("https://slim.chirusapo.vxx0.com/graph")
+                            .buildUpon().apply {
+                                appendQueryParameter("label1", "身長")
+                                appendQueryParameter("label2", "体重")
+                                appendQueryParameter("day", paramDate)
+                                appendQueryParameter("data1", paramBodyHeight)
+                                appendQueryParameter("data2", paramBodyWeight)
+                            }.build()
+
+
+                        val graph02Url = Uri.parse("https://slim.chirusapo.vxx0.com/graph")
+                            .buildUpon().apply {
+                                appendQueryParameter("label1", "服のサイズ")
+                                appendQueryParameter("label2", "靴のサイズ")
+                                appendQueryParameter("day", paramDate)
+                                appendQueryParameter("data1", paramClothesSize)
+                                appendQueryParameter("data2", paramShoesSize)
+                            }.build()
+
+                        graph01.webViewClient = WebViewClient()
+                        graph01.loadUrl(graph01Url.toString())
+                        graph01.settings.javaScriptEnabled = true
+
+
+                        println(graph01Url.toString())
+
+                        graph02.webViewClient = WebViewClient()
+                        graph02.loadUrl(graph02Url.toString())
+                        graph02.settings.javaScriptEnabled = true
+
+                        println(graph02Url.toString())
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.REQUIRED_PARAM,
+                                ApiError.UNKNOWN_CHILD,
+                                ApiError.UNREADY_BELONG_GROUP -> {
+                                    ApiError.showSnackBar(
+                                        root_view,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                }
+                                ApiError.UNKNOWN_TOKEN -> {
+                                    val intent = Intent(this, SignInActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    startActivity(intent)
+                                }
+                                else -> {
+                                    ApiError.showSnackBar(
+                                        root_view,
+                                        errorArray.getString(i),
+                                        Snackbar.LENGTH_SHORT
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(
+            ApiParam(
+                Api.SLIM + "/child/growth/history/get",
+                hashMapOf("token" to userToken, "child_id" to childId)
+            )
         )
-        setContentView(R.layout.activity_child_graff)
-
-        title = "ListViewMultiChartActivity"
-
-        val lv = listView1
-
-        val list = ArrayList<ChartItem>()
-
-//        list.add(
-//            BarChartItem(
-//                generateDataBar(1),
-//                applicationContext
-//            )
-//        )
-//        list.add(
-//            BarChartItem(
-//                generateDataBar(2),
-//                applicationContext
-//            )
-//        )
-//        list.add(
-//            BarChartItem(
-//                generateDataBar(3),
-//                applicationContext
-//            )
-//        )
-//        list.add(
-//            BarChartItem(
-//                generateDataBar(4),
-//                applicationContext
-//            )
-//        )
-
-        val cda = ChartDataAdapter(applicationContext, list)
-        lv.adapter = cda
-    }
-
-    /** adapter that supports 3 different item types  */
-    private inner class ChartDataAdapter internal constructor(
-        context: Context,
-        objects: List<ChartItem>
-    ) :
-        ArrayAdapter<ChartItem>(context, 0, objects) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-
-            return getItem(position)!!.getView(position, convertView!!, context)
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            // return the views type
-            val ci = getItem(position)
-            return ci?.getItemType() ?: 0
-        }
-
-        override fun getViewTypeCount(): Int {
-            return 3 // we have 3 different item-types
-        }
-    }
-
-    private fun generateDataBar(cnt: Int): BarData {
-
-        val entries = ArrayList<BarEntry>()
-
-        for (i in 0..11) {
-            entries.add(BarEntry(i.toFloat(), ((Math.random() * 70).toInt() + 30).toFloat()))
-        }
-
-        val d = BarDataSet(entries, "New DataSet $cnt")
-        d.setColors(*ColorTemplate.VORDIPLOM_COLORS)
-        d.highLightAlpha = 255
-
-        val cd = BarData(d)
-        cd.barWidth = 0.9f
-        return cd
-    }
-
-
-    fun saveToGallery() { /* Intentionally left empty */
     }
 }
