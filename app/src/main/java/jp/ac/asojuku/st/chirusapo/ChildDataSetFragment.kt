@@ -35,8 +35,10 @@ class ChildDataSetFragment : Fragment() {
     private  lateinit var childId : String
     private var counter : Int = 0
     private lateinit var childData: JSONObject
-    private lateinit var body_height:String
-    private lateinit var body_weight:String
+    private lateinit var bodyHeight:String
+    private lateinit var bodyWeight:String
+    private lateinit var clothesSize:String
+    private lateinit var shoesSize:String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +49,10 @@ class ChildDataSetFragment : Fragment() {
 
         Log.d("TEST", childData.toString())
         childId = childData.getString("user_id")
+        bodyHeight =  childData.getString("body_height")
+        bodyWeight =  childData.getString("body_weight")
+        clothesSize =  childData.getString("clothes_size")
+        shoesSize =  childData.getString("shoes_size")
     }
 
     override fun onCreateView(
@@ -62,13 +68,19 @@ class ChildDataSetFragment : Fragment() {
 
         speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
             when (actionItem.id) {
+                //子供情報更新画面
                 R.id.action_add_body -> {
                     val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
                     intent.putExtra("user_id", childId)
+                    intent.putExtra("bodyWeight", bodyWeight)
+                    intent.putExtra("bodyHeight", bodyHeight)
+                    intent.putExtra("clothesSize", clothesSize)
+                    intent.putExtra("shoesSize", shoesSize)
                     startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
+                //子供成長投稿画面
                 R.id.action_add_image -> {
                     val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
                     intent.putExtra("user_id", childId)
@@ -76,11 +88,13 @@ class ChildDataSetFragment : Fragment() {
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
+                //子成情報変更画面
                 R.id.action_update_body -> {
                     showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
+                //子供情報新規登録
                 R.id.action_add_user -> {
 //                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
                     val intent = Intent(activity!!, RegistrationChildActivity::class.java)
@@ -115,7 +129,7 @@ class ChildDataSetFragment : Fragment() {
                 val groupId = group.Rgroup_id
                 ApiGetTask {
                     if (it == null) {
-                        Snackbar.make(view!!, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(view, "APIとの通信に失敗しました", Snackbar.LENGTH_SHORT).show()
                     } else {
                         when (it.getString("status")) {
                             "200" -> {
@@ -124,7 +138,6 @@ class ChildDataSetFragment : Fragment() {
                                     it.getJSONObject("data").getJSONArray("child_list")
                                 val list = arrayListOf<ChildDataListItem>()
                                 var customListView = ChildDataListItem()
-
 
                                 for (y in 0 until childData.length()){
                                     if (childData.getJSONObject(y).getString("user_id") == childId){
@@ -280,28 +293,6 @@ class ChildDataSetFragment : Fragment() {
                                     dataArray
                                 )
                                 listViewRecord.adapter = adapter
-
-//                                val listViewRecord = ArrayList<ChildDataListSub>()
-//
-//                                var childDataListRecord = ChildDataListSub()
-//                                childDataListRecord.id = 0.toLong()
-//                                childDataListRecord.dataTitle = "今までの成長"
-//                                listViewRecord.add(childDataListRecord)
-//
-//                                childDataListRecord = ChildDataListSub()
-//                                childDataListRecord.id = 1.toLong()
-//                                childDataListRecord.dataTitle = "グラフの表示"
-//                                listViewRecord.add(childDataListRecord)
-//
-//                                childDataListRecord = ChildDataListSub()
-//                                childDataListRecord.id = 2.toLong()
-//                                childDataListRecord.dataTitle = "友達リスト"
-//                                listViewRecord.add(childDataListRecord)
-//
-//                                val listRecordView = child_list_record
-//                                val childDataRecordAdapter = ChildDataSubAdapter(activity!!)
-//                                childDataRecordAdapter.setChildDataSubAdapter(listViewRecord)
-//                                listRecordView.adapter = childDataRecordAdapter
 
                                 listViewRecord.setOnItemClickListener { adapterView, _, position, _ ->
                                     when (adapterView.getItemAtPosition(position) as String) {

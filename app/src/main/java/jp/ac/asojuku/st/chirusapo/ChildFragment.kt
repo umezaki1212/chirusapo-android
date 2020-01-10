@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import com.google.android.material.snackbar.Snackbar
-import com.leinardi.android.speeddial.SpeedDialView
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.Api
@@ -31,40 +30,7 @@ class ChildFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_child, container, false)
-
-//        val speedDialView = view.findViewById<SpeedDialView>(R.id.speedDialChild)
-//        speedDialView.inflate(R.menu.menu_speed_dial)
-//
-//        speedDialView.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
-//            when (actionItem.id) {
-//                R.id.action_add_body -> {
-//                    val intent = Intent(activity!!, RegistrationWeightHeightActivity::class.java)
-//                    startActivity(intent)
-//                    speedDialView.close() // To close the Speed Dial with animation
-//                    return@OnActionSelectedListener true // false will close it without animation
-//                }
-//                R.id.action_add_image -> {
-//                    val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
-//                    startActivity(intent)
-//                    speedDialView.close() // To close the Speed Dial with animation
-//                    return@OnActionSelectedListener true // false will close it without animation
-//                }
-//                R.id.action_update_body -> {
-//                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
-//                    speedDialView.close() // To close the Speed Dial with animation
-//                    return@OnActionSelectedListener true // false will close it without animation
-//                }
-//                R.id.action_add_user -> {
-//                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
-//                    speedDialView.close() // To close the Speed Dial with animation
-//                    return@OnActionSelectedListener true // false will close it without animation
-//                }
-//            }
-//            false
-//        })
-
-        return view
+        return inflater.inflate(R.layout.fragment_child, container, false)
     }
 
     override fun onAttach(context: Context) {

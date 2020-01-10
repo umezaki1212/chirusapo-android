@@ -61,6 +61,7 @@ class ApiError {
         const val VALIDATION_VACCINATION = "VALIDATION_VACCINATION"
         const val VALIDATION_ALLERGY = "VALIDATION_ALLERGY"
         const val UNKNOWN_CHILD = "UNKNOWN_CHILD"
+        const val ALREADY_RECORD = "ALREADY_RECORD"
 
         fun showToast(context: Context, message: String, duration: Int) {
             Toast.makeText(context, switchMessage(message), duration).show()
@@ -214,6 +215,9 @@ class ApiError {
                 }
                 UNKNOWN_CHILD -> {
                     "子ども情報が見つかりません"
+                }
+                ALREADY_RECORD -> {
+                    "成長記録の更新一日一回までです"
                 }
                 else -> message
             }
