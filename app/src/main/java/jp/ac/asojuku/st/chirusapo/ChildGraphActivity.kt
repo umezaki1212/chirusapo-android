@@ -39,6 +39,11 @@ class ChildGraphActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -51,6 +56,10 @@ class ChildGraphActivity : AppCompatActivity() {
                         val historyData =
                             jsonObject.getJSONObject("data").getJSONObject("history_data")
                         val keys = historyData.keys()
+
+                        if (historyData.length() == 0) {
+                            Snackbar.make(root_view, "成長データが見つかりませんでした", Snackbar.LENGTH_SHORT).show()
+                        }
 
                         var paramDate = ""
                         var paramBodyHeight = ""
