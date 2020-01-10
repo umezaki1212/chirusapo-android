@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity(),
     ChildFragment.OnFragmentInteractionListener,
     CalendarFragment.OnFragmentInteractionListener,
     AlbumFragment.OnFragmentInteractionListener,
-    DressFragment.OnFragmentInteractionListener {
+    DressFragment.OnFragmentInteractionListener,
+    ChildDataSetFragment.OnFragmentInteractionListener {
 
     lateinit var realm:Realm
     private lateinit var userToken:String
