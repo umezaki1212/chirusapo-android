@@ -3,23 +3,21 @@ package jp.ac.asojuku.st.chirusapo
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.adapters.ChildFriendAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.ChildFriendList
-import jp.ac.asojuku.st.chirusapo.apis.Api
-import jp.ac.asojuku.st.chirusapo.apis.ApiError
-import jp.ac.asojuku.st.chirusapo.apis.ApiGetTask
-import jp.ac.asojuku.st.chirusapo.apis.ApiParam
+import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.activity_listof_friend.*
 
 @SuppressLint("Registered")
 class ListofFriendActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
+    private lateinit var token : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +52,7 @@ class ListofFriendActivity : AppCompatActivity() {
             val childId = intent.getStringExtra("user_id")
 
             if (account !== null) {
-                val token = account.Rtoken
+                token = account.Rtoken
                 ApiGetTask {
                     if (it == null) {
                         ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_LONG)
@@ -91,8 +89,27 @@ class ListofFriendActivity : AppCompatActivity() {
                                     val intent =
                                         Intent(this, CheckFriendActivity::class.java)
                                     intent.putExtra("childId", childId)
-                                    intent.putExtra("friendId",item.friendId)
+                                    intent.putExtra("friendId", item.friendId)
                                     startActivity(intent)
+                                }
+                                listView.setOnItemLongClickListener { adapterView, _, i, _ ->
+                                    val item = adapterView.getItemAtPosition(i) as ChildFriendList
+                                    val message =
+                                        "子ども情報を削除しますか？\n" +
+                                                item.userName +
+                                                "の情報が削除されます"
+                                    AlertDialog.Builder(this).apply {
+                                        setTitle("子ども情報削除")
+                                        setMessage(message)
+                                        setPositiveButton("削除"){ _, _ ->
+                                            deleteFriend(item.friendId!!)
+                                        }
+                                        setNegativeButton("キャンセル", null)
+                                        create()
+                                        show()
+                                    }
+
+                                    return@setOnItemLongClickListener true
                                 }
                             }
                             "400" -> {
@@ -127,7 +144,41 @@ class ListofFriendActivity : AppCompatActivity() {
                 )
             }
         }
-
     }
 
+    private fun deleteFriend(childId:String) {
+        val param = hashMapOf(
+            "token" to token,
+            "friend_id" to childId
+        )
+        ApiPostTask{jsonObject ->
+            if (jsonObject == null) {
+                ApiError.showToast(this, ApiError.CONNECTION_ERROR, Toast.LENGTH_SHORT)
+            } else {
+                when (jsonObject.getString("status")) {
+                    "200" -> {
+                        Toast.makeText(this, "友達情報を削除しました", Toast.LENGTH_SHORT).show()
+                        getFriendList()
+                    }
+                    "400" -> {
+                        val errorArray = jsonObject.getJSONArray("message")
+                        for (i in 0 until errorArray.length()) {
+                            when (errorArray.getString(i)) {
+                                ApiError.UNAUTHORIZED_OPERATION -> {
+                                    ApiError.showToast(
+                                        this,
+                                        errorArray.getString(i),
+                                        Toast.LENGTH_LONG
+                                    )
+                                }
+                                else -> {
+                                    ApiError.showToast(this, errorArray.getString(i), Toast.LENGTH_SHORT)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.execute(ApiParam(Api.SLIM + "/child/friend/delete", param))
+    }
 }

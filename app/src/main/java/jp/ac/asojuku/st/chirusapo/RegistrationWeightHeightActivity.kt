@@ -10,10 +10,7 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_child_registration.*
 import kotlinx.android.synthetic.main.activity_registration_weight_height.*
-import kotlinx.android.synthetic.main.activity_registration_weight_height.child_height
-import kotlinx.android.synthetic.main.activity_registration_weight_height.child_weight
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
