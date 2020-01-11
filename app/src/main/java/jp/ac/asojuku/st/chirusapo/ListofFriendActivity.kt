@@ -3,6 +3,7 @@ package jp.ac.asojuku.st.chirusapo
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
@@ -66,6 +67,7 @@ class ListofFriendActivity : AppCompatActivity() {
                                 for (i in 0 until friendMember.length()) {
                                     val memberInfo = friendMember.getJSONObject(i)
                                     val memberName = memberInfo.getString("user_name")
+                                    val friendId = memberInfo.getString("id")
                                     val memberIcon = if (memberInfo.isNull("user_icon")) {
                                         null
                                     } else {
@@ -76,7 +78,7 @@ class ListofFriendActivity : AppCompatActivity() {
                                     item.id = i.toLong()
                                     item.userName = memberName
                                     item.userIcon = memberIcon
-
+                                    item.friendId = friendId
                                     list.add(item)
                                 }
                                 val listView = listview
@@ -84,10 +86,12 @@ class ListofFriendActivity : AppCompatActivity() {
                                 adapter.setSampleListItem(list)
                                 adapter.notifyDataSetChanged()
                                 listView.adapter = adapter
-                                listView.setOnItemClickListener { _, _, _, _ ->
+                                listView.setOnItemClickListener { adapterView, _, i, _ ->
+                                    val item = adapterView.getItemAtPosition(i) as ChildFriendList
                                     val intent =
                                         Intent(this, CheckFriendActivity::class.java)
-                                    intent.putExtra("childId", intent.getStringExtra("user_id"))
+                                    intent.putExtra("childId", childId)
+                                    intent.putExtra("friendId",item.friendId)
                                     startActivity(intent)
                                 }
                             }

@@ -28,6 +28,7 @@
         <activity android:name=".CalendarViewActivity" />
         <activity android:name=".ChildTimeLinePostAdd" />
         <activity android:name=".ChildGraphActivity" />
+        <activity android:name=".CheckFriendActivity" />
         <activity android:name=".ListofFriendActivity" />
         <activity android:name=".CheckGrowthActivity" />
         <activity android:name=".TryonSelectChildActivity" />
