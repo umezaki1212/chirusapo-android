@@ -36,6 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/child_heigth"
+                android:inputType="number"
                 android:textSize="30sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,6 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/child_weigth"
+                android:inputType="number"
                 android:textSize="30sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -68,12 +70,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/clothes_size"
+                android:inputType="number"
                 android:textSize="30sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/child_shose_input"
+            android:id="@+id/child_shoes_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -84,6 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/shoes_size"
+                android:inputType="number"
                 android:textSize="30sp" />
 
         </com.google.android.material.textfield.TextInputLayout>

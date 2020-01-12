@@ -32,7 +32,7 @@ class ChildDataSetFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     lateinit var realm: Realm
     private lateinit var userToken: String
-    private  lateinit var childId : String
+    private lateinit var childId : String
     private var counter : Int = 0
     private lateinit var childData: JSONObject
     private lateinit var bodyHeight:String
@@ -46,8 +46,6 @@ class ChildDataSetFragment : Fragment() {
         arguments?.let {
             childId= it.getString("childData")!!
         }
-
-        Log.d("TEST", childData.toString())
         childId = childData.getString("user_id")
         bodyHeight =  childData.getString("body_height")
         bodyWeight =  childData.getString("body_weight")

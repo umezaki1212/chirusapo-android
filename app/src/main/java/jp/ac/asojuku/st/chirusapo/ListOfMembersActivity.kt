@@ -87,7 +87,7 @@ class ListOfMembersActivity : AppCompatActivity() {
                                 adapter.setSampleListItem(list)
                                 adapter.notifyDataSetChanged()
                                 listView.adapter = adapter
-                                listView.setOnItemClickListener { adapterView, _, i, l ->
+                                listView.setOnItemClickListener { adapterView, _, i, _ ->
                                     val item = adapterView.getItemAtPosition(i) as GroupMemberListItem
                                     val intent =
                                         Intent(this, CheckProfileActivity::class.java)
