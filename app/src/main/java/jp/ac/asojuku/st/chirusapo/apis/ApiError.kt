@@ -62,6 +62,7 @@ class ApiError {
         const val VALIDATION_ALLERGY = "VALIDATION_ALLERGY"
         const val UNKNOWN_CHILD = "UNKNOWN_CHILD"
         const val ALREADY_RECORD = "ALREADY_RECORD"
+        const val VALIDATION_FRIEND_MEMO = "VALIDATION_FRIEND_MEMO"
 
         fun showToast(context: Context, message: String, duration: Int) {
             Toast.makeText(context, switchMessage(message), duration).show()

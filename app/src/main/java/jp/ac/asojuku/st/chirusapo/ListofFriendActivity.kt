@@ -3,6 +3,7 @@ package jp.ac.asojuku.st.chirusapo
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,15 +14,19 @@ import jp.ac.asojuku.st.chirusapo.adapters.ChildFriendList
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.activity_listof_friend.*
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 @SuppressLint("Registered")
 class ListofFriendActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
     private lateinit var token : String
+    private lateinit var childId:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listof_friend)
+
+        childId = intent.getStringExtra("user_id")
 
         supportActionBar?.let {
             title = "友達一覧"
@@ -31,8 +36,21 @@ class ListofFriendActivity : AppCompatActivity() {
 
         realm = Realm.getDefaultInstance()
 
-        getFriendList()
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        getFriendList()
+
+        button_friend_add.setOnClickListener {
+            val intent = Intent(this,ChildFriendAddActivity::class.java)
+            intent.putExtra("childId", childId)
+            startActivity(intent)
+        }
+
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -49,7 +67,6 @@ class ListofFriendActivity : AppCompatActivity() {
 
         realm.executeTransaction {
             val account: Account? = realm.where<Account>().findFirst()
-            val childId = intent.getStringExtra("user_id")
 
             if (account !== null) {
                 token = account.Rtoken
