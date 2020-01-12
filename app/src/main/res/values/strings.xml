@@ -145,4 +145,5 @@
     <string name="fragment_calendar_schedule_list">スケジュール一覧</string>
     <string name="child_add">追加する</string>
     <string name="child_id">子供ID</string>
+    <string name="memo">メモ</string>
 </resources>
