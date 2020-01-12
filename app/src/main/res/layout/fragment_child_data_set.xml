@@ -1,73 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="10dp"
+    android:paddingTop="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp"
     tools:context=".ChildFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/child_title_main_data"
+        <LinearLayout
+            android:id="@+id/root_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/child_title_main"
-            android:textSize="18sp" />
+            android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/child_main_data_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/list_view_border" />
+            <TextView
+                android:id="@+id/child_title_main_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/child_title_main"
+                android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/child_title_vaccination"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/child_vaccination"
-            android:textSize="18sp"/>
+            <ListView
+                android:id="@+id/child_main_data_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/list_view_border"
+                android:nestedScrollingEnabled="true" />
 
-        <ListView
-            android:id="@+id/child_vaccination_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/list_view_border">
+            <TextView
+                android:id="@+id/child_title_vaccination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/child_vaccination"
+                android:textSize="18sp" />
 
-        </ListView>
+            <ListView
+                android:id="@+id/child_vaccination_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/list_view_border"
+                android:nestedScrollingEnabled="true">
 
-        <TextView
-            android:id="@+id/child_title_allergy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/child_allergies"
-            android:textSize="18sp"/>
+            </ListView>
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/child_list_allergy"
-            android:background="@drawable/list_view_border">
-        </ListView>
+            <TextView
+                android:id="@+id/child_title_allergy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/child_allergies"
+                android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/child_record"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/child_record"
-            android:textSize="18sp"/>
+            <ListView
+                android:id="@+id/child_list_allergy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/list_view_border"
+                android:nestedScrollingEnabled="true" />
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/child_list_record"
-            android:background="@drawable/list_view_border">
-        </ListView>
+            <TextView
+                android:id="@+id/child_record"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/child_record"
+                android:textSize="18sp" />
 
-    </LinearLayout>
+            <ListView
+                android:id="@+id/child_list_record"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/list_view_border"
+                android:nestedScrollingEnabled="true" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <com.leinardi.android.speeddial.SpeedDialView
         android:id="@+id/speedDialChild"
@@ -76,8 +88,8 @@
         android:layout_gravity="bottom|end"
         app:sdMainFabClosedBackgroundColor="@color/colorPrimary"
         app:sdMainFabClosedSrc="@drawable/ic_bars_solid"
-        app:sdMainFabOpenedSrc="@drawable/ic_close"
-        app:sdMainFabOpenedBackgroundColor="#FFC107" />
+        app:sdMainFabOpenedBackgroundColor="#FFC107"
+        app:sdMainFabOpenedSrc="@drawable/ic_close" />
 
 
 </FrameLayout>
