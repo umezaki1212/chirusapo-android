@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,6 @@ import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
 import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import org.json.JSONObject
-import android.view.View.MeasureSpec
 
 class ChildDataSetFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -38,8 +36,6 @@ class ChildDataSetFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_child_data_set, container, false)
-
-        Log.d("TEST", childData.toString())
 
         childId = childData.getString("user_id")
 
@@ -176,8 +172,7 @@ class ChildDataSetFragment : Fragment() {
         childDataAdapter.notifyDataSetChanged()
         listView.adapter = childDataAdapter
 
-//        setListViewHeightBasedOnChildren(listView)
-        listView.layoutParams = setTest(listView)
+        setListViewHeightBasedOnChildren(listView)
 
         val listSub = ArrayList<ChildDataListItem>()
         arrayListOf<String>().apply {
@@ -208,8 +203,7 @@ class ChildDataSetFragment : Fragment() {
         childDataAllergyAdapter.setChildDataAdapter(listSub)
         listSubViewAllergy.adapter = childDataAllergyAdapter
 
-        listSubViewAllergy.layoutParams = setTest(listSubViewAllergy)
-//        setListViewHeightBasedOnChildren(listSubViewAllergy)
+        setListViewHeightBasedOnChildren(listSubViewAllergy)
 
         val listAllergy = ArrayList<ChildDataListSub>()
         arrayListOf<String>().apply {
@@ -234,9 +228,7 @@ class ChildDataSetFragment : Fragment() {
         val childDataSubAdapter = ChildDataSubAdapter(activity!!)
         childDataSubAdapter.setChildDataSubAdapter(listAllergy)
         listSubView.adapter = childDataSubAdapter
-
-//        setListViewHeightBasedOnChildren(listSubView)
-        listSubView.layoutParams = setTest(listSubView)
+        setListViewHeightBasedOnChildren(listSubView)
 
         val listViewRecord = view.findViewById<ListView>(R.id.child_list_record)
         val dataArray = arrayOf("今までの成長", "グラフの表示", "友達リスト")
@@ -270,8 +262,7 @@ class ChildDataSetFragment : Fragment() {
             }
         }
 
-//        setListViewHeightBasedOnChildren(listViewRecord)
-        listViewRecord.layoutParams = setTest(listViewRecord)
+        setListViewHeightBasedOnChildren(listViewRecord)
 
         return view
     }
@@ -314,21 +305,6 @@ class ChildDataSetFragment : Fragment() {
         val params = listView.layoutParams
         params.height = totalHeight + listView.dividerHeight * (listAdapter.count - 1)
         listView.layoutParams = params
-    }
-
-    private fun setTest(listView: ListView): LinearLayout.LayoutParams {
-        val lvItem = listView.adapter.getView(0, null, listView)
-        lvItem.measure(
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        )
-        val lvItemHeight = lvItem.measuredHeight
-        val lvWrapperHeight = lvItemHeight * listView.count + 10
-        // view.layoutParams
-        return LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            lvWrapperHeight
-        )
     }
 
     companion object {

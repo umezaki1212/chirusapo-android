@@ -4,10 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="10dp"
-    android:paddingTop="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp"
     tools:context=".ChildFragment">
 
     <ScrollView
@@ -18,7 +14,11 @@
             android:id="@+id/root_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:id="@+id/child_title_main_data"
@@ -32,7 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/list_view_border"
-                android:nestedScrollingEnabled="true" />
+                android:nestedScrollingEnabled="true"
+                tools:ignore="NestedScrolling" />
 
             <TextView
                 android:id="@+id/child_title_vaccination"
@@ -46,9 +47,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/list_view_border"
-                android:nestedScrollingEnabled="true">
-
-            </ListView>
+                android:nestedScrollingEnabled="true"
+                tools:ignore="NestedScrolling" />
 
             <TextView
                 android:id="@+id/child_title_allergy"
@@ -62,7 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/list_view_border"
-                android:nestedScrollingEnabled="true" />
+                android:nestedScrollingEnabled="true"
+                tools:ignore="NestedScrolling" />
 
             <TextView
                 android:id="@+id/child_record"
@@ -76,7 +77,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/list_view_border"
-                android:nestedScrollingEnabled="true" />
+                android:nestedScrollingEnabled="true"
+                tools:ignore="NestedScrolling" />
 
         </LinearLayout>
     </ScrollView>
