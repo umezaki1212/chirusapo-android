@@ -141,7 +141,7 @@ class RegistrationChildActivity : AppCompatActivity() {
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                gender = 0
+                clothes = 0
             }
         }
 

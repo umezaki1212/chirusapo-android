@@ -10,10 +10,7 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_child_registration.*
 import kotlinx.android.synthetic.main.activity_registration_weight_height.*
-import kotlinx.android.synthetic.main.activity_registration_weight_height.child_height
-import kotlinx.android.synthetic.main.activity_registration_weight_height.child_weight
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -55,12 +52,12 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_height_input.error = "身長が入力されていません"
                 false
             }
-            height.toDouble() < 10 -> {
-                child_height.error = "身長は10～200までの間で入力してください"
+            height.toDouble() < 9 -> {
+                child_height_input.error = "身長は10～200までの間で入力してください"
                 false
             }
-            height.toDouble() > 200 -> {
-                child_height.error = "身長は10～200までの間で入力してください"
+            height.toDouble() > 201 -> {
+                child_height_input.error = "身長は10～200までの間で入力してください"
                 false
             }
             //半角数字_で4文字から10文字以外なら
@@ -87,12 +84,12 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_weight_input.error = "体重が入力されていません"
                 false
             }
-            weight.toDouble() < 1 -> {
-                child_weight.error = "体重は1～150までの間で入力してください"
+            weight.toDouble() < 0 -> {
+                child_weight_input.error = "体重は1～150までの間で入力してください"
                 false
             }
-            weight.toDouble() > 150 -> {
-                child_weight.error = "体重は1～150までの間で入力してください"
+            weight.toDouble() > 151 -> {
+                child_weight_input.error = "体重は1～150までの間で入力してください"
                 false
             }
             //半角数字_で4文字から10文字以外なら
@@ -119,12 +116,12 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
                 child_clothes_input.error = "服のサイズが入力されていません"
                 false
             }
-            clothes.toDouble() < 50 -> {
-                child_weight.error = "服のサイズは50～160までの間で入力してください"
+            clothes.toDouble() < 49 -> {
+                child_clothes_input.error = "服のサイズは50～160までの間で入力してください"
                 false
             }
-            clothes.toDouble() > 160 -> {
-                child_weight.error = "服のサイズは50～160までの間で入力してください"
+            clothes.toDouble() > 161 -> {
+                child_clothes_input.error = "服のサイズは50～160までの間で入力してください"
                 false
             }
             //半角数字_で4文字から10文字以外なら
@@ -147,30 +144,30 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
     private fun validationShoes(): Boolean {
         //これで入力されたuser_idをstring型に変換して代入する。
         val shoes =
-            child_shose_input.editText?.text.toString().trim()
+            child_shoes_input.editText?.text.toString().trim()
 
         return when {
             shoes.isEmpty() -> {
                 //何も入力されていないなら
-                child_shose_input.error = "靴のサイズが入力されていません"
+                child_shoes_input.error = "靴のサイズが入力されていません"
                 false
             }
-            shoes.toDouble() < 5 -> {
-                child_shoes.error = "靴のサイズは5～30までの間で入力してください"
+            shoes.toDouble() <= 5 -> {
+                child_shoes_input.error = "靴のサイズは5～30までの間で入力してください"
                 false
             }
-            shoes.toDouble() > 30 -> {
-                child_shoes.error = "靴のサイズは5～30までの間で入力してください"
+            shoes.toDouble() >= 30 -> {
+                child_shoes_input.error = "靴のサイズは5～30までの間で入力してください"
                 false
             }
             //半角数字_で4文字から10文字以外なら
             !Pattern.compile("^[0-9]*\$").matcher(shoes).find() -> {
-                child_shose_input.error = "使用できない文字が含まれています"
+                child_shoes_input.error = "使用できない文字が含まれています"
                 false
             }
             //なにもエラーなし
             else -> {
-                child_shose_input.error = null
+                child_shoes_input.error = null
                 true
             }
         }
@@ -183,7 +180,7 @@ class RegistrationWeightHeightActivity : AppCompatActivity() {
         val height = child_height_input.editText?.text.toString().trim()
         val weight = child_weight_input.editText?.text.toString().trim()
         val clothes = child_clothes_input.editText?.text.toString().trim()
-        val shoes = child_shose_input.editText?.text.toString().trim()
+        val shoes = child_shoes_input.editText?.text.toString().trim()
         val time = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
         //バリデートでfalseが返ってきたら処理を抜ける
