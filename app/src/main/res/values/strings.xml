@@ -146,4 +146,5 @@
     <string name="child_add">追加する</string>
     <string name="child_id">子供ID</string>
     <string name="memo">メモ</string>
+    <string name="face_add">顔情報を追加する</string>
 </resources>

@@ -1,10 +1,9 @@
 package jp.ac.asojuku.st.chirusapo
 
-/* import kotlinx.android.synthetic.main.activity_registration_child.* */
+/* import kotlin.android.synthetic.main.activity_registration_child.* */
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -431,8 +430,6 @@ class RegistrationChildActivity : AppCompatActivity() {
             "clothes_size" to clothes.toString(),
             "shoes_size" to child_shoes.editText?.text.toString()
         )
-
-        Log.d("test",clothes.toString())
 
         for (i in 0 until vaccineNameTexts.size){
             params["vaccination[$i][vaccine_name]"] = vaccineNameTexts[i]

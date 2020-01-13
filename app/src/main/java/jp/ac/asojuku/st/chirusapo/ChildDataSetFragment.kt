@@ -30,6 +30,8 @@ class ChildDataSetFragment : Fragment() {
     private lateinit var childId: String
     private var counter: Int = 0
     private lateinit var childData: JSONObject
+    private lateinit var vaccinationCount:String
+    private lateinit var allergyCount:String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,13 +81,23 @@ class ChildDataSetFragment : Fragment() {
                     speedDialView.close()
                     return@OnActionSelectedListener true
                 }
+                // 子供顔管理
+                R.id.action_face_add -> {
+                    val intent = Intent(activity!!, ChildFaceFragment::class.java).apply {
+                        putExtra("user_id", childId)
+                    }
+                    startActivity(intent)
+                    speedDialView.close()
+                    return@OnActionSelectedListener true
+                }
                 // 子成情報変更画面
                 R.id.action_update_body -> {
-                    showToast(
-                        activity!!,
-                        "No label action clicked!\nClosing with animation",
-                        Toast.LENGTH_SHORT
-                    )
+                    val intent = Intent(activity!!, ChildChangeDataActivity::class.java).apply {
+                        putExtra("user_id", childId)
+                        putExtra("vaccinationCount", vaccinationCount)
+                        putExtra("allergyCount", allergyCount)
+                    }
+                    startActivity(intent)
                     speedDialView.close()
                     return@OnActionSelectedListener true
                 }
@@ -173,6 +185,10 @@ class ChildDataSetFragment : Fragment() {
         listView.adapter = childDataAdapter
 
         setListViewHeightBasedOnChildren(listView)
+
+
+        vaccinationCount = item.getJSONArray("vaccination").length().toString()
+        allergyCount = item.getJSONArray("allergy").length().toString()
 
         val listSub = ArrayList<ChildDataListItem>()
         arrayListOf<String>().apply {
