@@ -2,16 +2,20 @@ package jp.ac.asojuku.st.chirusapo
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
@@ -19,6 +23,7 @@ import com.squareup.picasso.Picasso
 import com.stfalcon.imageviewer.StfalconImageViewer
 import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.*
+import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showSnackBar
 import kotlinx.android.synthetic.main.fragment_album.*
 import java.io.IOException
 
@@ -144,7 +149,7 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         ApiMediaPostTask { jsonObject ->
             if (jsonObject == null) {
-                ApiError.showSnackBar(mRootView, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+                showSnackBar(mRootView, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
             } else {
                 when (jsonObject.getString("status")) {
                     "200" -> {
@@ -178,23 +183,15 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         val errorArray = jsonObject.getJSONArray("message")
                         for (i in 0 until errorArray.length()) {
                             when (errorArray.getString(i)) {
-                                ApiError.REQUIRED_PARAM,
-                                ApiError.UNKNOWN_GROUP,
-                                ApiError.UNREADY_BELONG_GROUP,
-                                ApiError.UPLOAD_FAILED,
-                                ApiError.ALLOW_EXTENSION -> {
-                                    ApiError.showSnackBar(
-                                        mRootView,
-                                        errorArray.getString(i),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                }
                                 ApiError.UNKNOWN_TOKEN -> {
                                     val intent =
                                         Intent(activity, SignInActivity::class.java).apply {
                                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                         }
                                     startActivity(intent)
+                                }
+                                else -> {
+                                    showSnackBar(mRootView, errorArray.getString(i), Snackbar.LENGTH_SHORT)
                                 }
                             }
                         }
@@ -215,7 +212,7 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun getAlbum() {
         ApiGetTask { jsonObject ->
             if (jsonObject == null) {
-                ApiError.showSnackBar(mRootView, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+                showSnackBar(mRootView, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
             } else {
                 when (jsonObject.getString("status")) {
                     "200" -> {
@@ -249,21 +246,15 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         val errorArray = jsonObject.getJSONArray("message")
                         for (i in 0 until errorArray.length()) {
                             when (errorArray.getString(i)) {
-                                ApiError.REQUIRED_PARAM,
-                                ApiError.UNKNOWN_GROUP,
-                                ApiError.UNREADY_BELONG_GROUP -> {
-                                    ApiError.showSnackBar(
-                                        mRootView,
-                                        errorArray.getString(i),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                }
                                 ApiError.UNKNOWN_TOKEN -> {
                                     val intent =
                                         Intent(activity, SignInActivity::class.java).apply {
                                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                         }
                                     startActivity(intent)
+                                }
+                                else -> {
+                                    showSnackBar(mRootView, errorArray.getString(i), Snackbar.LENGTH_SHORT)
                                 }
                             }
                         }
@@ -279,21 +270,37 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun setAlbum(list: ArrayList<String>) {
-        class GridAdapter(private val context: Context) : BaseAdapter() {
+        class GridAdapter : BaseAdapter() {
 
             override fun getView(i: Int, view: View?, viewGroup: ViewGroup?): View {
-                val imageView = ImageView(context).apply {
+                val imageView = ImageView(activity).apply {
                     layoutParams = LinearLayout.LayoutParams(500, 500)
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     setPadding(10, 10, 10, 10)
-                }
-                imageView.setOnClickListener {
-                    StfalconImageViewer.Builder<String>(
-                        activity!!,
-                        mutableListOf(list[i])
-                    ) { view, image ->
-                        Picasso.get().load(image).into(view)
-                    }.show()
+                    // ImageViewer
+                    setOnClickListener {
+                        StfalconImageViewer.Builder<String>(activity!!, mutableListOf(list[i])) { view, image ->
+                            Picasso.get().load(image).into(view)
+                        }.apply {
+                            withHiddenStatusBar(false)
+                            show()
+                        }
+                    }
+                    // FaceRecognition
+                    setOnLongClickListener {
+                        AlertDialog.Builder(activity!!).apply {
+                            setItems(arrayOf("写っている子どもを検索")) { _: DialogInterface?, i: Int ->
+                                when (i) {
+                                    0 -> {
+                                        faceRecognition((drawable as BitmapDrawable).bitmap)
+                                    }
+                                }
+                            }
+                            create()
+                            show()
+                        }
+                        return@setOnLongClickListener true
+                    }
                 }
 
                 Picasso.get().load(list[i]).into(imageView)
@@ -312,9 +319,52 @@ class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             override fun getCount(): Int {
                 return list.size
             }
+
+            private fun faceRecognition(bitmap: Bitmap) {
+                val snackBar = Snackbar.make(mRootView, "顔を認識しています…", Snackbar.LENGTH_INDEFINITE)
+                snackBar.show()
+                activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
+                val api = Api.urlBuilder(
+                    Api.FLASK,
+                    "recognition/token",
+                    hashMapOf("token" to userToken))
+                val param = ApiParamImage("image/jpg", "image.jpg", "file", bitmap)
+                ApiMediaPostTask { jsonObject ->
+                    if (jsonObject == null) {
+                        showSnackBar(mRootView, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
+                    } else {
+                        when (jsonObject.getString("status")) {
+                            "200" -> {
+                                Snackbar.make(mRootView, "Hey?", Snackbar.LENGTH_SHORT).show()
+                            }
+                            "400" -> {
+                                val errorArray = jsonObject.getJSONArray("message")
+                                for (i in 0 until errorArray.length()) {
+                                    when (errorArray.getString(i)) {
+//                                        ApiError.UNKNOWN_TOKEN -> {
+//                                            val intent =
+//                                                Intent(activity, SignInActivity::class.java).apply {
+//                                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                                                }
+//                                            startActivity(intent)
+//                                        }
+                                        else -> {
+                                            showSnackBar(mRootView, errorArray.getString(i), Snackbar.LENGTH_SHORT)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    snackBar.dismiss()
+                    activity!!.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                }.execute(ApiParam(api, image = arrayListOf(param), longTimeout = true))
+            }
         }
 
-        val gridView = activity!!.findViewById<GridView>(R.id.grid_view)
-        gridView.adapter = GridAdapter(activity!!)
+        activity!!.findViewById<GridView>(R.id.grid_view).apply {
+            adapter = GridAdapter()
+        }
     }
 }

@@ -28,6 +28,8 @@ class ChildFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_child, container, false)
+
         realm = Realm.getDefaultInstance()
 
         val account = realm.where<Account>().findFirst()
@@ -42,7 +44,7 @@ class ChildFragment : Fragment() {
             Toast.makeText(activity, "ユーザー情報を取得できませんでした", Toast.LENGTH_SHORT).show()
         }
 
-        return inflater.inflate(R.layout.fragment_child, container, false)
+        return view
     }
 
     override fun onAttach(context: Context) {
