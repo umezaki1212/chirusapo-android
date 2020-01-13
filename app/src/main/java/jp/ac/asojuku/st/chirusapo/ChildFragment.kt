@@ -3,7 +3,6 @@ package jp.ac.asojuku.st.chirusapo
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -20,9 +18,8 @@ import jp.ac.asojuku.st.chirusapo.apis.*
 import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import kotlinx.android.synthetic.main.fragment_child.*
 
-class ChildFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class ChildFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
-    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var realm: Realm
     private lateinit var userToken: String
     private lateinit var groupId: String
@@ -47,15 +44,7 @@ class ChildFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             Toast.makeText(activity, "ユーザー情報を取得できませんでした", Toast.LENGTH_SHORT).show()
         }
 
-        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
-        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener)
-        mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
-
         return view
-    }
-
-    private val mOnRefreshListener = SwipeRefreshLayout.OnRefreshListener {
-        getChild()
     }
 
     override fun onAttach(context: Context) {
@@ -70,10 +59,6 @@ class ChildFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onDetach() {
         super.onDetach()
         listener = null
-    }
-
-    override fun onRefresh() {
-        getChild()
     }
 
     interface OnFragmentInteractionListener {
@@ -168,7 +153,6 @@ class ChildFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                     ).show()
                 }
             }
-            mSwipeRefreshLayout.isRefreshing = false
         }.execute(
             ApiParam(
                 Api.SLIM + "/child/list",
