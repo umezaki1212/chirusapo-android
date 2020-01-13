@@ -12,6 +12,11 @@
         android:title="@string/action_add_image" />
 
     <item
+        android:id="@+id/action_face_add"
+        android:icon="@drawable/ic_user"
+        android:title="@string/face_add" />
+
+    <item
         android:id="@+id/action_update_body"
         android:icon="@drawable/ic_pen"
         android:title="@string/action_update_body" />
