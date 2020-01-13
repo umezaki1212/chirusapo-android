@@ -1,19 +1,17 @@
 package jp.ac.asojuku.st.chirusapo
 
 import android.app.DatePickerDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.kotlin.where
 import jp.ac.asojuku.st.chirusapo.apis.*
-import kotlinx.android.synthetic.main.activity_check_friend.*
 import kotlinx.android.synthetic.main.activity_child_friend_add.*
-import kotlinx.android.synthetic.main.activity_child_friend_add.friend_name
 import kotlinx.android.synthetic.main.activity_child_registration.*
 import java.util.*
 
@@ -151,6 +149,7 @@ class ChildFriendAddActivity : AppCompatActivity() {
         var check = true
         if(!userNameCheck())check = false
         if(!childBirthdayCheck())check = false
+        if(!memoCheck())check = false
         if(!check)return
 
         val account: Account? = realm.where<Account>().findFirst()

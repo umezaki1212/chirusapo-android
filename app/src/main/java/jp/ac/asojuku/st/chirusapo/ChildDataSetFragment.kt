@@ -39,7 +39,8 @@ class ChildDataSetFragment : Fragment() {
     private lateinit var bodyWeight:String
     private lateinit var clothesSize:String
     private lateinit var shoesSize:String
-
+    private lateinit var vaccinationCount:String
+    private lateinit var allergyCount:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,9 +87,21 @@ class ChildDataSetFragment : Fragment() {
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
+                //子供顔管理
+                R.id.action_face_add -> {
+                    val intent = Intent(activity!!, ChildFaceFragment::class.java)
+                    intent.putExtra("user_id", childId)
+                    startActivity(intent)
+                    speedDialView.close() // To close the Speed Dial with animation
+                    return@OnActionSelectedListener true // false will close it without animation
+                }
                 //子成情報変更画面
                 R.id.action_update_body -> {
-                    showToast(activity!!,"No label action clicked!\nClosing with animation",Toast.LENGTH_SHORT)
+                    val intent = Intent(activity!!, ChildChangeDataActivity::class.java)
+                    intent.putExtra("user_id", childId)
+                    intent.putExtra("vaccinationCount",vaccinationCount)
+                    intent.putExtra("allergyCount",allergyCount)
+                    startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
@@ -223,6 +236,9 @@ class ChildDataSetFragment : Fragment() {
                                 listView.adapter = childDataAdapter
 
                                 setListViewHeightBasedOnChildren(child_main_data_list)
+
+                                vaccinationCount = item.getJSONArray("vaccination").length().toString()
+                                allergyCount = item.getJSONArray("allergy").length().toString()
 
                                 val listSub = ArrayList<ChildDataListItem>()
                                 arrayListOf<String>().apply {
