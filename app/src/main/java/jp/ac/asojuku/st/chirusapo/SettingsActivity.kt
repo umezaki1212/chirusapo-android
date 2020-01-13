@@ -14,7 +14,6 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import android.widget.LinearLayout
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -37,7 +36,6 @@ class SettingsActivity : AppCompatActivity() {
 
             val realm = Realm.getDefaultInstance()
             val userToken: String
-            val view = view
 
             val account = realm.where(Account::class.java).findFirst()
             if (account == null) {
@@ -51,6 +49,18 @@ class SettingsActivity : AppCompatActivity() {
             accountEdit!!.setOnPreferenceClickListener {
                 val intent = Intent(activity, ChangeProfileActivity::class.java)
                 startActivity(intent)
+                return@setOnPreferenceClickListener true
+            }
+
+            val lineCooperation = findPreference<PreferenceScreen>("line_cooperation")
+            lineCooperation!!.setOnPreferenceClickListener {
+                /*
+                ここに実装
+                val uri = Uri.parse("https://slim.chirusapo.vxx0.com/line/signin")
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+                */
+
                 return@setOnPreferenceClickListener true
             }
 
