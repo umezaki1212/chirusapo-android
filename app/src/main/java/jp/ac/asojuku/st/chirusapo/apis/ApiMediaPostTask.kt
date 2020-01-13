@@ -6,11 +6,9 @@ import android.os.AsyncTask
 import okhttp3.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.util.*
-import okhttp3.RequestBody
-import okhttp3.MultipartBody
 import java.io.File
-
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class ApiMediaPostTask(var callback: (JSONObject?) -> Unit) :
     AsyncTask<ApiParam, Unit, JSONObject>() {
@@ -47,9 +45,16 @@ class ApiMediaPostTask(var callback: (JSONObject?) -> Unit) :
             }
 
             val requestBody = multipartBody.build()
-
             val request = Request.Builder().url(api).post(requestBody).build()
-            val okHttpClient = OkHttpClient()
+            val okHttpClient = if (params.longTimeout) {
+                OkHttpClient.Builder().apply {
+                    connectTimeout(10, TimeUnit.MINUTES)
+                    readTimeout(5, TimeUnit.MINUTES)
+                    writeTimeout(5, TimeUnit.MINUTES)
+                }.build()
+            } else {
+                OkHttpClient()
+            }
             val call = okHttpClient.newCall(request)
             val response = call.execute()
             val body = response.body()
