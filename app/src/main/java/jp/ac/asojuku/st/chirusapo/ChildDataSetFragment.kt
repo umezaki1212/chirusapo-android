@@ -19,7 +19,6 @@ import jp.ac.asojuku.st.chirusapo.adapters.ChildDataAdapter
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListItem
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataListSub
 import jp.ac.asojuku.st.chirusapo.adapters.ChildDataSubAdapter
-import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showToast
 import org.json.JSONObject
 
 class ChildDataSetFragment : Fragment() {
@@ -75,15 +74,6 @@ class ChildDataSetFragment : Fragment() {
                 // 子供成長投稿画面
                 R.id.action_add_image -> {
                     val intent = Intent(activity, ChildTimeLinePostAdd::class.java).apply {
-                        putExtra("user_id", childId)
-                    }
-                    startActivity(intent)
-                    speedDialView.close()
-                    return@OnActionSelectedListener true
-                }
-                // 子供顔管理
-                R.id.action_face_add -> {
-                    val intent = Intent(activity!!, ChildFaceFragment::class.java).apply {
                         putExtra("user_id", childId)
                     }
                     startActivity(intent)
@@ -247,7 +237,7 @@ class ChildDataSetFragment : Fragment() {
         setListViewHeightBasedOnChildren(listSubView)
 
         val listViewRecord = view.findViewById<ListView>(R.id.child_list_record)
-        val dataArray = arrayOf("今までの成長", "グラフの表示", "友達リスト")
+        val dataArray = arrayOf("今までの成長", "グラフの表示", "友達リスト","子供の顔情報")
         val adapter = ArrayAdapter(
             activity!!,
             android.R.layout.simple_list_item_1,
@@ -271,6 +261,12 @@ class ChildDataSetFragment : Fragment() {
                 }
                 "友達リスト" -> {
                     val intent = Intent(activity, ListofFriendActivity::class.java).apply {
+                        putExtra("user_id", childId)
+                    }
+                    startActivity(intent)
+                }
+                "子供の顔情報" -> {
+                    val intent = Intent(activity, ChildFaceActivity::class.java).apply {
                         putExtra("user_id", childId)
                     }
                     startActivity(intent)
