@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -25,9 +26,6 @@ import jp.ac.asojuku.st.chirusapo.apis.*
 import jp.ac.asojuku.st.chirusapo.apis.ApiError.Companion.showSnackBar
 import kotlinx.android.synthetic.main.fragment_album.*
 import java.io.IOException
-import android.widget.ProgressBar
-import android.R.layout
-import android.view.WindowManager
 
 class AlbumFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private var listener: OnFragmentInteractionListener? = null
