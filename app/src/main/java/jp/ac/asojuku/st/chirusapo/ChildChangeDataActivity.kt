@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -19,12 +18,12 @@ import jp.ac.asojuku.st.chirusapo.apis.Api
 import jp.ac.asojuku.st.chirusapo.apis.ApiError
 import jp.ac.asojuku.st.chirusapo.apis.ApiParam
 import jp.ac.asojuku.st.chirusapo.apis.ApiPostTask
-import kotlinx.android.synthetic.main.activity_child_chang_data.*
+import kotlinx.android.synthetic.main.activity_child_change_data.*
 import kotlinx.android.synthetic.main.activity_child_registration.*
 import java.util.*
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class ChildChangDataActivity : AppCompatActivity() {
+class ChildChangeDataActivity : AppCompatActivity() {
 
     lateinit var realm: Realm
 
@@ -45,7 +44,7 @@ class ChildChangDataActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_child_chang_data)
+        setContentView(R.layout.activity_child_change_data)
         realm = Realm.getDefaultInstance()
 
         val vaccine = realm.where<Vaccine>().findAll()

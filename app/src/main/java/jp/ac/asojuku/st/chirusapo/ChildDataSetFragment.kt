@@ -87,9 +87,9 @@ class ChildDataSetFragment : Fragment() {
                     speedDialView.close() // To close the Speed Dial with animation
                     return@OnActionSelectedListener true // false will close it without animation
                 }
-                //子供成長投稿画面
+                //子供顔管理
                 R.id.action_face_add -> {
-                    val intent = Intent(activity!!, ChildTimeLinePostAdd::class.java)
+                    val intent = Intent(activity!!, ChildFaceFragment::class.java)
                     intent.putExtra("user_id", childId)
                     startActivity(intent)
                     speedDialView.close() // To close the Speed Dial with animation
@@ -97,7 +97,7 @@ class ChildDataSetFragment : Fragment() {
                 }
                 //子成情報変更画面
                 R.id.action_update_body -> {
-                    val intent = Intent(activity!!, ChildChangDataActivity::class.java)
+                    val intent = Intent(activity!!, ChildChangeDataActivity::class.java)
                     intent.putExtra("user_id", childId)
                     intent.putExtra("vaccinationCount",vaccinationCount)
                     intent.putExtra("allergyCount",allergyCount)
