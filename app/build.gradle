@@ -74,4 +74,7 @@ dependencies {
     // StfalconImageViewer
     // https://github.com/stfalcon-studio/StfalconImageViewer
     implementation 'com.github.stfalcon:stfalcon-imageviewer:0.1.0'
+    // SimpleCropView
+    // https://github.com/igreenwood/SimpleCropView
+    implementation 'com.isseiaoki:simplecropview:1.1.8'
 }
