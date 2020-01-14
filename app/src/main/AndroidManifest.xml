@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".ChildFaceActivity"></activity>
+        <activity android:name=".ChildFaceActivity" />
         <activity android:name=".ChildChangeDataActivity" />
         <activity android:name=".ChildFriendAddActivity" />
         <activity android:name=".RegistrationChildActivity" />
