@@ -51,7 +51,7 @@ class CalendarAddActivity : AppCompatActivity() {
                     var month = (m + 1).toString()
                     var day = d.toString()
                     if (m < 9) {
-                        month = "0$m"
+                        month = "0$month"
                     }
                     if (d < 10) {
                         day = "0$d"
