@@ -1,13 +1,8 @@
 package jp.ac.asojuku.st.chirusapo
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -19,9 +14,7 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 import io.realm.Realm
 import jp.ac.asojuku.st.chirusapo.apis.*
 import kotlinx.android.synthetic.main.activity_child_face.*
-import java.io.IOException
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ChildFaceActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener{
 
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
@@ -67,125 +60,27 @@ class ChildFaceActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
         realm = Realm.getDefaultInstance()
 
         val account = realm.where(Account::class.java).findFirst()
-        childId = intent.getStringExtra("user_id")
+        childId = intent.getStringExtra("user_id")!!
 
         if (account != null) {
             userToken = account.Rtoken
         }
 
         button_add_face.setOnClickListener {
-            onUploadPhotoPicker()
+            val intent = Intent(this, ChildFaceTrimmingActivity::class.java).apply {
+                putExtra("childId", childId)
+            }
+            startActivity(intent)
         }
 
         button_add_face_fab.setOnClickListener {
-            onUploadPhotoPicker()
+            val intent = Intent(this, ChildFaceTrimmingActivity::class.java).apply {
+                putExtra("childId", childId)
+            }
+            startActivity(intent)
         }
 
         getAlbum()
-    }
-
-    private fun onUploadPhotoPicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "image/*"
-        }
-        startActivityForResult(intent, PHOTO_SELECT_CODE)
-    }
-
-    @Throws(IOException::class)
-    private fun getBitmapFromUri(uri: Uri): Bitmap {
-        val parcelFileDescriptor = this.contentResolver.openFileDescriptor(uri, "r")
-        val fileDescriptor = parcelFileDescriptor!!.fileDescriptor
-        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-        parcelFileDescriptor.close()
-        return image
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (resultData != null) {
-                when (requestCode) {
-                    PHOTO_SELECT_CODE -> {
-                        try {
-                            val uri = resultData.data as Uri
-                            val bitmap = getBitmapFromUri(uri)
-                            onPhotoUpload(bitmap)
-                        } catch (e: Exception) {
-                            Snackbar
-                                .make(root_layout, "選択された画像を取得できませんでした", Snackbar.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun onPhotoUpload(bitmap: Bitmap) {
-        Snackbar.make(root_layout, "画像をアップロードしています…", Snackbar.LENGTH_SHORT).show()
-
-        ApiMediaPostTask { jsonObject ->
-            if (jsonObject == null) {
-                ApiError.showSnackBar(root_layout, ApiError.CONNECTION_ERROR, Snackbar.LENGTH_SHORT)
-            } else {
-                when (jsonObject.getString("status")) {
-                    "200" -> {
-                        val albumJsonArray =
-                            jsonObject.getJSONObject("data").getJSONObject("face_info")
-
-                        val layoutNotFindImage =
-                            this.findViewById<LinearLayout>(R.id.not_find_image)
-                        val layoutGridView =
-                            this.findViewById<GridView>(R.id.grid_view)
-
-                        if (albumJsonArray.length() == 0) {
-                            layoutNotFindImage.visibility = View.VISIBLE
-                            layoutGridView.visibility = View.INVISIBLE
-                        } else {
-                            layoutNotFindImage.visibility = View.INVISIBLE
-                            layoutGridView.visibility = View.VISIBLE
-
-                            val albumArrayList = arrayListOf<String>().apply {
-                                (0 until albumJsonArray.length()).forEach { _ ->
-                                    this.add(albumJsonArray.getString("file_name"))
-                                }
-                            }
-
-                            setAlbum(albumArrayList)
-                        }
-
-                        mSwipeRefreshLayout.isRefreshing = false
-                    }
-                    "400" -> {
-                        val errorArray = jsonObject.getJSONArray("message")
-                        for (i in 0 until errorArray.length()) {
-                            when (errorArray.getString(i)) {
-                                ApiError.UNKNOWN_TOKEN -> {
-                                    val intent =
-                                        Intent(this, SignInActivity::class.java).apply {
-                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        }
-                                    startActivity(intent)
-                                }
-                                else -> {
-                                    ApiError.showSnackBar(root_layout, errorArray.getString(i), Snackbar.LENGTH_SHORT)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }.execute(
-            ApiParam(
-                Api.SLIM + "/child/face/add",
-                hashMapOf("token" to userToken, "child_id" to childId),
-                arrayListOf(
-                    ApiParamImage("image/jpeg", "image.jpeg", "face_image", bitmap)
-                )
-            )
-        )
     }
 
     private fun getAlbum() {
@@ -262,7 +157,7 @@ class ChildFaceActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListe
                     setPadding(10, 10, 10, 10)
                     // ImageViewer
                     setOnClickListener {
-                        StfalconImageViewer.Builder<String>(this@ChildFaceActivity, mutableListOf(list[i])) { view, image ->
+                        StfalconImageViewer.Builder(this@ChildFaceActivity, mutableListOf(list[i])) { view, image ->
                             Picasso.get().load(image).into(view)
                         }.apply {
                             withHiddenStatusBar(false)
